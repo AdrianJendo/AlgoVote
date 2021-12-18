@@ -1,20 +1,20 @@
-import React, { useState } from "react";
+import React from "react";
+import { styled } from "@mui/system";
+import StartVote from "./startVote";
+
+const Dashboard = styled("div")(
+	({ theme }) => `
+		background-color: ${theme.palette.background.default};
+		width: 100%;
+		height: calc(100vh - 64px);
+	`
+);
 
 const Base = () => {
-	const [buttonClicked, setButtonClicked] = useState(false);
-
-	const handleButtonClicked = () => {
-		setButtonClicked(true);
-	};
-
 	return (
-		<div className="App">
-			{!buttonClicked ? (
-				<button onClick={handleButtonClicked}>Create vote</button>
-			) : (
-				<h2>You have started a vote</h2>
-			)}
-		</div>
+		<Dashboard>
+			<StartVote />
+		</Dashboard>
 	);
 };
 
