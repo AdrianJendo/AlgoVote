@@ -1,6 +1,6 @@
-import Base from "components/base.jsx";
-import AppBar from "components/appBar";
-import { lightTheme, darkTheme } from "theme/palletes";
+import Base from "components/Base.jsx";
+import AppBar from "components/AppBar";
+import { lightTheme, darkTheme } from "theme/Palletes";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { useState } from "react";
 

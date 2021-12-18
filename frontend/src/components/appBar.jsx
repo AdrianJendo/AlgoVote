@@ -8,7 +8,7 @@ import {
 	IconButton,
 } from "@mui/material";
 import HowToVoteIcon from "@mui/icons-material/HowToVote";
-import MUISwitch from "components/muiSwitch";
+import MUISwitch from "components/MuiSwitch";
 
 const TopAppBar = ({ dark, setDark }) => {
 	const toggleSwitch = () => {

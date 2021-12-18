@@ -1,6 +1,6 @@
 import React from "react";
 import { styled } from "@mui/system";
-import StartVote from "./startVote";
+import StartVote from "./StartVote";
 
 const Dashboard = styled("div")(
 	({ theme }) => `
