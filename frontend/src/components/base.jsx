@@ -1,6 +1,6 @@
 import React from "react";
 import { styled } from "@mui/system";
-import StartVote from "./StartVote";
+import VoteWorkflow from "components/VoteWorkflow";
 
 const Dashboard = styled("div")(
 	({ theme }) => `
@@ -13,7 +13,7 @@ const Dashboard = styled("div")(
 const Base = () => {
 	return (
 		<Dashboard>
-			<StartVote />
+			<VoteWorkflow />
 		</Dashboard>
 	);
 };
