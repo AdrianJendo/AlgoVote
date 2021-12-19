@@ -8,6 +8,7 @@ export const VoteInfoProvider = (props) => {
 		format: null,
 		method: null,
 		uploadType: null,
+		participantData: null,
 	});
 	return (
 		<VoteInfoContext.Provider value={[voteInfo, setVoteInfo]}>

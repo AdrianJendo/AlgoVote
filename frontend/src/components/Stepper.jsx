@@ -79,15 +79,14 @@ export default function VerticalLinearStepper() {
 											? "Finish"
 											: "Continue"}
 									</Button>
-									{index > 0 && (
-										<Button
-											// disabled={index === 0}
-											onClick={handleBack}
-											sx={{ mt: 1, mr: 1 }}
-										>
-											Back
-										</Button>
-									)}
+
+									<Button
+										// disabled={index === 0}
+										onClick={handleBack}
+										sx={{ mt: 1, mr: 1 }}
+									>
+										{index > 0 ? "Back" : "Cancel"}
+									</Button>
 								</div>
 							</Box>
 						</StepContent>

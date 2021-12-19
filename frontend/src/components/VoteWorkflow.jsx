@@ -3,6 +3,7 @@ import { Button, Paper, Typography, ButtonGroup } from "@mui/material";
 import { styled } from "@mui/system";
 import { VoteInfoContext } from "context/VoteInfoContext";
 import VerticalLinearStepper from "components/Stepper";
+import StickyHeadTable from "components/ParticpantsTable";
 
 const ButtonDiv = styled("div")(
 	() => `
@@ -45,48 +46,51 @@ const buttonGroupSX = (top) => ({ position: "relative", top: `${top}px` });
 const VoteWorkflow = () => {
 	const [voteInfo, setVoteInfo] = useContext(VoteInfoContext);
 
-	//Handle file upload
-	const [participantData, setParticipantData] = useState(null);
-	const [fileName, setFileName] = useState(null);
-
 	// Handle .txt and .csv files
 	const fileUploadHandler = (e) => {
-		const file = e.target.files[0];
-		let fileReader = new FileReader();
-		try {
-			fileReader.readAsText(file);
-			setFileName(file.name);
-		} catch {}
-		fileReader.onloadend = (e) => {
-			const content = e.target.result
-				.split("\n")
-				.join(",")
-				.split("\r")
-				.join(",")
-				.split(" ")
-				.join(",")
-				.split(","); // Split element in list of values
-			let i = 0;
-			while (i < content.length) {
-				if (content[i] === "" || !content[i].includes("@")) {
-					content.splice(i, 1);
-				} else {
-					i++;
+		const participants = {}; // handling multiple votes right now, but update it in the future to support name:numVotes in the future ... for excel files just do adjacent cells
+		const len = e.target.files.length;
+		for (let i = 0; i < len; i++) {
+			const file = e.target.files[i];
+			let fileReader = new FileReader();
+			try {
+				fileReader.readAsText(file);
+			} catch {}
+			fileReader.onloadend = (e) => {
+				const content = e.target.result
+					.split("\n")
+					.join(",")
+					.split("\r")
+					.join(",")
+					.split(" ")
+					.join(",")
+					.split(","); // Split element in list of values
+				for (let i = 0; i < content.length; i++) {
+					if (content[i] !== "" && content[i].includes("@")) {
+						if (participants[content[i]]) {
+							participants[content[i]]++;
+						} else {
+							participants[content[i]] = 1;
+						}
+					}
 				}
-			}
-
-			setParticipantData(content);
-		};
+				if (i === len - 1) {
+					setVoteInfo({ ...voteInfo, participantData: participants });
+				}
+			};
+		}
 	};
 
 	const goBack = () => {
-		if (voteInfo.uploadType) {
+		if (voteInfo.participantData) {
+			setVoteInfo({ ...voteInfo, participantData: null });
+		} else if (voteInfo.uploadType) {
 			setVoteInfo({ ...voteInfo, uploadType: null });
 		} else if (voteInfo.method) {
 			setVoteInfo({ ...voteInfo, method: null });
 		} else if (voteInfo.format) {
 			setVoteInfo({ ...voteInfo, format: null });
-		} else {
+		} else if (voteInfo.voteStarted) {
 			setVoteInfo({ ...voteInfo, voteStarted: false });
 		}
 	};
@@ -236,52 +240,76 @@ const VoteWorkflow = () => {
 						{voteInfo.method === "manual" && (
 							<FillDiv>Corvette</FillDiv>
 						)}
-						{voteInfo.uploadType === "excel" && (
-							<FillDiv>
-								<label htmlFor="file">
-									<Input
-										accept=".xlsx"
-										id="file"
-										multiple
-										type="file"
-									/>
-									<Button
-										sx={buttonGroupSX(10)}
-										variant="contained"
-										component="span"
-									>
-										Upload File
-									</Button>
-								</label>
-							</FillDiv>
+						{voteInfo.uploadType === "excel" &&
+							voteInfo.participantData === null && (
+								<FillDiv>
+									<Typography sx={typographySX(4)}>
+										Upload a file [USE TOOLTIP HERE THAT
+										SPECIFIES FORMAT]
+									</Typography>
+									<label htmlFor="file">
+										<Input
+											accept=".xlsx"
+											id="file"
+											multiple
+											type="file"
+										/>
+										<Button
+											sx={buttonGroupSX(10)}
+											variant="contained"
+											component="span"
+										>
+											Upload File
+										</Button>
+									</label>
+								</FillDiv>
+							)}
+						{voteInfo.uploadType === "txt" &&
+							voteInfo.participantData === null && (
+								<FillDiv>
+									<Typography sx={typographySX(4)}>
+										Upload a file [USE TOOLTIP HERE THAT
+										SPECIFIES FORMAT]
+									</Typography>
+									<label htmlFor="file">
+										<Input
+											accept=".txt"
+											id="file"
+											multiple
+											type="file"
+											onChange={fileUploadHandler}
+										/>
+										<Button
+											sx={buttonGroupSX(10)}
+											variant="contained"
+											component="span"
+										>
+											Upload File
+										</Button>
+									</label>
+								</FillDiv>
+							)}
+						{voteInfo.participantData !== null && (
+							<div
+								style={{
+									position: "relative",
+									height: "calc(100% - 180px)",
+									width: "60%",
+									left: "20%",
+									top: "5%",
+								}}
+							>
+								<StickyHeadTable />
+							</div>
 						)}
-						{voteInfo.uploadType === "txt" && (
-							<FillDiv>
-								<label htmlFor="file">
-									<Input
-										accept=".txt"
-										id="file"
-										multiple
-										type="file"
-										onChange={fileUploadHandler}
-									/>
-									<Button
-										sx={buttonGroupSX(10)}
-										variant="contained"
-										component="span"
-									>
-										Upload File
-									</Button>
-								</label>
-							</FillDiv>
-						)}
-						<Button
-							sx={buttonGroupSX(75)}
-							variant="contained"
-							onClick={goBack}
-						>
-							Go Back
-						</Button>
+						<ButtonGroup variant="contained" sx={buttonGroupSX(75)}>
+							<Button onClick={goBack}>
+								{voteInfo.format == null ? "Cancel" : "Go Back"}
+							</Button>
+							{voteInfo.participantData !== null && (
+								<Button>Confirm</Button>
+							)}
+						</ButtonGroup>
 					</Paper>
 				</PaperDiv>
 			) : (
