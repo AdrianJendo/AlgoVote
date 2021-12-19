@@ -4,6 +4,7 @@ import { styled } from "@mui/system";
 import { VoteInfoContext } from "context/VoteInfoContext";
 import VerticalLinearStepper from "components/Stepper";
 import StickyHeadTable from "components/ParticpantsTable";
+import * as XLSX from "xlsx";
 
 const ButtonDiv = styled("div")(
 	() => `
@@ -67,10 +68,55 @@ const VoteWorkflow = () => {
 					.split(","); // Split element in list of values
 				for (let i = 0; i < content.length; i++) {
 					if (content[i] !== "" && content[i].includes("@")) {
-						if (participants[content[i]]) {
-							participants[content[i]]++;
+						const participant = content[i].toLowerCase();
+						if (participants[participant]) {
+							participants[participant]++;
 						} else {
-							participants[content[i]] = 1;
+							participants[participant] = 1;
+						}
+					}
+				}
+				if (i === len - 1) {
+					setVoteInfo({ ...voteInfo, participantData: participants });
+				}
+			};
+		}
+	};
+
+	const excelUploadHandler = async (e) => {
+		const participants = {}; // handling multiple votes right now, but update it in the future to support name:numVotes in the future ... for excel files just do adjacent cells
+		const len = e.target.files.length;
+
+		for (let i = 0; i < len; i++) {
+			const file = e.target.files[i];
+			const fileReader = new FileReader();
+			fileReader.readAsBinaryString(file);
+
+			fileReader.onload = (e) => {
+				/* Parse data */
+				const bstr = e.target.result;
+				const wb = XLSX.read(bstr, { type: "binary" });
+				/* Get first worksheet */
+				const wsname = wb.SheetNames[0];
+				const ws = wb.Sheets[wsname];
+				/* Convert array of arrays */
+				const data = XLSX.utils.sheet_to_csv(ws, { header: 1 });
+				const content = data
+					.split("\n")
+					.join(",")
+					.split("\r")
+					.join(",")
+					.split(" ")
+					.join(",")
+					.split(","); // Split element in list of values
+				/* Update state */
+				for (let i = 0; i < content.length; i++) {
+					if (content[i] !== "" && content[i].includes("@")) {
+						const participant = content[i].toLowerCase();
+						if (participants[participant]) {
+							participants[participant]++;
+						} else {
+							participants[participant] = 1;
 						}
 					}
 				}
@@ -253,6 +299,7 @@ const VoteWorkflow = () => {
 											id="file"
 											multiple
 											type="file"
+											onChange={excelUploadHandler}
 										/>
 										<Button
 											sx={buttonGroupSX(10)}
