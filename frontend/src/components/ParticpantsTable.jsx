@@ -9,20 +9,37 @@ import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import { VoteInfoContext } from "context/VoteInfoContext";
 
-const rowsPerPage = 100;
-
-const columns = [
-	{ id: "name", label: "Name", minWidth: 170 },
-	{ id: "numVotes", label: "Number of Votes", minWidth: 170 },
-];
+const rowsPerPage = 50;
 
 export default function StickyHeadTable() {
 	const [page, setPage] = React.useState(0);
-	const [voteInfo, setVoteInfo] = React.useContext(VoteInfoContext);
+	const voteInfo = React.useContext(VoteInfoContext)[0];
+
+	// activeStep === 0 -> participants stage
+	const columns =
+		voteInfo.activeStep === 0
+			? [
+					{ id: "name", label: "Name", minWidth: 170 },
+					{ id: "numVotes", label: "Number of Votes", minWidth: 170 },
+			  ]
+			: [
+					{ id: "id", label: "ID", minWidth: 170 },
+					{ id: "name", label: "Name", minWidth: 170 },
+			  ];
 
 	const rows = [];
-	for (const [name, numVotes] of Object.entries(voteInfo.participantData)) {
-		rows.push({ name, numVotes });
+	if (voteInfo.activeStep === 0) {
+		for (const [name, numVotes] of Object.entries(
+			voteInfo.participantData
+		)) {
+			rows.push({ name, numVotes });
+		}
+	} else {
+		let id = 1;
+		for (const name of Object.keys(voteInfo.candidateData)) {
+			rows.push({ id, name });
+			id++;
+		}
 	}
 
 	const handleChangePage = (event, newPage) => {
