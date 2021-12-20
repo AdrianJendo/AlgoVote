@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { Button, Typography, ButtonGroup } from "@mui/material";
 import { styled } from "@mui/system";
 import { VoteInfoContext } from "context/VoteInfoContext";
-import StickyHeadTable from "components/ParticpantsTable";
+import StickyHeadTable from "components/RenderTable";
 import { txtUploadHandler, excelUploadHandler } from "utils/FileUpload";
 
 const FillDiv = styled("div")(
@@ -230,7 +230,7 @@ const SelectParticipants = () => {
 						top: "5%",
 					}}
 				>
-					<StickyHeadTable />
+					<StickyHeadTable stage="participants" />
 				</div>
 			)}
 			<ButtonGroup variant="contained" sx={buttonGroupSX(75)}>

@@ -11,13 +11,14 @@ import { VoteInfoContext } from "context/VoteInfoContext";
 
 const rowsPerPage = 50;
 
-export default function StickyHeadTable() {
+export default function StickyHeadTable({ stage }) {
 	const [page, setPage] = React.useState(0);
 	const voteInfo = React.useContext(VoteInfoContext)[0];
 
-	// activeStep === 0 -> participants stage
+	return <div>Table</div>;
+
 	const columns =
-		voteInfo.activeStep === 0
+		stage === "participants"
 			? [
 					{ id: "name", label: "Name", minWidth: 170 },
 					{ id: "numVotes", label: "Number of Votes", minWidth: 170 },
@@ -28,7 +29,7 @@ export default function StickyHeadTable() {
 			  ];
 
 	const rows = [];
-	if (voteInfo.activeStep === 0) {
+	if (stage === "participants") {
 		for (const [name, numVotes] of Object.entries(
 			voteInfo.participantData
 		)) {

@@ -7,6 +7,7 @@ import SelectParticipants from "components/SelectParticipants";
 import SelectCandidates from "components/SelectCandidates";
 import DatePicker from "components/DatePicker";
 import ReviewDetails from "components/ReviewDetails";
+import Payment from "components/Payment";
 
 const ButtonDiv = styled("div")(
 	() => `
@@ -96,6 +97,7 @@ const VoteWorkflow = () => {
 							/>
 						)}
 						{voteInfo.activeStep === 4 && <ReviewDetails />}
+						{voteInfo.activeStep === 5 && <Payment />}
 					</Paper>
 				</PaperDiv>
 			) : (

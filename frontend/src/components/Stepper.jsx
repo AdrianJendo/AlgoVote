@@ -50,7 +50,7 @@ export default function VerticalLinearStepper() {
 			voteInfo.activeStep === 1 || //&& !dateValue.error) ||
 			(voteInfo.activeStep === 2 && !dateValue.error) ||
 			(voteInfo.activeStep === 3 && !dateValue.error) ||
-			(voteInfo.activeStep === 4 && voteInfo.paymentReceived)
+			voteInfo.activeStep === 4
 		) {
 			setReadyToContinue(true);
 		} else {
