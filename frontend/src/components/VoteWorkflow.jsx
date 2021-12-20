@@ -5,6 +5,7 @@ import { VoteInfoContext } from "context/VoteInfoContext";
 import VerticalLinearStepper from "components/Stepper";
 import SelectParticipants from "components/SelectParticipants";
 import SelectCandidates from "components/SelectCandidates";
+import DatePicker from "components/DatePicker";
 
 const ButtonDiv = styled("div")(
 	() => `
@@ -33,6 +34,8 @@ const PaperDiv = styled("div")(
 const VoteWorkflow = () => {
 	const [voteInfo, setVoteInfo] = useContext(VoteInfoContext);
 
+	const earliestDate = new Date();
+
 	return (
 		<div style={{ height: "100%" }}>
 			{voteInfo.voteStarted && (
@@ -53,6 +56,34 @@ const VoteWorkflow = () => {
 					>
 						{voteInfo.activeStep === 0 && <SelectParticipants />}
 						{voteInfo.activeStep === 1 && <SelectCandidates />}
+						{voteInfo.activeStep === 2 && (
+							<DatePicker
+								earliestDate={earliestDate}
+								selectedDate={voteInfo.startDate}
+								endDate={
+									new Date(
+										earliestDate.getFullYear() + 7,
+										earliestDate.getMonth(),
+										earliestDate.getDate()
+									)
+								}
+								label="Start Date"
+							/>
+						)}
+						{voteInfo.activeStep === 3 && (
+							<DatePicker
+								earliestDate={voteInfo.startDate}
+								selectedDate={voteInfo.endDate}
+								endDate={
+									new Date(
+										voteInfo.startDate.getFullYear() + 7,
+										voteInfo.startDate.getMonth(),
+										voteInfo.startDate.getDate()
+									)
+								}
+								label="End Date"
+							/>
+						)}
 					</Paper>
 				</PaperDiv>
 			) : (
