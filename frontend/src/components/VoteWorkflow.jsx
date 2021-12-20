@@ -32,13 +32,20 @@ const PaperDiv = styled("div")(
 	`
 );
 
+const StyledBackground = styled("div")(
+	({ theme }) => `
+		height: 100%;
+		background: ${theme.palette.background.paper};
+	`
+);
+
 const VoteWorkflow = () => {
 	const [voteInfo, setVoteInfo] = useContext(VoteInfoContext);
 
 	const earliestDate = new Date();
 
 	return (
-		<div style={{ height: "100%" }}>
+		<StyledBackground>
 			{voteInfo.voteStarted && (
 				<StepperDiv>
 					<VerticalLinearStepper />
@@ -103,7 +110,7 @@ const VoteWorkflow = () => {
 					</Button>
 				</ButtonDiv>
 			)}
-		</div>
+		</StyledBackground>
 	);
 };
 

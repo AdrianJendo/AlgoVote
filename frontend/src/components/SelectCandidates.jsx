@@ -181,19 +181,21 @@ const SelectCandidates = () => {
 				</div>
 			)}
 			<ButtonGroup variant="contained" sx={buttonGroupSX(75)}>
-				<Button onClick={goBack}>Go Back</Button>
-				{/* {voteInfo.candidateData !== null && (
+				{voteInfo.candidateFormat !== null && (
 					<Button
 						onClick={() =>
 							setVoteInfo({
 								...voteInfo,
-								activeStep: voteInfo.activeStep + 1,
+								candidateMethod: null,
+								candidateUploadType: null,
+								candidateData: null,
 							})
 						}
 					>
-						Confirm
+						Reset
 					</Button>
-				)} */}
+				)}
+				<Button onClick={goBack}>Go Back</Button>
 			</ButtonGroup>
 		</div>
 	);

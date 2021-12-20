@@ -37,7 +37,7 @@ const steps = [
 	},
 ];
 
-const delay = 60 * 1000; // minutes (use delay of 5 minutes)
+const delay = 60 * 5000; // minutes (use delay of 5 minutes)
 
 export default function VerticalLinearStepper() {
 	const [voteInfo, setVoteInfo] = React.useContext(VoteInfoContext);
@@ -61,30 +61,42 @@ export default function VerticalLinearStepper() {
 	const handleNext = () => {
 		if (voteInfo.activeStep === 2) {
 			if (
-				dateValue.timeValue < new Date(new Date().getTime() + delay) ||
-				dateValue.startDate < new Date(new Date().getTime() + delay)
+				dateValue.timeValue < new Date(new Date().getTime()) ||
+				dateValue.startDate <
+					new Date(
+						new Date().getFullYear(),
+						new Date().getMonth(),
+						new Date().getDate()
+					)
 			) {
-				alert("Update start time or date to be before current time");
+				alert("Update start time or date to be after current time");
 			} else {
 				setVoteInfo({
 					...voteInfo,
 					activeStep: voteInfo.activeStep + 1,
 					startDate: dateValue.value,
-					startTime: dateValue.timeValue,
+					startTime: new Date(dateValue.timeValue.setSeconds(0)),
 				});
 			}
 		} else if (voteInfo.activeStep === 3) {
 			if (
 				dateValue.timeValue < new Date(new Date().getTime() + delay) ||
-				dateValue.endDate < new Date(new Date().getTime() + delay)
+				dateValue.endDate <
+					new Date(
+						new Date().getFullYear(),
+						new Date().getMonth(),
+						new Date().getDate()
+					)
 			) {
-				alert("Update end time or date to be before current time");
+				alert(
+					"Update end time or date to be after current time + delay"
+				);
 			} else {
 				setVoteInfo({
 					...voteInfo,
 					activeStep: voteInfo.activeStep + 1,
 					endDate: dateValue.value,
-					endTime: dateValue.timeValue,
+					endTime: new Date(dateValue.timeValue.setSeconds(0)),
 				});
 			}
 		} else {

@@ -23,7 +23,8 @@ const MarginDiv = styled("div")(
 	`
 );
 
-const delay = 60 * 1000; // minutes (use delay of 5 minutes)
+const delay = 60 * 5000; // minutes (use delay of 5 minutes)
+const buffer = 60 * 1000; // buffer so it doesnt give errors too early
 
 export default function ResponsiveDatePickers({
 	earliestDate,
@@ -71,7 +72,7 @@ export default function ResponsiveDatePickers({
 	const handleTimeChange = (newValue) => {
 		if (
 			(startTime && newValue < new Date(startTime.getTime() + delay)) ||
-			newValue < new Date(new Date().getTime() + delay)
+			newValue < new Date(new Date().getTime() + delay - buffer)
 		) {
 			setDateValue({ ...dateValue, timeValue: newValue, error: true });
 		} else {
@@ -112,7 +113,9 @@ export default function ResponsiveDatePickers({
 						minTime={
 							startTime && startTime > new Date()
 								? new Date(startTime.getTime() + delay)
-								: new Date(new Date().getTime() + delay)
+								: new Date(
+										new Date().getTime() + delay - buffer
+								  )
 						}
 						renderInput={(params) => <TextField {...params} />}
 					/>

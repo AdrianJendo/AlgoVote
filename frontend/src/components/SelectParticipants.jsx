@@ -252,18 +252,6 @@ const SelectParticipants = () => {
 				<Button onClick={goBack}>
 					{voteInfo.participantFormat == null ? "Cancel" : "Go Back"}
 				</Button>
-				{voteInfo.participantData !== null && (
-					<Button
-						onClick={() =>
-							setVoteInfo({
-								...voteInfo,
-								activeStep: voteInfo.activeStep + 1,
-							})
-						}
-					>
-						Confirm
-					</Button>
-				)}
 			</ButtonGroup>
 		</div>
 	);
