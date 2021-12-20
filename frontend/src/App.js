@@ -4,7 +4,8 @@ import { lightTheme, darkTheme } from "theme/Palletes";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { useState } from "react";
 import { VoteInfoProvider } from "context/VoteInfoContext";
-import DateAdapter from "@mui/lab/AdapterDateFns";
+import { DateValueProvider } from "context/DateValueContext";
+import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
 
 function App() {
@@ -14,10 +15,12 @@ function App() {
 		<ThemeProvider
 			theme={dark ? createTheme(darkTheme) : createTheme(lightTheme)}
 		>
-			<LocalizationProvider dateAdapter={DateAdapter}>
+			<LocalizationProvider dateAdapter={AdapterDateFns}>
 				<VoteInfoProvider>
-					<AppBar dark={dark} setDark={setDark} />
-					<Base />
+					<DateValueProvider>
+						<AppBar dark={dark} setDark={setDark} />
+						<Base />
+					</DateValueProvider>
 				</VoteInfoProvider>
 			</LocalizationProvider>
 		</ThemeProvider>

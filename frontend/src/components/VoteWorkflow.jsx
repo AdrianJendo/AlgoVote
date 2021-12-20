@@ -6,6 +6,7 @@ import VerticalLinearStepper from "components/Stepper";
 import SelectParticipants from "components/SelectParticipants";
 import SelectCandidates from "components/SelectCandidates";
 import DatePicker from "components/DatePicker";
+import ReviewDetails from "components/ReviewDetails";
 
 const ButtonDiv = styled("div")(
 	() => `
@@ -68,12 +69,14 @@ const VoteWorkflow = () => {
 									)
 								}
 								label="Start Date"
+								timeLabel="Start Time"
 							/>
 						)}
 						{voteInfo.activeStep === 3 && (
 							<DatePicker
 								earliestDate={voteInfo.startDate}
 								selectedDate={voteInfo.endDate}
+								startTime={voteInfo.startTime}
 								endDate={
 									new Date(
 										voteInfo.startDate.getFullYear() + 7,
@@ -82,8 +85,10 @@ const VoteWorkflow = () => {
 									)
 								}
 								label="End Date"
+								timeLabel="End Time"
 							/>
 						)}
+						{voteInfo.activeStep === 4 && <ReviewDetails />}
 					</Paper>
 				</PaperDiv>
 			) : (

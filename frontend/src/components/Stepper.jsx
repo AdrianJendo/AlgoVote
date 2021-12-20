@@ -8,6 +8,7 @@ import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import { VoteInfoContext } from "context/VoteInfoContext";
+import { DateValueContext } from "context/DateValueContext";
 
 const steps = [
 	{
@@ -27,38 +28,71 @@ const steps = [
 		description: `Choose when your vote will end.`,
 	},
 	{
-		label: "Payment",
-		description: `A gas fee of X algo is required to execute this smart contract on the blockchain.`,
+		label: "Review Details",
+		description: `Review the details of this transaction and click 'Continue'.`,
 	},
 	{
-		label: "Confirm",
-		description: `Review the details of this transaction and click 'Finish'.`,
+		label: "Payment",
+		description: `A gas fee of X algo is required to execute this smart contract on the blockchain. Make the payment to finalize this vote contract.`,
 	},
 ];
 
+const delay = 60 * 1000; // minutes (use delay of 5 minutes)
+
 export default function VerticalLinearStepper() {
 	const [voteInfo, setVoteInfo] = React.useContext(VoteInfoContext);
+	const dateValue = React.useContext(DateValueContext)[0];
 	const [readyToContinue, setReadyToContinue] = React.useState(false);
 
 	React.useEffect(() => {
 		if (
-			(voteInfo.activeStep === 0 && voteInfo.participantData) ||
-			(voteInfo.activeStep === 1 && voteInfo.candidateDate) ||
-			(voteInfo.activeStep === 2 && voteInfo.startDate) ||
-			(voteInfo.activeStep === 3 && voteInfo.endDate) ||
+			voteInfo.activeStep === 0 || //&& voteInfo.participantData) ||
+			voteInfo.activeStep === 1 || //&& !dateValue.error) ||
+			(voteInfo.activeStep === 2 && !dateValue.error) ||
+			(voteInfo.activeStep === 3 && !dateValue.error) ||
 			(voteInfo.activeStep === 4 && voteInfo.paymentReceived)
 		) {
 			setReadyToContinue(true);
 		} else {
 			setReadyToContinue(false);
 		}
-	}, [voteInfo]);
+	}, [voteInfo, dateValue]);
 
 	const handleNext = () => {
-		setVoteInfo({
-			...voteInfo,
-			activeStep: voteInfo.activeStep + 1,
-		});
+		if (voteInfo.activeStep === 2) {
+			if (
+				dateValue.timeValue < new Date(new Date().getTime() + delay) ||
+				dateValue.startDate < new Date(new Date().getTime() + delay)
+			) {
+				alert("Update start time or date to be before current time");
+			} else {
+				setVoteInfo({
+					...voteInfo,
+					activeStep: voteInfo.activeStep + 1,
+					startDate: dateValue.value,
+					startTime: dateValue.timeValue,
+				});
+			}
+		} else if (voteInfo.activeStep === 3) {
+			if (
+				dateValue.timeValue < new Date(new Date().getTime() + delay) ||
+				dateValue.endDate < new Date(new Date().getTime() + delay)
+			) {
+				alert("Update end time or date to be before current time");
+			} else {
+				setVoteInfo({
+					...voteInfo,
+					activeStep: voteInfo.activeStep + 1,
+					endDate: dateValue.value,
+					endTime: dateValue.timeValue,
+				});
+			}
+		} else {
+			setVoteInfo({
+				...voteInfo,
+				activeStep: voteInfo.activeStep + 1,
+			});
+		}
 	};
 
 	const handleBack = () => {
@@ -82,10 +116,6 @@ export default function VerticalLinearStepper() {
 				confirmed: false,
 			});
 		} else {
-			// if (activeStep === 1) {
-			// 	// newVoteInfo.candidateData = null;
-			// } else if (activeStep === 2) {
-			// }
 			setVoteInfo({ ...voteInfo, activeStep: activeStep - 1 });
 		}
 	};
@@ -101,7 +131,7 @@ export default function VerticalLinearStepper() {
 					<Step key={step.label}>
 						<StepLabel
 							optional={
-								index === 2 ? (
+								index === steps.length - 1 ? (
 									<Typography variant="caption">
 										Last step
 									</Typography>

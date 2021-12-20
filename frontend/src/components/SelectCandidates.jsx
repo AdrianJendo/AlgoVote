@@ -182,7 +182,7 @@ const SelectCandidates = () => {
 			)}
 			<ButtonGroup variant="contained" sx={buttonGroupSX(75)}>
 				<Button onClick={goBack}>Go Back</Button>
-				{voteInfo.candidateData !== null && (
+				{/* {voteInfo.candidateData !== null && (
 					<Button
 						onClick={() =>
 							setVoteInfo({
@@ -193,7 +193,7 @@ const SelectCandidates = () => {
 					>
 						Confirm
 					</Button>
-				)}
+				)} */}
 			</ButtonGroup>
 		</div>
 	);
