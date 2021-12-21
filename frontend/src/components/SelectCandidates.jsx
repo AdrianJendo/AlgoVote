@@ -9,8 +9,11 @@ import {
 	Input,
 	typographySX,
 	buttonGroupSX,
-	TableDiv,
+	TableSubDiv,
+	ManualUploadDiv,
+	ManualUploadSubDiv,
 } from "utils/ParticipantsStyle";
+import CustomizedInputBase from "components/TextInput";
 
 const SelectCandidates = () => {
 	const [voteInfo, setVoteInfo] = useContext(VoteInfoContext);
@@ -93,9 +96,6 @@ const SelectCandidates = () => {
 						</ButtonGroup>
 					</FillDiv>
 				)}
-			{voteInfo.candidateMethod === "manual" && (
-				<FillDiv>Corvette</FillDiv>
-			)}
 			{voteInfo.candidateUploadType === "excel" &&
 				voteInfo.candidateData === null && (
 					<FillDiv>
@@ -160,10 +160,16 @@ const SelectCandidates = () => {
 						</label>
 					</FillDiv>
 				)}
-			{voteInfo.candidateData !== null && (
-				<TableDiv>
-					<StickyHeadTable stage="candidates" />
-				</TableDiv>
+			{(voteInfo.candidateMethod === "manual" ||
+				voteInfo.candidateData !== null) && (
+				<ManualUploadDiv>
+					<ManualUploadSubDiv>
+						<CustomizedInputBase index="candidateData" />
+					</ManualUploadSubDiv>
+					<TableSubDiv>
+						<StickyHeadTable stage="candidates" />
+					</TableSubDiv>
+				</ManualUploadDiv>
 			)}
 			<ButtonGroup variant="contained" sx={buttonGroupSX(75)}>
 				{voteInfo.candidateFormat !== null && (

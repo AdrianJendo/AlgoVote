@@ -78,7 +78,12 @@ const ReviewDetails = () => {
 					<Typography>Participants</Typography>
 				</AccordionSummary>
 				<AccordionDetails>
-					<div style={{ display: "flex", maxHeight: "50vh" }}>
+					<div
+						style={{
+							display: "flex",
+							maxHeight: "calc(80vh - 200px)",
+						}}
+					>
 						<StickyHeadTable stage="participants" />
 					</div>
 				</AccordionDetails>
@@ -94,7 +99,12 @@ const ReviewDetails = () => {
 					<Typography>Candidates</Typography>
 				</AccordionSummary>
 				<AccordionDetails>
-					<div style={{ display: "flex", maxHeight: "50vh" }}>
+					<div
+						style={{
+							display: "flex",
+							maxHeight: "calc(80vh - 200px)",
+						}}
+					>
 						<StickyHeadTable stage="candidates" />
 					</div>
 				</AccordionDetails>

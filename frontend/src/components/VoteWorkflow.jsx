@@ -37,6 +37,7 @@ const StyledBackground = styled("div")(
 	({ theme }) => `
 		height: 100%;
 		background: ${theme.palette.background.paper};
+		overflow-y: hidden;
 	`
 );
 

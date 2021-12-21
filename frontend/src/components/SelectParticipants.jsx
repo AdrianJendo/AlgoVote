@@ -160,17 +160,6 @@ const SelectParticipants = () => {
 						</ButtonGroup>
 					</FillDiv>
 				)}
-			{(voteInfo.participantMethod === "manual" ||
-				voteInfo.participantData !== null) && (
-				<ManualUploadDiv>
-					<ManualUploadSubDiv>
-						<CustomizedInputBase />
-					</ManualUploadSubDiv>
-					<TableSubDiv>
-						<StickyHeadTable stage="participants" />
-					</TableSubDiv>
-				</ManualUploadDiv>
-			)}
 			{voteInfo.participantUploadType === "excel" &&
 				voteInfo.participantData === null && (
 					<FillDiv>
@@ -235,6 +224,17 @@ const SelectParticipants = () => {
 						</label>
 					</FillDiv>
 				)}
+			{(voteInfo.participantMethod === "manual" ||
+				voteInfo.participantData !== null) && (
+				<ManualUploadDiv>
+					<ManualUploadSubDiv>
+						<CustomizedInputBase index="participantData" />
+					</ManualUploadSubDiv>
+					<TableSubDiv>
+						<StickyHeadTable stage="participants" />
+					</TableSubDiv>
+				</ManualUploadDiv>
+			)}
 			<ButtonGroup variant="contained" sx={buttonGroupSX(75)}>
 				{voteInfo.participantFormat !== null && (
 					<Button

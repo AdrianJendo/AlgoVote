@@ -6,25 +6,26 @@ import IconButton from "@mui/material/IconButton";
 import DirectionsIcon from "@mui/icons-material/Directions";
 import { VoteInfoContext } from "context/VoteInfoContext";
 
-export default function CustomizedInputBase() {
+export default function CustomizedInputBase({ index }) {
 	const [textValue, setTextValue] = React.useState("");
 	const [voteInfo, setVoteInfo] = React.useContext(VoteInfoContext);
 
 	const inputRef = React.useRef();
 
 	const addValue = () => {
-		const participants = voteInfo.participantData
-			? voteInfo.participantData
-			: {};
-
-		if (participants[textValue]) {
-			participants[textValue]++;
+		const participants = voteInfo[index] ? voteInfo[index] : {};
+		const name = textValue.toLowerCase();
+		if (participants[name] && index === "participantData") {
+			participants[name]++;
+		} else if (participants[name]) {
+			alert("Candidate already exists in table");
+			return;
 		} else {
-			participants[textValue] = 1;
+			participants[name] = 1;
 		}
 
 		const newVoteInfo = Object.assign({}, voteInfo);
-		newVoteInfo.participantData = participants;
+		newVoteInfo[index] = participants;
 		setVoteInfo(newVoteInfo);
 		setTextValue("");
 	};
@@ -45,7 +46,9 @@ export default function CustomizedInputBase() {
 		>
 			<InputBase
 				sx={{ ml: 1, flex: 1 }}
-				placeholder="Add a participant"
+				placeholder={`Add a ${
+					index === "participantData" ? "participant" : "candidate"
+				}`}
 				inputProps={{ "aria-label": "add participant" }}
 				value={textValue}
 				inputRef={inputRef}
