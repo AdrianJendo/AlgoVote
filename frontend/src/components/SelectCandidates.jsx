@@ -9,6 +9,7 @@ import {
 	Input,
 	typographySX,
 	buttonGroupSX,
+	TableDiv,
 } from "utils/ParticipantsStyle";
 
 const SelectCandidates = () => {
@@ -160,17 +161,9 @@ const SelectCandidates = () => {
 					</FillDiv>
 				)}
 			{voteInfo.candidateData !== null && (
-				<div
-					style={{
-						position: "relative",
-						height: "calc(100% - 180px)",
-						width: "60%",
-						left: "20%",
-						top: "5%",
-					}}
-				>
+				<TableDiv>
 					<StickyHeadTable stage="candidates" />
-				</div>
+				</TableDiv>
 			)}
 			<ButtonGroup variant="contained" sx={buttonGroupSX(75)}>
 				{voteInfo.candidateFormat !== null && (

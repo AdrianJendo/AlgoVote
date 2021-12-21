@@ -8,14 +8,31 @@ import {
 	Input,
 	typographySX,
 	buttonGroupSX,
+	TableDiv,
+	TableSubDiv,
+	ManualUploadDiv,
+	ManualUploadSubDiv,
 } from "utils/ParticipantsStyle";
+import CustomizedInputBase from "components/TextInput";
 
 const SelectParticipants = () => {
 	const [voteInfo, setVoteInfo] = useContext(VoteInfoContext);
 
 	const goBack = () => {
-		if (voteInfo.participantData) {
+		if (
+			voteInfo.participantData &&
+			voteInfo.participantMethod === "upload"
+		) {
 			setVoteInfo({ ...voteInfo, participantData: null });
+		} else if (
+			voteInfo.participantData &&
+			voteInfo.participantMethod === "manual"
+		) {
+			setVoteInfo({
+				...voteInfo,
+				participantMethod: null,
+				participantData: null,
+			});
 		} else if (voteInfo.participantUploadType) {
 			setVoteInfo({ ...voteInfo, participantUploadType: null });
 		} else if (voteInfo.participantMethod) {
@@ -94,7 +111,7 @@ const SelectParticipants = () => {
 								onClick={() =>
 									setVoteInfo({
 										...voteInfo,
-										participantMethod: "file",
+										participantMethod: "upload",
 									})
 								}
 							>
@@ -113,7 +130,7 @@ const SelectParticipants = () => {
 						</ButtonGroup>
 					</FillDiv>
 				)}
-			{voteInfo.participantMethod === "file" &&
+			{voteInfo.participantMethod === "upload" &&
 				voteInfo.participantUploadType === null && (
 					<FillDiv>
 						<Typography sx={typographySX(4)}>
@@ -145,7 +162,14 @@ const SelectParticipants = () => {
 					</FillDiv>
 				)}
 			{voteInfo.participantMethod === "manual" && (
-				<FillDiv>Corvette</FillDiv>
+				<ManualUploadDiv>
+					<ManualUploadSubDiv>
+						<CustomizedInputBase />
+					</ManualUploadSubDiv>
+					<TableSubDiv>
+						<StickyHeadTable stage="participants" />
+					</TableSubDiv>
+				</ManualUploadDiv>
 			)}
 			{voteInfo.participantUploadType === "excel" &&
 				voteInfo.participantData === null && (
@@ -211,19 +235,12 @@ const SelectParticipants = () => {
 						</label>
 					</FillDiv>
 				)}
-			{voteInfo.participantData !== null && (
-				<div
-					style={{
-						position: "relative",
-						height: "calc(100% - 180px)",
-						width: "60%",
-						left: "20%",
-						top: "5%",
-					}}
-				>
-					<StickyHeadTable stage="participants" />
-				</div>
-			)}
+			{voteInfo.participantMethod === "upload" &&
+				voteInfo.participantData !== null && (
+					<TableDiv>
+						<StickyHeadTable stage="participants" />
+					</TableDiv>
+				)}
 			<ButtonGroup variant="contained" sx={buttonGroupSX(75)}>
 				{voteInfo.participantFormat !== null && (
 					<Button
