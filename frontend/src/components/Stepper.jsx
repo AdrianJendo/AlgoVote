@@ -9,6 +9,7 @@ import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import { VoteInfoContext } from "context/VoteInfoContext";
 import { DateValueContext } from "context/DateValueContext";
+import isSameDate from "utils/IsSameDate";
 
 const steps = [
 	{
@@ -37,7 +38,7 @@ const steps = [
 	},
 ];
 
-const delay = 60 * 5000; // minutes (use delay of 5 minutes)
+const delay = 60 * 4000; // minutes (use delay of 5 minutes)
 
 export default function VerticalLinearStepper() {
 	const [voteInfo, setVoteInfo] = React.useContext(VoteInfoContext);
@@ -60,33 +61,34 @@ export default function VerticalLinearStepper() {
 
 	const handleNext = () => {
 		if (voteInfo.activeStep === 2) {
+			// Start date stuff
 			if (
-				dateValue.timeValue < new Date(new Date().getTime()) ||
-				dateValue.startDate <
-					new Date(
-						new Date().getFullYear(),
-						new Date().getMonth(),
-						new Date().getDate()
-					)
+				!isSameDate(dateValue.value, new Date()) ||
+				dateValue.timeValue - new Date(new Date().getTime() + delay) > 0
 			) {
-				alert("Update start time or date to be after current time");
-			} else {
 				setVoteInfo({
 					...voteInfo,
 					activeStep: voteInfo.activeStep + 1,
 					startDate: dateValue.value,
 					startTime: new Date(dateValue.timeValue.setSeconds(0)),
 				});
+			} else {
+				alert("Update start time or date to be after current time");
 			}
 		} else if (voteInfo.activeStep === 3) {
+			// End date stuff
 			if (
-				dateValue.timeValue < new Date(new Date().getTime() + delay) ||
-				dateValue.endDate <
-					new Date(
-						new Date().getFullYear(),
-						new Date().getMonth(),
-						new Date().getDate()
-					)
+				(isSameDate(dateValue.value, new Date()) &&
+					(dateValue.timeValue -
+						new Date(new Date().getTime() + delay) <
+						0 ||
+						dateValue.timeValue -
+							new Date(voteInfo.startTime.getTime() + delay) <
+							0)) || // check if the date is today and we are choosing a time in the past or too early
+				(isSameDate(dateValue.value, voteInfo.startDate) &&
+					dateValue.timeValue -
+						new Date(voteInfo.startTime.getTime() + delay) <
+						0)
 			) {
 				alert(
 					"Update end time or date to be after current time + delay"

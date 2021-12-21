@@ -9,7 +9,7 @@ import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
 
 function App() {
-	const [dark, setDark] = useState(false);
+	const [dark, setDark] = useState(true);
 
 	return (
 		<ThemeProvider

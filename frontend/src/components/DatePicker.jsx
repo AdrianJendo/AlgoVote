@@ -4,6 +4,7 @@ import DatePicker from "@mui/lab/DatePicker";
 import TimePicker from "@mui/lab/TimePicker";
 import { DateValueContext } from "context/DateValueContext";
 import { styled } from "@mui/system";
+import isSameDate from "utils/IsSameDate";
 
 const typographySX = (top) => ({ position: "relative", top: `${top}%` });
 
@@ -23,28 +24,39 @@ const MarginDiv = styled("div")(
 	`
 );
 
-const delay = 60 * 5000; // minutes (use delay of 5 minutes)
-const buffer = 60 * 1000; // buffer so it doesnt give errors too early
+const delay = 60 * 4000; // minutes (use delay of 5 minutes) - actually 4 but we round to the nearest minutes so this is effectively 5 for any validation
 
 export default function ResponsiveDatePickers({
 	earliestDate,
+	earliestTime,
 	selectedDate,
+	selectedTime,
 	endDate,
-	startTime,
 	label,
-	timeLabel,
 }) {
 	const [dateValue, setDateValue] = React.useContext(DateValueContext);
 
+	// Idk this some fucking nuts shit setting the right time was such a pain in the ass
 	React.useEffect(() => {
 		setDateValue({
 			error: false,
-			value: selectedDate ? selectedDate : earliestDate,
-			timeValue: startTime
-				? new Date(startTime.getTime() + delay)
-				: new Date(earliestDate.getTime() + delay),
+			value:
+				selectedDate && label !== "End" ? selectedDate : earliestDate,
+			timeValue:
+				selectedTime && label !== "End"
+					? selectedTime
+					: label === "Start"
+					? new Date(new Date().getTime() + delay + 60 * 1000)
+					: new Date(earliestTime.getTime() + delay + 60 * 1000),
 		});
-	}, [setDateValue, earliestDate, selectedDate, startTime]);
+	}, [
+		earliestDate,
+		earliestTime,
+		label,
+		selectedDate,
+		selectedTime,
+		setDateValue,
+	]);
 
 	const handeDateChange = (newValue) => {
 		const earliestDateDate = new Date(
@@ -70,13 +82,41 @@ export default function ResponsiveDatePickers({
 	};
 
 	const handleTimeChange = (newValue) => {
-		if (
-			(startTime && newValue < new Date(startTime.getTime() + delay)) ||
-			newValue < new Date(new Date().getTime() + delay - buffer)
-		) {
-			setDateValue({ ...dateValue, timeValue: newValue, error: true });
+		if (label === "Start") {
+			if (
+				isSameDate(dateValue.value, new Date()) &&
+				newValue < new Date(new Date().getTime() + delay) // handle case where we are trying to start a vote today and we try setting the time too early
+			) {
+				setDateValue({
+					...dateValue,
+					timeValue: newValue,
+					error: true,
+				});
+			} else {
+				setDateValue({
+					...dateValue,
+					timeValue: newValue,
+					error: false,
+				});
+			}
 		} else {
-			setDateValue({ ...dateValue, timeValue: newValue, error: false });
+			if (
+				isSameDate(dateValue.value, earliestDate) &&
+				(newValue < new Date(earliestTime.getTime() + delay) || // handle case where we are try to end the date on the same day but before the earliest time possible
+					newValue < new Date(new Date().getTime() + delay)) // also need to check that the new value is not in the past
+			) {
+				setDateValue({
+					...dateValue,
+					timeValue: newValue,
+					error: true,
+				});
+			} else {
+				setDateValue({
+					...dateValue,
+					timeValue: newValue,
+					error: false,
+				});
+			}
 		}
 	};
 
@@ -88,7 +128,7 @@ export default function ResponsiveDatePickers({
 			<InlineDiv>
 				<MarginDiv>
 					<DatePicker
-						label={label}
+						label={`${label} Date`}
 						openTo="day"
 						views={["year", "month", "day"]}
 						minDate={earliestDate}
@@ -97,7 +137,7 @@ export default function ResponsiveDatePickers({
 						onChange={(newValue) => handeDateChange(newValue)}
 						renderInput={(params) => <TextField {...params} />}
 					/>
-					{earliestDate && startTime && (
+					{label === "End" && (
 						<Typography sx={{ margin: "20px" }}>
 							Start Date: {earliestDate.toDateString()}
 						</Typography>
@@ -105,23 +145,27 @@ export default function ResponsiveDatePickers({
 				</MarginDiv>
 				<MarginDiv>
 					<TimePicker
-						label={timeLabel}
+						label={`${label} Time`}
 						value={dateValue.timeValue}
 						onChange={(newValue) => {
 							handleTimeChange(newValue);
 						}}
 						minTime={
-							startTime && startTime > new Date()
-								? new Date(startTime.getTime() + delay)
-								: new Date(
-										new Date().getTime() + delay - buffer
-								  )
+							label === "Start"
+								? isSameDate(dateValue.value, new Date())
+									? new Date(new Date().getTime() + delay)
+									: new Date(0, 0, 0)
+								: isSameDate(dateValue.value, new Date()) // this one is a lot more complicated because we need to check (a) if the end date is today,
+								? new Date(new Date().getTime() + delay)
+								: isSameDate(dateValue.value, earliestDate) // and (b) if the date is the same date as the earliest start date
+								? new Date(earliestTime.getTime() + delay)
+								: new Date(0, 0, 0)
 						}
 						renderInput={(params) => <TextField {...params} />}
 					/>
-					{earliestDate && startTime && (
+					{label === "End" && (
 						<Typography sx={{ margin: "20px" }}>
-							Start Time: {startTime.toLocaleTimeString()}
+							Start Time: {earliestTime.toLocaleTimeString()}
 						</Typography>
 					)}
 				</MarginDiv>

@@ -43,8 +43,7 @@ const StyledBackground = styled("div")(
 const VoteWorkflow = () => {
 	const [voteInfo, setVoteInfo] = useContext(VoteInfoContext);
 
-	const earliestDate = new Date();
-
+	const earliestStartDate = new Date(); // earliest start date is today
 	return (
 		<StyledBackground>
 			{voteInfo.voteStarted && (
@@ -67,24 +66,25 @@ const VoteWorkflow = () => {
 						{voteInfo.activeStep === 1 && <SelectCandidates />}
 						{voteInfo.activeStep === 2 && (
 							<DatePicker
-								earliestDate={earliestDate}
+								earliestDate={earliestStartDate}
 								selectedDate={voteInfo.startDate}
+								selectedTime={voteInfo.startTime}
 								endDate={
 									new Date(
-										earliestDate.getFullYear() + 7,
-										earliestDate.getMonth(),
-										earliestDate.getDate()
+										new Date().getFullYear() + 7,
+										new Date().getMonth(),
+										new Date().getDate()
 									)
 								}
-								label="Start Date"
-								timeLabel="Start Time"
+								label="Start"
 							/>
 						)}
 						{voteInfo.activeStep === 3 && (
 							<DatePicker
 								earliestDate={voteInfo.startDate}
+								earliestTime={voteInfo.startTime}
 								selectedDate={voteInfo.endDate}
-								startTime={voteInfo.startTime}
+								selectedTime={voteInfo.endTime}
 								endDate={
 									new Date(
 										voteInfo.startDate.getFullYear() + 7,
@@ -92,8 +92,7 @@ const VoteWorkflow = () => {
 										voteInfo.startDate.getDate()
 									)
 								}
-								label="End Date"
-								timeLabel="End Time"
+								label="End"
 							/>
 						)}
 						{voteInfo.activeStep === 4 && <ReviewDetails />}
