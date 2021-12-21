@@ -5,6 +5,7 @@ import TimePicker from "@mui/lab/TimePicker";
 import { DateValueContext } from "context/DateValueContext";
 import { styled } from "@mui/system";
 import isSameDate from "utils/IsSameDate";
+import { delay } from "utils/Constants";
 
 const typographySX = (top) => ({ position: "relative", top: `${top}%` });
 
@@ -23,8 +24,6 @@ const MarginDiv = styled("div")(
 		margin:20px;
 	`
 );
-
-const delay = 60 * 4000; // minutes (use delay of 5 minutes) - actually 4 but we round to the nearest minutes so this is effectively 5 for any validation
 
 export default function ResponsiveDatePickers({
 	earliestDate,

@@ -9,7 +9,52 @@ import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import { VoteInfoContext } from "context/VoteInfoContext";
 import { DateValueContext } from "context/DateValueContext";
+import { delay } from "utils/Constants";
 import isSameDate from "utils/IsSameDate";
+import { styled } from "@mui/system";
+import Check from "@mui/icons-material/Check";
+
+const StepIconRoot = styled("div")(({ theme, ownerState }) => ({
+	color: theme.palette.primary.main,
+
+	"& .background": {
+		width: 24,
+		height: 24,
+		borderRadius: "50%",
+		color: "#fff",
+		backgroundColor:
+			ownerState.active || ownerState.completed
+				? theme.palette.primary.main
+				: theme.stepperButtonColor,
+	},
+}));
+
+function StepIcon(props) {
+	const { active, completed, icon, className } = props;
+	return (
+		<StepIconRoot ownerState={{ active, completed }} className={className}>
+			{completed ? (
+				// <div className="background">
+				// 	<Check sx={{ fontSize: 20 }} />
+				// </div>
+				<Check />
+			) : (
+				<div className="background">
+					<div className="icon">
+						<Typography
+							sx={{
+								fontSize: "12px",
+								transform: "translate(8.5px, 3px)",
+							}}
+						>
+							{icon}
+						</Typography>
+					</div>
+				</div>
+			)}
+		</StepIconRoot>
+	);
+}
 
 const steps = [
 	{
@@ -37,8 +82,6 @@ const steps = [
 		description: `A gas fee of X algo is required to execute this smart contract on the blockchain. Make the payment to finalize this vote contract.`,
 	},
 ];
-
-const delay = 60 * 4000; // minutes (use delay of 5 minutes)
 
 export default function VerticalLinearStepper() {
 	const [voteInfo, setVoteInfo] = React.useContext(VoteInfoContext);
@@ -151,6 +194,7 @@ export default function VerticalLinearStepper() {
 									</Typography>
 								) : null
 							}
+							StepIconComponent={StepIcon}
 						>
 							{step.label}
 						</StepLabel>
@@ -171,6 +215,7 @@ export default function VerticalLinearStepper() {
 
 									<Button
 										// disabled={index === 0}
+										variant="text"
 										onClick={handleBack}
 										sx={{ mt: 1, mr: 1 }}
 									>

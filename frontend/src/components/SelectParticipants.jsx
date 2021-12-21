@@ -1,23 +1,14 @@
 import React, { useContext } from "react";
 import { Button, Typography, ButtonGroup } from "@mui/material";
-import { styled } from "@mui/system";
 import { VoteInfoContext } from "context/VoteInfoContext";
 import StickyHeadTable from "components/RenderTable";
 import { txtUploadHandler, excelUploadHandler } from "utils/FileUpload";
-
-const FillDiv = styled("div")(
-	() => `
-		position:relative;
-		top:30px
-	`
-);
-
-const Input = styled("input")({
-	display: "none",
-});
-
-const typographySX = (top) => ({ position: "relative", top: `${top}%` });
-const buttonGroupSX = (top) => ({ position: "relative", top: `${top}px` });
+import {
+	FillDiv,
+	Input,
+	typographySX,
+	buttonGroupSX,
+} from "utils/ParticipantsStyle";
 
 const SelectParticipants = () => {
 	const [voteInfo, setVoteInfo] = useContext(VoteInfoContext);
