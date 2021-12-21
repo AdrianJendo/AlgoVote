@@ -45,7 +45,7 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 }));
 
 const ReviewDetails = () => {
-	const [expanded, setExpanded] = useState("panel1");
+	const [expanded, setExpanded] = useState(false);
 
 	const handleChange = (panel) => (event, isExpanded) => {
 		setExpanded(isExpanded ? panel : false);
@@ -78,7 +78,9 @@ const ReviewDetails = () => {
 					<Typography>Participants</Typography>
 				</AccordionSummary>
 				<AccordionDetails>
-					<StickyHeadTable stage="participants" />
+					<div style={{ display: "flex", maxHeight: "50vh" }}>
+						<StickyHeadTable stage="participants" />
+					</div>
 				</AccordionDetails>
 			</Accordion>
 			<Accordion
@@ -92,7 +94,9 @@ const ReviewDetails = () => {
 					<Typography>Candidates</Typography>
 				</AccordionSummary>
 				<AccordionDetails>
-					<StickyHeadTable stage="candidates" />
+					<div style={{ display: "flex", maxHeight: "50vh" }}>
+						<StickyHeadTable stage="candidates" />
+					</div>
 				</AccordionDetails>
 			</Accordion>
 			<Accordion

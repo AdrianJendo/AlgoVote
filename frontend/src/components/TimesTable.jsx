@@ -12,7 +12,7 @@ import { styled } from "@mui/material/styles";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
 	[`&.${tableCellClasses.head}`]: {
-		backgroundColor: theme.palette.common.black,
+		backgroundColor: theme.palette.background.default,
 		color: theme.palette.common.white,
 	},
 	[`&.${tableCellClasses.body}`]: {

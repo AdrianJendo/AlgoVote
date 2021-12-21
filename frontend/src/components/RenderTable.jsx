@@ -1,14 +1,18 @@
 import * as React from "react";
-import Paper from "@mui/material/Paper";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TablePagination from "@mui/material/TablePagination";
-import TableRow from "@mui/material/TableRow";
 import { VoteInfoContext } from "context/VoteInfoContext";
-import IconButton from "@mui/material/IconButton";
+import {
+	IconButton,
+	Tooltip,
+	Paper,
+	Table,
+	TableBody,
+	TableCell,
+	TableContainer,
+	TableHead,
+	TablePagination,
+	TableRow,
+} from "@mui/material";
+import SettingsBackupRestoreIcon from "@mui/icons-material/SettingsBackupRestore";
 import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
 
 const rowsPerPage = 50;
@@ -30,6 +34,23 @@ export default function StickyHeadTable({ stage }) {
 					{ id: "cancel", label: "", width: 50, align: "right" },
 			  ];
 
+	if (voteInfo.activeStep === 4) {
+		columns[columns.length - 1].label = (
+			<Tooltip title="Edit" placement="top">
+				<IconButton
+					onClick={() =>
+						setVoteInfo({
+							...voteInfo,
+							activeStep: stage === "participants" ? 0 : 1,
+						})
+					}
+				>
+					<SettingsBackupRestoreIcon />
+				</IconButton>
+			</Tooltip>
+		);
+	}
+
 	const rows = [];
 	if (stage === "participants" && voteInfo.participantData) {
 		for (const [name, numVotes] of Object.entries(
@@ -38,13 +59,16 @@ export default function StickyHeadTable({ stage }) {
 			rows.push({
 				name,
 				numVotes,
-				cancel: (
-					<IconButton
-						onClick={() => decrementPerson({ numVotes, name })}
-					>
-						<PersonRemoveIcon />{" "}
-					</IconButton>
-				),
+				cancel:
+					voteInfo.activeStep === 4 ? (
+						""
+					) : (
+						<IconButton
+							onClick={() => decrementPerson({ numVotes, name })}
+						>
+							<PersonRemoveIcon />
+						</IconButton>
+					),
 			});
 		}
 	} else if (stage === "candidates" && voteInfo.candidateData) {
@@ -89,9 +113,9 @@ export default function StickyHeadTable({ stage }) {
 	};
 
 	return (
-		<Paper sx={{ height: "100%", width: "100%", overflow: "hidden" }}>
+		<Paper sx={{ maxHeight: "100%", width: "100%", overflow: "hidden" }}>
 			<TableContainer
-				sx={{ height: rows.length > rowsPerPage ? "85%" : "100%" }}
+				sx={{ maxHeight: rows.length > rowsPerPage ? "85%" : "100%" }}
 			>
 				<Table stickyHeader aria-label="sticky table">
 					<TableHead>
