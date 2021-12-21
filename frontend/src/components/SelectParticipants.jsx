@@ -8,7 +8,6 @@ import {
 	Input,
 	typographySX,
 	buttonGroupSX,
-	TableDiv,
 	TableSubDiv,
 	ManualUploadDiv,
 	ManualUploadSubDiv,
@@ -161,7 +160,8 @@ const SelectParticipants = () => {
 						</ButtonGroup>
 					</FillDiv>
 				)}
-			{voteInfo.participantMethod === "manual" && (
+			{(voteInfo.participantMethod === "manual" ||
+				voteInfo.participantData !== null) && (
 				<ManualUploadDiv>
 					<ManualUploadSubDiv>
 						<CustomizedInputBase />
@@ -234,12 +234,6 @@ const SelectParticipants = () => {
 							</Button>
 						</label>
 					</FillDiv>
-				)}
-			{voteInfo.participantMethod === "upload" &&
-				voteInfo.participantData !== null && (
-					<TableDiv>
-						<StickyHeadTable stage="participants" />
-					</TableDiv>
 				)}
 			<ButtonGroup variant="contained" sx={buttonGroupSX(75)}>
 				{voteInfo.participantFormat !== null && (

@@ -39,6 +39,7 @@ export const ManualUploadSubDiv = styled("div")({
 
 export const TableSubDiv = styled("div")({
 	position: "relative",
+	display: "flex",
 	height: "90%",
 	width: "100%",
 	padding: "10px",
