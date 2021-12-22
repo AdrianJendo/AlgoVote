@@ -77,11 +77,18 @@ export default function StickyHeadTable({ stage }) {
 			rows.push({
 				id,
 				name,
-				cancel: (
-					<IconButton>
-						<PersonRemoveIcon />
-					</IconButton>
-				),
+				cancel:
+					voteInfo.activeStep === 4 ? (
+						""
+					) : (
+						<IconButton
+							onClick={() =>
+								decrementPerson({ numVotes: 1, name })
+							}
+						>
+							<PersonRemoveIcon />
+						</IconButton>
+					),
 			});
 			id++;
 		}
