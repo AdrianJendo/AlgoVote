@@ -9,21 +9,17 @@ import DatePicker from "components/DatePicker";
 import ReviewDetails from "components/ReviewDetails";
 import Payment from "components/Payment";
 
-const ButtonDiv = styled("div")(
-	() => `
-		position: absolute;
-		left: 50%;
-		top: 20%;
-	`
-);
+const ButtonDiv = styled("div")({
+	position: "absolute",
+	left: "50%",
+	top: "20%",
+});
 
-const StepperDiv = styled("div")(
-	() => `
-		position:absolute;
-		left: 2%;
-		top: 80px;
-	`
-);
+const StepperDiv = styled("div")({
+	position: "fixed",
+	left: "2%",
+	top: "80px",
+});
 
 const PaperDiv = styled("div")(
 	({ theme }) => `
