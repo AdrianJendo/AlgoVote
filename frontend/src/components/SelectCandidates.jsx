@@ -14,6 +14,11 @@ import {
 	ManualUploadSubDiv,
 } from "utils/ParticipantsStyle";
 import CustomizedInputBase from "components/TextInput";
+import HelpIcon from "@mui/icons-material/Help";
+import HelperTooltip from "components/HelperTooltip";
+
+const candidates1 = require("images/candidates1.png");
+const candidates2 = require("images/candidates2.png");
 
 const SelectCandidates = () => {
 	const [voteInfo, setVoteInfo] = useContext(VoteInfoContext);
@@ -100,8 +105,33 @@ const SelectCandidates = () => {
 				voteInfo.candidateData === null && (
 					<FillDiv>
 						<Typography sx={typographySX(4)}>
-							Upload a file [USE TOOLTIP HERE THAT SPECIFIES
-							FORMAT]
+							Upload a file
+							<sup>
+								<HelperTooltip
+									title={
+										<div>
+											<center>
+												<Typography variant="caption">
+													An example of a valid format
+													is shown below:
+												</Typography>
+											</center>
+
+											<img
+												src={candidates1}
+												alt="Err"
+												height="200px"
+												style={{
+													padding: "5px",
+												}}
+											/>
+										</div>
+									}
+									placement="right"
+								>
+									<HelpIcon sx={{ fontSize: "16px" }} />
+								</HelperTooltip>
+							</sup>
 						</Typography>
 						<label htmlFor="file">
 							<Input
@@ -132,9 +162,35 @@ const SelectCandidates = () => {
 				voteInfo.candidateData === null && (
 					<FillDiv>
 						<Typography sx={typographySX(4)}>
-							Upload a file [USE TOOLTIP HERE THAT SPECIFIES
-							FORMAT]
+							Upload a file
+							<sup>
+								<HelperTooltip
+									title={
+										<div>
+											<center>
+												<Typography variant="caption">
+													An example of a valid format
+													is shown below:
+												</Typography>
+											</center>
+
+											<img
+												src={candidates2}
+												alt="Err"
+												height="100px"
+												style={{
+													padding: "5px",
+												}}
+											/>
+										</div>
+									}
+									placement="right"
+								>
+									<HelpIcon sx={{ fontSize: "16px" }} />
+								</HelperTooltip>
+							</sup>
 						</Typography>
+
 						<label htmlFor="file">
 							<Input
 								accept=".txt"

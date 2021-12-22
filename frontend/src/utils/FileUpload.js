@@ -88,7 +88,7 @@ export const excelUploadHandler = async (
 
 					if (participants[participant]) {
 						participants[participant] += numVotes;
-					} else {
+					} else if (numVotes > 0) {
 						participants[participant] = numVotes;
 					}
 				}

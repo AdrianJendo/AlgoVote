@@ -13,6 +13,15 @@ import {
 	ManualUploadSubDiv,
 } from "utils/ParticipantsStyle";
 import CustomizedInputBase from "components/TextInput";
+import HelpIcon from "@mui/icons-material/Help";
+import HelperTooltip from "components/HelperTooltip";
+
+const emails1 = require("images/emails1.png");
+const emails2 = require("images/emails2.png");
+const emails3 = require("images/emails3.png");
+const phoneNumbers1 = require("images/phoneNumbers1.png");
+const phoneNumbers2 = require("images/phoneNumbers2.png");
+const phoneNumbers3 = require("images/phoneNumbers3.png");
 
 const SelectParticipants = () => {
 	const [voteInfo, setVoteInfo] = useContext(VoteInfoContext);
@@ -164,8 +173,52 @@ const SelectParticipants = () => {
 				voteInfo.participantData === null && (
 					<FillDiv>
 						<Typography sx={typographySX(4)}>
-							Upload a file [USE TOOLTIP HERE THAT SPECIFIES
-							FORMAT]
+							Upload a file{" "}
+							<sup>
+								<HelperTooltip
+									title={
+										<div>
+											<center>
+												<Typography variant="caption">
+													Examples of valid formats
+													are shown below:
+												</Typography>
+											</center>
+											<div style={{ display: "flex" }}>
+												<img
+													src={
+														voteInfo.participantFormat ===
+														"email"
+															? emails1
+															: phoneNumbers1
+													}
+													alt="Err"
+													height="160px"
+													style={{
+														padding: "5px",
+													}}
+												/>
+												<img
+													src={
+														voteInfo.participantFormat ===
+														"email"
+															? emails2
+															: phoneNumbers2
+													}
+													alt="Err"
+													height="160px"
+													style={{
+														padding: "5px",
+													}}
+												/>
+											</div>
+										</div>
+									}
+									placement="right"
+								>
+									<HelpIcon sx={{ fontSize: "16px" }} />
+								</HelperTooltip>
+							</sup>
 						</Typography>
 						<label htmlFor="file">
 							<Input
@@ -196,8 +249,37 @@ const SelectParticipants = () => {
 				voteInfo.participantData === null && (
 					<FillDiv>
 						<Typography sx={typographySX(4)}>
-							Upload a file [USE TOOLTIP HERE THAT SPECIFIES
-							FORMAT]
+							Upload a file{" "}
+							<sup>
+								<HelperTooltip
+									title={
+										<div>
+											<center>
+												<Typography variant="caption">
+													An example of a valid format
+													is shown below:
+												</Typography>
+											</center>
+											<img
+												src={
+													voteInfo.participantFormat ===
+													"email"
+														? emails3
+														: phoneNumbers3
+												}
+												alt="Err"
+												height="100px"
+												style={{
+													padding: "5px",
+												}}
+											/>
+										</div>
+									}
+									placement="right"
+								>
+									<HelpIcon sx={{ fontSize: "16px" }} />
+								</HelperTooltip>
+							</sup>
 						</Typography>
 						<label htmlFor="file">
 							<Input
