@@ -1,11 +1,12 @@
 import * as React from "react";
-import { TextField, Typography } from "@mui/material";
+import { TextField, Typography, Tooltip } from "@mui/material";
 import DatePicker from "@mui/lab/DatePicker";
 import TimePicker from "@mui/lab/TimePicker";
 import { DateValueContext } from "context/DateValueContext";
 import { styled } from "@mui/system";
 import isSameDate from "utils/IsSameDate";
 import { delay } from "utils/Constants";
+import HelpIcon from "@mui/icons-material/Help";
 
 const typographySX = (top) => ({ position: "relative", top: `${top}%` });
 
@@ -162,6 +163,21 @@ export default function ResponsiveDatePickers({
 						}
 						renderInput={(params) => <TextField {...params} />}
 					/>
+					{dateValue.error && (
+						<Tooltip
+							sx={{
+								position: "absolute",
+								left: "69%",
+								top: "35px",
+							}}
+							title={`${label} time must be at least 5 minutes from ${
+								label === "Start" ? "now" : "start time"
+							}.`}
+							placement="right"
+						>
+							<HelpIcon />
+						</Tooltip>
+					)}
 					{label === "End" && (
 						<Typography sx={{ margin: "20px" }}>
 							Start Time: {earliestTime.toLocaleTimeString()}
