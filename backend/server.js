@@ -1,9 +1,12 @@
 const express = require("express");
+require("dotenv").config();
 const app = express();
-const port = 5001;
+const port = process.env.BACKEND_PORT;
 
 app.get("/", (req, res) => {
-	res.send(`Hello on ${port}!`);
+	debugger;
+	res.send(`Here is environment variable ${port}!`);
 });
+console.log("PORT", port);
 
 app.listen(port);

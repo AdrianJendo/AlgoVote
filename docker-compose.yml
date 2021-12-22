@@ -1,0 +1,28 @@
+version: "3.8"
+services:
+    frontend:
+        build:
+            context: ./frontend
+        volumes:
+            - /frontend/node_modules
+            - ./frontend/src:/frontend/src
+        env_file:
+            - .env
+    backend:
+        build:
+            context: ./backend
+        volumes:
+            - /backend/node_modules
+            - ./backend/api:/backend/api
+            - ./backend/server.js:/backend/server.js
+        env_file:
+            - .env
+    nginx:
+        restart: always
+        depends_on:
+            - frontend
+            - backend
+        build:
+            context: ./nginx
+        ports:
+            - 8080:80
