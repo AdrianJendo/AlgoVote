@@ -1,12 +1,14 @@
 import * as React from "react";
-import Box from "@mui/material/Box";
-import Stepper from "@mui/material/Stepper";
-import Step from "@mui/material/Step";
-import StepLabel from "@mui/material/StepLabel";
-import StepContent from "@mui/material/StepContent";
-import Button from "@mui/material/Button";
-import Paper from "@mui/material/Paper";
-import Typography from "@mui/material/Typography";
+import {
+	Box,
+	Stepper,
+	Step,
+	StepLabel,
+	StepContent,
+	Button,
+	Paper,
+	Typography,
+} from "@mui/material";
 import { VoteInfoContext } from "context/VoteInfoContext";
 import { DateValueContext } from "context/DateValueContext";
 import { delay } from "utils/Constants";

@@ -1,10 +1,12 @@
 import * as XLSX from "xlsx";
+import shouldAddParticipant from "utils/ShouldAddParticipant";
 
 // Handle .txt and .csv files
 export const txtUploadHandler = (e, voteInfo, setVoteInfo, dataType) => {
 	const participants = {}; // handling multiple votes right now, but update it in the future to support name:numVotes in the future ... for excel files just do adjacent cells
 	const len = e.target.files.length;
 	for (let i = 0; i < len; i++) {
+		// traverse each uploaded file
 		const file = e.target.files[i];
 		let fileReader = new FileReader();
 		try {
@@ -19,9 +21,9 @@ export const txtUploadHandler = (e, voteInfo, setVoteInfo, dataType) => {
 				.split(" ")
 				.join(",")
 				.split(","); // Split element in list of values
-			for (let i = 0; i < content.length; i++) {
-				if (content[i] !== "" && content[i].includes("@")) {
-					const participant = content[i].toLowerCase();
+			for (let j = 0; j < content.length; j++) {
+				if (shouldAddParticipant(content[j], voteInfo, dataType)) {
+					const participant = content[j].toLowerCase();
 					if (participants[participant]) {
 						participants[participant]++;
 					} else {
@@ -48,6 +50,7 @@ export const excelUploadHandler = async (
 	const participants = {}; // handling multiple votes right now, but update it in the future to support name:numVotes in the future ... for excel files just do adjacent cells
 	const len = e.target.files.length;
 	for (let i = 0; i < len; i++) {
+		// traverse each uploaded file
 		const file = e.target.files[i];
 		const fileReader = new FileReader();
 		fileReader.readAsBinaryString(file);
@@ -66,20 +69,28 @@ export const excelUploadHandler = async (
 				.join(",")
 				.split("\r")
 				.join(",")
-				.split(" ")
-				.join(",")
 				.split(","); // Split element in list of values
 			/* Update state */
-			for (let i = 0; i < content.length; i++) {
-				if (content[i] !== "" && content[i].includes("@")) {
-					const participant = content[i].toLowerCase();
-					if (participants[participant]) {
-						participants[participant]++;
-					} else {
-						participants[participant] = 1;
+			for (let j = 0; j < content.length; j++) {
+				if (shouldAddParticipant(content[j], voteInfo, dataType)) {
+					let numVotes = 1;
+					const participant = content[j].toLowerCase();
+
+					if (
+						j < content.length - 1 &&
+						voteInfo.participantFormat === "email" && // check if it's an email
+						dataType === "participantData" &&
+						content[j + 1] !== "" &&
+						!content[j + 1].includes("@")
+					) {
+						numVotes = parseInt(content[++j]);
 					}
-				} else if (content[i] !== "" && dataType === "candidateData") {
-					participants[content[i].toLowerCase()] = 1;
+
+					if (participants[participant]) {
+						participants[participant] += numVotes;
+					} else {
+						participants[participant] = numVotes;
+					}
 				}
 			}
 			if (i === len - 1) {

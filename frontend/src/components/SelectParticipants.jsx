@@ -75,7 +75,7 @@ const SelectParticipants = () => {
 						>
 							Phone Number
 						</Button>
-						<Button
+						{/* <Button
 							onClick={() =>
 								setVoteInfo({
 									...voteInfo,
@@ -94,7 +94,7 @@ const SelectParticipants = () => {
 							}
 						>
 							Key-Value Pair
-						</Button>
+						</Button> */}
 					</ButtonGroup>
 				</FillDiv>
 			)}

@@ -5,6 +5,7 @@ import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import DirectionsIcon from "@mui/icons-material/Directions";
 import { VoteInfoContext } from "context/VoteInfoContext";
+import shouldAddParticipant from "utils/ShouldAddParticipant";
 
 export default function CustomizedInputBase({ index }) {
 	const [textValue, setTextValue] = React.useState("");
@@ -13,21 +14,31 @@ export default function CustomizedInputBase({ index }) {
 	const inputRef = React.useRef();
 
 	const addValue = () => {
+		const names = textValue.toLowerCase().split(" ").join("").split(",");
 		const participants = voteInfo[index] ? voteInfo[index] : {};
-		const name = textValue.toLowerCase();
-		if (participants[name] && index === "participantData") {
-			participants[name]++;
-		} else if (participants[name]) {
-			alert("Candidate already exists in table");
-			return;
-		} else {
-			participants[name] = 1;
-		}
+		for (let i = 0; i < names.length; ++i) {
+			const name = names[i];
+			if (shouldAddParticipant(name, voteInfo, index)) {
+				if (participants[name] && index === "participantData") {
+					participants[name]++;
+				} else if (participants[name]) {
+					alert("Candidate already exists in table");
+					return;
+				} else {
+					participants[name] = 1;
+				}
+			} else {
+				alert("Not valid");
+				return;
+			}
 
-		const newVoteInfo = Object.assign({}, voteInfo);
-		newVoteInfo[index] = participants;
-		setVoteInfo(newVoteInfo);
-		setTextValue("");
+			if (i === names.length - 1) {
+				const newVoteInfo = Object.assign({}, voteInfo);
+				newVoteInfo[index] = participants;
+				setVoteInfo(newVoteInfo);
+				setTextValue("");
+			}
+		}
 	};
 
 	const handleChange = (e) => {
