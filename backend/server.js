@@ -5,6 +5,8 @@ import bodyParser from "body-parser"; // allows us to take in post request bodie
 import testRoutes from "./routes/test.js";
 import submitVoteRoutes from "./routes/submit.js";
 
+import algosdk from "algosdk";
+
 // Environment variables
 dotenv.config();
 const port = process.env.BACKEND_PORT || 5001;
@@ -19,6 +21,14 @@ app.use(bodyParser.json());
 app.use("/test", testRoutes);
 app.use("/submitvote", submitVoteRoutes);
 
+// Algorand
+// create client object to connect to sandbox's algod client
+const algodToken =
+	"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+const algodServer = "http://localhost";
+const algodPort = 4001;
+let algodClient = new algosdk.Algodv2(algodToken, algodServer, algodPort);
+
 app.get("/", (req, res) => {
 	res.send(`Listening on port ${port}!`);
 });
@@ -26,3 +36,5 @@ app.get("/", (req, res) => {
 app.listen(port, () => {
 	console.log(`Server started on port ${port}`);
 });
+
+export { algodClient };
