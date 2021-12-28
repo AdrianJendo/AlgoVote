@@ -16,5 +16,11 @@ yarn-error.log*
 
 # Misc
 .env
-
 notes.txt
+
+
+# Sandbox
+.active_config
+.clean
+sandbox.log
+data

@@ -1,5 +1,6 @@
 import algosdk from "algosdk";
-import { algodClient } from "../server.js";
+import path from "path";
+import { algodClient, __dirname } from "../server.js";
 
 // Function used to print created asset for account and assetid
 const printCreatedAsset = async function (algodclient, account, assetid) {
@@ -83,14 +84,19 @@ export const createVoteToken = async (req, res) => {
 	let rawSignedTxn = txn.signTxn(creatorAccount.sk);
 	let tx = await algodClient.sendRawTransaction(rawSignedTxn).do();
 	console.log("Transaction : " + tx.txId);
-	let assetID = null;
 	// wait for transaction to be confirmed
 	await waitForConfirmation(algodClient, tx.txId, 4);
 	// Get the new asset's information from the creator account
 	let ptx = await algodClient.pendingTransactionInformation(tx.txId).do();
-	assetID = ptx["asset-index"];
+	const assetID = ptx["asset-index"];
 
 	return res.send({ assetID, creator: creatorAccount.addr });
+};
+
+export const checkTokenBalance = async (req, res) => {
+	return res.send(
+		await printAssetHolding(algodClient, req.query.addr, req.query.assetID)
+	);
 };
 
 export const optInToVote = async (req, res) => {
@@ -163,7 +169,7 @@ export const transferAsset = async (req, res) => {
 	const revocationTarget = undefined;
 	const closeRemainderTo = undefined;
 	//Amount of the asset to transfer
-	const amount = 10;
+	const amount = req.body.amount;
 
 	// signing and sending "txn" will send "amount" assets from "sender" to "recipient"
 	let xtxn = algosdk.makeAssetTransferTxnWithSuggestedParams(
@@ -468,3 +474,10 @@ Integration/Algos and assets ?
 SDKs/Javascript
 
 */
+
+// Read in teal file
+export const compileSmartContract = (req, res) => {
+	const filePath = path.join(__dirname, "teal/teal.js");
+	console.log(filePath);
+	return res.send(filePath);
+};

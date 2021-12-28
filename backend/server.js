@@ -7,6 +7,11 @@ import submitVoteRoutes from "./routes/submit.js";
 
 import algosdk from "algosdk";
 
+import path from "path";
+import { fileURLToPath } from "url";
+export const __filename = fileURLToPath(import.meta.url);
+export const __dirname = path.dirname(__filename);
+
 // Environment variables
 dotenv.config();
 const port = process.env.BACKEND_PORT || 5001;
