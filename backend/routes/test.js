@@ -10,7 +10,7 @@ import {
 	transferAsset,
 	revokeToken,
 	checkTokenBalance,
-	compileSmartContract,
+	createSmartContract,
 } from "../controllers/test.js";
 
 const router = express.Router();
@@ -25,6 +25,6 @@ router.post("/toggleFreeze", toggleFreeze);
 router.post("/transferAsset", transferAsset);
 router.post("/revokeToken", revokeToken);
 router.get("/checkTokenBalance", checkTokenBalance);
-router.get("/compileSmartContract", compileSmartContract);
+router.post("/createSmartContract", createSmartContract);
 
 export default router;

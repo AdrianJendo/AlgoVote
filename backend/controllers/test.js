@@ -1,5 +1,6 @@
 import algosdk from "algosdk";
 import path from "path";
+import fs from "fs";
 import { algodClient, __dirname } from "../server.js";
 
 // Function used to print created asset for account and assetid
@@ -475,9 +476,80 @@ SDKs/Javascript
 
 */
 
+const readTeal = async (filePath) => {
+	const programBytes = fs.readFileSync(filePath);
+	const compiledResponse = await algodClient.compile(programBytes).do();
+	const compiledBytes = new Uint8Array(
+		Buffer.from(compiledResponse.result, "base64")
+	);
+	return compiledBytes;
+};
+
 // Read in teal file
-export const compileSmartContract = (req, res) => {
-	const filePath = path.join(__dirname, "teal/teal.js");
-	console.log(filePath);
-	return res.send(filePath);
+export const createSmartContract = async (req, res) => {
+	const creatorAccount = algosdk.mnemonicToSecretKey(
+		req.body.creatorMnemonic
+	);
+	const sender = creatorAccount.addr;
+
+	// get node suggested parameters
+	let params = await algodClient.getTransactionParams().do();
+	// comment out the next two lines to use suggested fee
+	params.fee = 1000;
+	params.flatFee = true;
+
+	// declare onComplete as NoOp
+	const onComplete = algosdk.OnApplicationComplete.NoOpOC;
+
+	const vote_opt_out = path.join(
+		__dirname,
+		"smart_contracts/p_vote_opt_out.teal"
+	);
+	const vote = path.join(__dirname, "smart_contracts/p_vote.teal");
+
+	const vote_program = await readTeal(vote);
+	const opt_out_program = await readTeal(vote_opt_out);
+
+	// integer parameter
+	const args = [];
+	args.push(algosdk.encodeUint64(1));
+	args.push(algosdk.encodeUint64(20));
+	args.push(algosdk.encodeUint64(20));
+	args.push(algosdk.encodeUint64(100));
+	// const lsig = new algosdk.LogicSigAccount(vote_program, args);
+	// console.log("lsig : " + lsig.address());
+
+	// create unsigned transaction
+	let txn = algosdk.makeApplicationCreateTxn(
+		sender,
+		params,
+		onComplete,
+		vote_program,
+		opt_out_program,
+		0,
+		1,
+		6,
+		1,
+		args
+	);
+	let txId = txn.txID().toString();
+
+	// Sign the transaction
+	let signedTxn = txn.signTxn(creatorAccount.sk);
+	console.log("Signed transaction with txID: %s", txId);
+
+	// Submit the transaction
+	await algodClient.sendRawTransaction(signedTxn).do();
+
+	// Wait for confirmation
+	await waitForConfirmation(algodClient, txId, 4);
+
+	// display results
+	let transactionResponse = await algodClient
+		.pendingTransactionInformation(txId)
+		.do();
+	let appId = transactionResponse["application-index"];
+	console.log("Created new app-id: ", appId);
+
+	return res.send({ appId });
 };
