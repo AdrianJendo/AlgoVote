@@ -513,15 +513,6 @@ export const createSmartContract = async (req, res) => {
 	// integer parameter
 	const args = [];
 	const today = new Date();
-	const startRegistrationUTC = Date.UTC(
-		today.getUTCFullYear(),
-		today.getUTCMonth(),
-		today.getUTCDate(),
-		today.getUTCHours(),
-		today.getUTCMinutes(),
-		today.getUTCSeconds(),
-		today.getUTCMilliseconds()
-	);
 	const startVoteUTC = Date.UTC(
 		today.getUTCFullYear(),
 		today.getUTCMonth(),
@@ -541,8 +532,6 @@ export const createSmartContract = async (req, res) => {
 		today.getUTCMilliseconds()
 	);
 
-	args.push(algosdk.encodeUint64(startRegistrationUTC)); // Start registration
-	args.push(algosdk.encodeUint64(startVoteUTC));
 	args.push(algosdk.encodeUint64(startVoteUTC));
 	args.push(algosdk.encodeUint64(endVoteUTC));
 	// const lsig = new algosdk.LogicSigAccount(vote_program, args);

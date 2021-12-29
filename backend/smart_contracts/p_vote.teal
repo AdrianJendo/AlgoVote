@@ -8,26 +8,18 @@ bz not_creation // branch to target if ApplicationID is zero (bz -> branch if ze
 byte "Creator"
 txn Sender // Sender address stored as "Creator" variable
 app_global_put // write previous valued to global storage (it's like a dictionary where "Creator" is the key, and Sender is the value)
-//4 args must be used on creation
+//2 args must be used on creation
 txn NumAppArgs
-int 4
+int 2
 ==
-bz failed // check if number of app args is 4 and branch if they are not equal
-//set round ranges
-byte "RegistrationBegin"
-txna ApplicationArgs 0
-btoi // converts big endian bytes to uint64
-app_global_put // put the first application arguement into global storage with "RegistrationBegin" key
-byte "RegistrationEnd"
-txna ApplicationArgs 1
-btoi
-app_global_put // put the 2nd application arguement into global storage with "RegistrationEnd" key
+bz failed // check if number of app args is 2 and branch if they are not equal
+//set timestamps
 byte "VoteBegin"
-txna ApplicationArgs 2
-btoi
-app_global_put
+txna ApplicationArgs 0 // access the first argument in the transaction
+btoi // converts big endian bytes to uint64
+app_global_put // put the first application argument into global storage with "VoteBegin" key
 byte "VoteEnd"
-txna ApplicationArgs 3
+txna ApplicationArgs 1 // put the 2nd application argument into global storage with "VoteEnd" key
 btoi
 app_global_put
 int 1
@@ -185,15 +177,10 @@ pop
 int 1
 return
 register:
-// global LatestTimestamp // No minimum registration time
-// byte "RegistrationBegin"
-// app_global_get
-// >=
 global LatestTimestamp
-byte "RegistrationEnd"
+byte "VoteBegin"
 app_global_get
-<=
-// &&
+>
 int OptIn
 txn OnCompletion
 ==
