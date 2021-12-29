@@ -512,10 +512,39 @@ export const createSmartContract = async (req, res) => {
 
 	// integer parameter
 	const args = [];
-	args.push(algosdk.encodeUint64(1));
-	args.push(algosdk.encodeUint64(20));
-	args.push(algosdk.encodeUint64(20));
-	args.push(algosdk.encodeUint64(100));
+	const today = new Date();
+	const startRegistrationUTC = Date.UTC(
+		today.getUTCFullYear(),
+		today.getUTCMonth(),
+		today.getUTCDate(),
+		today.getUTCHours(),
+		today.getUTCMinutes(),
+		today.getUTCSeconds(),
+		today.getUTCMilliseconds()
+	);
+	const startVoteUTC = Date.UTC(
+		today.getUTCFullYear(),
+		today.getUTCMonth(),
+		today.getUTCDate(),
+		today.getUTCHours(),
+		today.getUTCMinutes() + 1,
+		today.getUTCSeconds(),
+		today.getUTCMilliseconds()
+	);
+	const endVoteUTC = Date.UTC(
+		today.getUTCFullYear(),
+		today.getUTCMonth(),
+		today.getUTCDate(),
+		today.getUTCHours(),
+		today.getUTCMinutes() + 10,
+		today.getUTCSeconds(),
+		today.getUTCMilliseconds()
+	);
+
+	args.push(algosdk.encodeUint64(startRegistrationUTC)); // Start registration
+	args.push(algosdk.encodeUint64(startVoteUTC));
+	args.push(algosdk.encodeUint64(startVoteUTC));
+	args.push(algosdk.encodeUint64(endVoteUTC));
 	// const lsig = new algosdk.LogicSigAccount(vote_program, args);
 	// console.log("lsig : " + lsig.address());
 
@@ -552,4 +581,46 @@ export const createSmartContract = async (req, res) => {
 	console.log("Created new app-id: ", appId);
 
 	return res.send({ appId });
+};
+
+export const registerForVote = async (req, res) => {
+	// get accounts from mnemonic
+	const userAccount = algosdk.mnemonicToSecretKey(req.body.userMnemonic);
+	const sender = userAccount.addr;
+	const appId = req.body.appId;
+
+	// get node suggested parameters
+	let params = await algodClient.getTransactionParams().do();
+	// comment out the next two lines to use suggested fee
+	params.fee = 1000;
+	params.flatFee = true;
+
+	const args = [];
+	args.push(new Uint8Array(Buffer.from("register")));
+	// args.push(new Uint8Array(...Buffer.from("register")));
+
+	// create unsigned transaction
+	const txn = algosdk.makeApplicationOptInTxn(sender, params, appId, args);
+	let txId = txn.txID().toString();
+
+	// Sign the transaction
+	let signedTxn = txn.signTxn(userAccount.sk);
+	console.log("Signed transaction with txID: %s", txId);
+
+	// Submit the transaction
+	await algodClient.sendRawTransaction(signedTxn).do();
+
+	// Wait for confirmation
+	await waitForConfirmation(algodClient, txId, 4);
+
+	// display results
+	let transactionResponse = await algodClient
+		.pendingTransactionInformation(txId)
+		.do();
+	console.log(
+		"Opted-in to app-id:",
+		transactionResponse["txn"]["txn"]["apid"]
+	);
+
+	return res.send({ transactionResponse });
 };

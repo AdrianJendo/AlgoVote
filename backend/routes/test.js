@@ -11,6 +11,7 @@ import {
 	revokeToken,
 	checkTokenBalance,
 	createSmartContract,
+	registerForVote,
 } from "../controllers/test.js";
 
 const router = express.Router();
@@ -26,5 +27,6 @@ router.post("/transferAsset", transferAsset);
 router.post("/revokeToken", revokeToken);
 router.get("/checkTokenBalance", checkTokenBalance);
 router.post("/createSmartContract", createSmartContract);
+router.post("/registerForVote", registerForVote);
 
 export default router;

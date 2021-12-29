@@ -2,26 +2,26 @@
 // check if the app is being created
 // if so save creator
 int 0
-txn ApplicationID
+txn ApplicationID // check if the ApplicationID exists (if doesn't exist it equals zero)
 ==
-bz not_creation
+bz not_creation // branch to target if ApplicationID is zero (bz -> branch if zero)
 byte "Creator"
-txn Sender
-app_global_put
+txn Sender // Sender address stored as "Creator" variable
+app_global_put // write previous valued to global storage (it's like a dictionary where "Creator" is the key, and Sender is the value)
 //4 args must be used on creation
 txn NumAppArgs
 int 4
 ==
-bz failed
+bz failed // check if number of app args is 4 and branch if they are not equal
 //set round ranges
-byte "RegBegin"
+byte "RegistrationBegin"
 txna ApplicationArgs 0
-btoi
-app_global_put
-byte "RegEnd"
+btoi // converts big endian bytes to uint64
+app_global_put // put the first application arguement into global storage with "RegistrationBegin" key
+byte "RegistrationEnd"
 txna ApplicationArgs 1
 btoi
-app_global_put
+app_global_put // put the 2nd application arguement into global storage with "RegistrationEnd" key
 byte "VoteBegin"
 txna ApplicationArgs 2
 btoi
@@ -31,20 +31,20 @@ txna ApplicationArgs 3
 btoi
 app_global_put
 int 1
-return
-not_creation:
+return // Returns the value on the top of the stack when the program terminates, for successful creation of smart contract, return 1
+not_creation: // branch for any call that is not contract creation
 // check if this is deletion ---
 int DeleteApplication
 txn OnCompletion
 ==
-bz not_deletion
+bz not_deletion // branch if not equal
 byte "Creator"
-app_global_get
+app_global_get // Get the "Creator" byte from global storage
 txn Sender
-==
-bz failed
+== // Check if the "Creator" is equal to the sender of the current transaction
+bz failed // Fail if "Creator" is not sender
 int 1
-return
+return // Return 1 to complete app deletion
 not_deletion:
 //---
 // check if this is update ---
@@ -64,38 +64,38 @@ not_update:
 // check for closeout
 int CloseOut
 txn OnCompletion
-==
+== // branch if equal (not zero) -- bnz -> branch if not zero
 bnz close_out
 // register
 txna ApplicationArgs 0
-byte "register"
+byte "register" // check if the first argument to the transaction is "register"
 ==
 bnz register
 //vote
 txna ApplicationArgs 0
-byte "vote" 
+byte "vote" // check if the first argument to the transaction is "vote"
 ==
 bnz vote
-int 0
+int 0 // handle case where arguement is either not "register" or not "vote"
 return
 vote:
 //verify in voting rounds
-global Round
+global LatestTimestamp
 byte "VoteBegin"
-app_global_get
+app_global_get // check that current Round is after votebegin
 >=
-global Round
+global LatestTimestamp
 byte "VoteEnd"
-app_global_get
+app_global_get // and check that current Round is before voteend
 <=
 &&
-bz failed
+bz failed // if one of the above conditions is false, branch to failed
 // Check that the account has opted in
 // account offset (0 == sender, 
 // 1 == txn.accounts[0], 2 == txn.accounts[1], etc..)
-int 0 
-txn ApplicationID
-app_opted_in
+int 0 // offset of 0 corresponds to sender
+txn ApplicationID // B -> AppId
+app_opted_in // check if account A (0 -> sender) opted in to application B (specified by AppId)
 bz failed
 // check if they have the vote token
 // assuming assetid 2. This should
@@ -185,15 +185,15 @@ pop
 int 1
 return
 register:
-global Round
-byte "RegBegin"
-app_global_get
->=
-global Round
-byte "RegEnd"
+// global LatestTimestamp // No minimum registration time
+// byte "RegistrationBegin"
+// app_global_get
+// >=
+global LatestTimestamp
+byte "RegistrationEnd"
 app_global_get
 <=
-&&
+// &&
 int OptIn
 txn OnCompletion
 ==
