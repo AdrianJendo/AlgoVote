@@ -471,15 +471,6 @@ export const getRoute = (req, res) => {
 	res.send([{ some: "jsondata", get: "this is get route" }]);
 };
 
-/*
-
-Development environments/Set up your development environment
-Tokenization/Create fungible token
-Integration/Algos and assets ?
-SDKs/Javascript
-
-*/
-
 const readTeal = async (filePath) => {
 	const programBytes = fs.readFileSync(filePath);
 	const compiledResponse = await algodClient.compile(programBytes).do();
@@ -495,6 +486,7 @@ export const createSmartContract = async (req, res) => {
 		req.body.creatorMnemonic
 	);
 	const sender = creatorAccount.addr;
+	const assetId = req.body.assetId;
 
 	// get node suggested parameters
 	let params = await algodClient.getTransactionParams().do();
@@ -549,8 +541,11 @@ export const createSmartContract = async (req, res) => {
 
 	args.push(algosdk.encodeUint64(startVotingBlock));
 	args.push(algosdk.encodeUint64(endVotingBlock));
+	args.push(algosdk.encodeUint64(assetId));
 	// const lsig = new algosdk.LogicSigAccount(vote_program, args);
 	// console.log("lsig : " + lsig.address());
+
+	const numCandidates = 2;
 
 	// create unsigned transaction
 	let txn = algosdk.makeApplicationCreateTxn(
@@ -559,10 +554,10 @@ export const createSmartContract = async (req, res) => {
 		onComplete,
 		vote_program,
 		opt_out_program,
-		0,
-		1,
-		6,
-		1,
+		0, // local integers
+		1, // local byteslices
+		args.length + numCandidates, // global integers (startVotingBlock, endVotingBlock, assetId, numCandidates)
+		1, // global byteslices (1 for creator address)
 		args
 	);
 	let txId = txn.txID().toString();
@@ -572,15 +567,21 @@ export const createSmartContract = async (req, res) => {
 	console.log("Signed transaction with txID: %s", txId);
 
 	// Submit the transaction
-	await algodClient.sendRawTransaction(signedTxn).do();
+	try {
+		await algodClient.sendRawTransaction(signedTxn).do();
 
-	// Wait for confirmation
-	await waitForConfirmation(algodClient, txId, 4);
+		// Wait for confirmation
+		await waitForConfirmation(algodClient, txId, 4);
+	} catch (err) {
+		console.log(err);
+	}
 
 	// display results
 	let transactionResponse = await algodClient
 		.pendingTransactionInformation(txId)
 		.do();
+
+	console.log("txn response", transactionResponse);
 	let appId = transactionResponse["application-index"];
 	console.log("Created new app-id: ", appId);
 
@@ -629,33 +630,104 @@ export const registerForVote = async (req, res) => {
 	return res.send({ transactionResponse });
 };
 
-async function dryrunDebugging(lsig, txn, data) {
-	let txns;
-	let sources;
-	if (data == null) {
-		//compile
-		txns = [
-			{
-				lsig: lsig,
-				txn: txn,
-			},
-		];
-	} else {
-		// source
-		txns = [
-			{
-				txn: txn,
-			},
-		];
-		sources = [
-			new algosdk.modelsv2.DryrunSource("lsig", data.toString("utf8"), 0),
-		];
-	}
+// voting via atomic transfer
+export const submitVote = async (req, res) => {
+	// get accounts from mnemonic
+	const userAccount = algosdk.mnemonicToSecretKey(req.body.userMnemonic);
+	const sender = userAccount.addr;
+	const appId = req.body.appId;
+	const candidate = req.body.candidate;
+	const assetId = req.body.assetId;
+	const recipient = req.body.receiver;
+	const amount = req.body.amount;
 
-	const dr = new algosdk.modelsv2.DryrunRequest({
-		txns: txns,
-		sources: sources,
-	});
-	const dryrunResponse = await algodClient.dryrun(dr).do();
-	return dryrunResponse;
-}
+	// get node suggested parameters
+	let params = await algodClient.getTransactionParams().do();
+	// comment out the next two lines to use suggested fee
+	params.fee = 1000;
+	params.flatFee = true;
+
+	const args = [];
+	args.push(new Uint8Array(Buffer.from("vote")));
+	args.push(new Uint8Array(Buffer.from(candidate)));
+
+	// goal app call --app-id {APPID} --app-arg "str:vote" --app-arg "str:candidatea" --from {ACCOUNT}  --out=unsignedtransaction1.tx
+	let txn1 = algosdk.makeApplicationNoOpTxn(sender, params, appId, args);
+
+	//goal asset send --from={ACCOUNT} --to={CENTRAL_ACCOUNT} --creator {CENTRAL_ACCOUNT} --assetid {VOTE_TOKEN_ID} --fee=1000 --amount=1 --out=unsignedtransaction2.tx
+	const revocationTarget = undefined;
+	const closeRemainderTo = undefined;
+	//Amount of the asset to transfer
+
+	// signing and sending "txn" will send "amount" assets from "sender" to "recipient"
+	let txn2 = algosdk.makeAssetTransferTxnWithSuggestedParams(
+		sender,
+		recipient,
+		closeRemainderTo,
+		revocationTarget,
+		amount,
+		undefined,
+		assetId,
+		params
+	);
+
+	// Combine transactions
+	let txns = [txn1, txn2];
+
+	// Group both transactions
+	let txnGroup = algosdk.assignGroupID(txns);
+	console.log("txnGroup", txnGroup);
+
+	let signedTxn1 = txn1.signTxn(userAccount.sk);
+	let signedTxn2 = txn2.signTxn(userAccount.sk);
+
+	// Combine the signed transactions
+	const signed = [];
+	signed.push(signedTxn1);
+	signed.push(signedTxn2);
+
+	let txn = await algodClient.sendRawTransaction(signed).do();
+	console.log("Transaction : " + txn.txId);
+
+	// Wait for transaction to be confirmed
+	await waitForConfirmation(algodClient, txn.txId, 4);
+
+	return res.send(await printAssetHolding(algodClient, sender, assetId));
+};
+
+export const deleteSmartContract = async (req, res) => {
+	// define sender as creator
+	const creatorAccount = algosdk.mnemonicToSecretKey(
+		req.body.creatorMnemonic
+	);
+	const sender = creatorAccount.addr;
+	const appId = req.body.appId;
+
+	// get node suggested parameters
+	let params = await algodClient.getTransactionParams().do();
+	// comment out the next two lines to use suggested fee
+	params.fee = 1000;
+	params.flatFee = true;
+
+	// create unsigned transaction
+	let txn = algosdk.makeApplicationDeleteTxn(sender, params, appId);
+	let txId = txn.txID().toString();
+
+	// Sign the transaction
+	let signedTxn = txn.signTxn(creatorAccount.sk);
+	console.log("Signed transaction with txID: %s", txId);
+
+	// Submit the transaction
+	await algodClient.sendRawTransaction(signedTxn).do();
+
+	// Wait for confirmation
+	await waitForConfirmation(algodClient, txId, 4);
+
+	// display results
+	let transactionResponse = await algodClient
+		.pendingTransactionInformation(txId)
+		.do();
+
+	console.log("Deleted app-id: ", appId);
+	return res.send({ transactionResponse });
+};

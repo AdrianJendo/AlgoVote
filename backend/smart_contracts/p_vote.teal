@@ -10,7 +10,7 @@ txn Sender // Sender address stored as "Creator" variable
 app_global_put // write previous valued to global storage (it's like a dictionary where "Creator" is the key, and Sender is the value)
 //2 args must be used on creation
 txn NumAppArgs
-int 2
+int 3
 ==
 bz failed // check if number of app args is 2 and branch if they are not equal
 //set timestamps
@@ -20,6 +20,10 @@ btoi // converts big endian bytes to uint64
 app_global_put // put the first application argument into global storage with "VoteBegin" key
 byte "VoteEnd"
 txna ApplicationArgs 1 // put the 2nd application argument into global storage with "VoteEnd" key
+btoi
+app_global_put
+byte "AssetId"
+txna ApplicationArgs 2 // put the 3rd argument into global storage as "AssetID"
 btoi
 app_global_put
 int 1
@@ -78,7 +82,7 @@ app_global_get // check that current Round is after votebegin
 >=
 global Round
 byte "VoteEnd"
-app_global_get // and check that current Round is before voteend
+app_global_get // and check that current Round is before voteEnd
 <=
 &&
 bz failed // if one of the above conditions is false, branch to failed
@@ -90,12 +94,11 @@ txn ApplicationID // B -> AppId
 app_opted_in // check if account A (0 -> sender) opted in to application B (specified by AppId)
 bz failed
 // check if they have the vote token
-// assuming assetid 2. This should
-// be changed to appropriate asset id
 // sender
-int 0
-// hard-coded assetid
-int 2
+int 0 // offset 0 for sender
+// not hard-coded assetid
+byte "AssetId"
+app_global_get
 // returns frozen an asset balance
 // pop frozen
 asset_holding_get AssetBalance
@@ -109,7 +112,7 @@ global GroupSize
 int 2
 ==
 bz failed
-// second tx is an asset xfer
+// second txn is an asset transfer
 gtxn 1 TypeEnum
 int 4
 ==
@@ -122,24 +125,19 @@ gtxn 1 AssetReceiver
 bz failed
 // verify the proper token is being spent
 gtxn 1 XferAsset
-// hard coded and should be changed
-int 2
+// not hard-coded
+byte "AssetId"
+app_global_get
 ==
 bz failed
-// spent 1 vote token
-gtxn 1 AssetAmount
-//
-int 1
-==
-bz failed
-//check local to see if they have voted
-int 0 //sender
+// check local to see if they have voted
+int 0 // sender
 txn ApplicationID
 byte "voted"
-app_local_get_ex 
+app_local_get_ex // put voted variable to top of stack
 // if voted skip incrementing count
 bnz voted
-pop
+pop // pop voted variable from stack
 // can only vote for candidatea
 // or candidateb
 txna ApplicationArgs 1
@@ -150,26 +148,26 @@ byte "candidateb"
 ==
 ||
 bz failed
-// read existing vote candiate
+// read existing vote candidate
 // in global state and increment vote
 int 0
-txna ApplicationArgs 1
-app_global_get_ex
+txna ApplicationArgs 1 // load candidate onto top of stack
+app_global_get_ex // read from application A (0) global state key B (candidate)
 bnz increment_existing
-pop
-int 0
+pop // if current candidate has 0 votes (or DNE) pop last value
+int 0 // add zero (current number of votes of candidate)
 increment_existing:
 int 1
 +
 store 1
 txna ApplicationArgs 1
 load 1
-app_global_put
+app_global_put // store number of votes in global state
 // store the voters choice in local state
-int 0 //sender
+int 0 // sender
 byte "voted"
 txna ApplicationArgs 1
-app_local_put
+app_local_put // put the voters candidate in local storage
 int 1
 return
 voted:
