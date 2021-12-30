@@ -2,6 +2,10 @@ import algosdk from "algosdk";
 import path from "path";
 import fs from "fs";
 import { algodClient, __dirname } from "../server.js";
+import axios from "axios";
+const GET_PARAMS_URL =
+	"https://api.testnet.algoexplorer.io/v2/transactions/params";
+const SECS_PER_BLOCK = 4.5;
 
 // Function used to print created asset for account and assetid
 const printCreatedAsset = async function (algodclient, account, assetid) {
@@ -518,7 +522,7 @@ export const createSmartContract = async (req, res) => {
 		today.getUTCMonth(),
 		today.getUTCDate(),
 		today.getUTCHours(),
-		today.getUTCMinutes() + 1,
+		today.getUTCMinutes() + 2,
 		today.getUTCSeconds(),
 		today.getUTCMilliseconds()
 	);
@@ -532,8 +536,19 @@ export const createSmartContract = async (req, res) => {
 		today.getUTCMilliseconds()
 	);
 
-	args.push(algosdk.encodeUint64(startVoteUTC));
-	args.push(algosdk.encodeUint64(endVoteUTC));
+	// We can also try omitting all this code and using startVoteUTC and endVoteUTC directly... then either using 'global LatestTimestamp' or passing in the timestamp at which registration was attempted
+	const startVoteSecs = Math.abs(Math.round((startVoteUTC - today) / 1000));
+	const endVoteSecs = Math.abs(Math.round((endVoteUTC - today) / 1000));
+
+	const curBlock = await axios.get(GET_PARAMS_URL);
+	const blockRound = curBlock.data["last-round"];
+	const startVotingBlock = Math.ceil(
+		blockRound + startVoteSecs / SECS_PER_BLOCK
+	);
+	const endVotingBlock = Math.ceil(blockRound + endVoteSecs / SECS_PER_BLOCK);
+
+	args.push(algosdk.encodeUint64(startVotingBlock));
+	args.push(algosdk.encodeUint64(endVotingBlock));
 	// const lsig = new algosdk.LogicSigAccount(vote_program, args);
 	// console.log("lsig : " + lsig.address());
 
@@ -613,3 +628,34 @@ export const registerForVote = async (req, res) => {
 
 	return res.send({ transactionResponse });
 };
+
+async function dryrunDebugging(lsig, txn, data) {
+	let txns;
+	let sources;
+	if (data == null) {
+		//compile
+		txns = [
+			{
+				lsig: lsig,
+				txn: txn,
+			},
+		];
+	} else {
+		// source
+		txns = [
+			{
+				txn: txn,
+			},
+		];
+		sources = [
+			new algosdk.modelsv2.DryrunSource("lsig", data.toString("utf8"), 0),
+		];
+	}
+
+	const dr = new algosdk.modelsv2.DryrunRequest({
+		txns: txns,
+		sources: sources,
+	});
+	const dryrunResponse = await algodClient.dryrun(dr).do();
+	return dryrunResponse;
+}

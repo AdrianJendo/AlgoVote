@@ -72,11 +72,11 @@ int 0 // handle case where arguement is either not "register" or not "vote"
 return
 vote:
 //verify in voting rounds
-global LatestTimestamp
+global Round
 byte "VoteBegin"
 app_global_get // check that current Round is after votebegin
 >=
-global LatestTimestamp
+global Round
 byte "VoteEnd"
 app_global_get // and check that current Round is before voteend
 <=
@@ -177,10 +177,10 @@ pop
 int 1
 return
 register:
-global LatestTimestamp
+global Round
 byte "VoteBegin"
 app_global_get
->
+<=
 int OptIn
 txn OnCompletion
 ==
