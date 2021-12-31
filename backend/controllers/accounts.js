@@ -19,6 +19,7 @@ export const createAlgoAccount = (req, res) => {
 	}
 };
 
+// Txn to send algos to a new account and opt-in the receiving account for staking (ie: registering the other account)
 export const registerAlgoAccount = async (req, res) => {
 	try {
 		const senderAccount = algosdk.mnemonicToSecretKey(
@@ -102,13 +103,7 @@ export const registerAlgoAccount = async (req, res) => {
 	}
 };
 
-export const checkAlgoBalance = async (req, res) => {
-	const accountAddr = req.query.addr;
-	return res.send({
-		accountBalance: await getAlgoBalance(algodClient, accountAddr),
-	});
-};
-
+// Receiving algo account must be registered (ie: funded)
 export const sendAlgo = async (req, res) => {
 	try {
 		const senderAccount = algosdk.mnemonicToSecretKey(
@@ -185,4 +180,11 @@ export const sendAlgo = async (req, res) => {
 	} catch (err) {
 		console.log("err", err);
 	}
+};
+
+export const checkAlgoBalance = async (req, res) => {
+	const accountAddr = req.query.addr;
+	return res.send({
+		accountBalance: await getAlgoBalance(algodClient, accountAddr),
+	});
 };

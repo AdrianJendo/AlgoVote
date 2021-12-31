@@ -5,10 +5,7 @@ import { algodClient, __dirname } from "../server.js";
 import { printAssetHolding } from "../helpers/ASAs.js";
 import { waitForConfirmation } from "../helpers/misc.js";
 import { readTeal } from "../helpers/smartContracts.js";
-import axios from "axios";
 
-const GET_PARAMS_URL =
-	"https://api.testnet.algoexplorer.io/v2/transactions/params";
 const SECS_PER_BLOCK = 4.5;
 
 // Read in teal file
@@ -63,8 +60,8 @@ export const createVoteSmartContract = async (req, res) => {
 	const startVoteSecs = Math.abs(Math.round((startVoteUTC - today) / 1000));
 	const endVoteSecs = Math.abs(Math.round((endVoteUTC - today) / 1000));
 
-	const curBlock = await axios.get(GET_PARAMS_URL);
-	const blockRound = curBlock.data["last-round"];
+	const status = await algodClient.status().do();
+	const blockRound = status["last-round"];
 	const startVotingBlock = Math.ceil(
 		blockRound + startVoteSecs / SECS_PER_BLOCK
 	);
