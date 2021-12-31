@@ -2,6 +2,9 @@ import express from "express";
 import dotenv from "dotenv";
 import bodyParser from "body-parser"; // allows us to take in post request bodies
 
+import smartContractRoutes from "./routes/smartContracts.js";
+import accountsRoutes from "./routes/accounts.js";
+import ASAsRoutes from "./routes/ASAs.js";
 import testRoutes from "./routes/test.js";
 import submitVoteRoutes from "./routes/submit.js";
 
@@ -23,8 +26,11 @@ const app = express();
 app.use(bodyParser.json());
 
 // Route middleware
+app.use("/algoAccount", accountsRoutes);
+app.use("/asa", ASAsRoutes);
+app.use("/smartContract", smartContractRoutes);
 app.use("/test", testRoutes);
-app.use("/submitvote", submitVoteRoutes);
+app.use("/submitVote", submitVoteRoutes);
 
 // Algorand
 // create client object to connect to sandbox's algod client
