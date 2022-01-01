@@ -214,7 +214,7 @@ export const submitVote = async (req, res) => {
 
 	// Group both transactions
 	let txnGroup = algosdk.assignGroupID(txns);
-	console.log("txnGroup", txnGroup);
+	// console.log("txnGroup", txnGroup);
 
 	let signedTxn1 = txn1.signTxn(userAccount.sk);
 	let signedTxn2 = txn2.signTxn(userAccount.sk);

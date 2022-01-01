@@ -115,9 +115,6 @@ export const optInToAsset = async (req, res) => {
 		// wait for transaction to be confirmed
 		await waitForConfirmation(algodClient, opttx.txId);
 
-		//You should now see the new asset listed in the account information
-		console.log("Account 3 = " + senderAccount.addr);
-
 		const assetHoldings = JSON.parse(
 			await printAssetHolding(algodClient, senderAccount.addr, assetId)
 		);
@@ -164,9 +161,6 @@ export const transferAsset = async (req, res) => {
 		console.log("Transaction : " + xtx.txId);
 		// wait for transaction to be confirmed
 		await waitForConfirmation(algodClient, xtx.txId);
-
-		// You should now see the 10 assets listed in the account information
-		console.log("Account 3 = " + senderAccount.addr);
 
 		const tokensWithCreator = JSON.parse(
 			await printAssetHolding(algodClient, senderAccount.addr, assetId)

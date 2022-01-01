@@ -3,9 +3,10 @@ import { algodClient, __dirname } from "../server.js";
 import axios from "axios";
 import { pollingDelay } from "../helpers/misc.js";
 
-const NUM_VOTERS = 2;
+const NUM_VOTERS = 20;
 const NUM_CANDIDATES = 2;
-const MIN_BALANCE = 1000000 + 100000 + 100000 + 50000; // micro algos -> 0.1 algo (min account balance) + 0.1 (to opt in and receive ASA) + 0.1 (to opt in to smart contract) + 0.05 (for 1 local byte slice)
+const MIN_BALANCE = 100000 + 100000 + 100000 + 50000 + 100000; // micro algos -> 0.1 algo (min account balance) + 0.1 (to opt in and receive ASA) + 0.1 (to opt in to smart contract) + 0.05 (for 1 local byte slice)
+// added an extra 100000 algos so that the account doesn't dip below the minimum during any transactions
 // note that the creator has a higher minimum balance because it is responsible for the global varaibles
 // the local byteslice variable is only responsible for keeping track on whether the account has voted or not
 
@@ -23,7 +24,6 @@ export const votingWorkflow = async (req, res) => {
 	let assetId;
 	let appId;
 	let startBlock;
-	let voteResp;
 
 	// setup
 	try {
@@ -56,47 +56,83 @@ export const votingWorkflow = async (req, res) => {
 
 	// create voters
 	try {
+		// create new account
+		const newAccountPromises = [];
 		for (let i = 0; i < NUM_VOTERS; i++) {
-			// create new account
-			const newAccount = await axios.post(
-				"http://localhost:5001/algoAccount/createAlgoAccount"
+			newAccountPromises.push(
+				axios.post(
+					"http://localhost:5001/algoAccount/createAlgoAccount"
+				)
 			);
-			const accountAddr = newAccount.data.accountAddr;
-			const accountMnemonic = newAccount.data.accountMnemonic;
+		}
 
-			// fund new account with minimum balance
-			await axios.post("http://localhost:5001/algoAccount/sendAlgo", {
-				senderMnemonic: algosdk.secretKeyToMnemonic(creatorAccount.sk),
-				receiver: accountAddr,
-				amount: MIN_BALANCE,
-				message: "",
-			});
+		const accounts = await Promise.all(newAccountPromises);
 
-			// opt in to receive vote token
-			await axios.post("http://localhost:5001/asa/optInToAsset", {
-				senderMnemonic: accountMnemonic,
-				assetId,
-			});
+		// fund new account with minimum balance
+		const fundAccountPromises = [];
+		for (let i = 0; i < accounts.length; ++i) {
+			const accountAddr = accounts[i].data.accountAddr;
+			const accountMnemonic = accounts[i].data.accountMnemonic;
 
-			// receive vote token
-			await axios.post("http://localhost:5001/asa/transferAsset", {
-				senderMnemonic: creatorMnemonic,
-				receiver: accountAddr,
-				amount: 1,
-				assetId,
-			});
-
-			// opt in to voting contract
-			await axios.post(
-				"http://localhost:5001/smartContract/optInVoteSmartContract",
-				{
-					userMnemonic: accountMnemonic,
-					appId,
-				}
+			fundAccountPromises.push(
+				axios.post("http://localhost:5001/algoAccount/sendAlgo", {
+					senderMnemonic: algosdk.secretKeyToMnemonic(
+						creatorAccount.sk
+					),
+					receiver: accountAddr,
+					amount: MIN_BALANCE,
+					message: "",
+				})
 			);
 
 			voters.push({ accountAddr, accountMnemonic });
 		}
+
+		await Promise.all(fundAccountPromises);
+
+		// opt in to receive vote token
+		const optInTokenPromises = [];
+		for (let i = 0; i < NUM_VOTERS; ++i) {
+			optInTokenPromises.push(
+				axios.post("http://localhost:5001/asa/optInToAsset", {
+					senderMnemonic: voters[i].accountMnemonic,
+					assetId,
+				})
+			);
+		}
+
+		await Promise.all(optInTokenPromises);
+
+		// receive vote token
+		const receiveTokenPromises = [];
+		for (let i = 0; i < NUM_VOTERS; ++i) {
+			receiveTokenPromises.push(
+				axios.post("http://localhost:5001/asa/transferAsset", {
+					senderMnemonic: creatorMnemonic,
+					receiver: voters[i].accountAddr,
+					amount: 1,
+					assetId,
+				})
+			);
+		}
+
+		await Promise.all(receiveTokenPromises);
+
+		// opt in to voting contract
+		const optInContractPromises = [];
+		for (let i = 0; i < NUM_VOTERS; ++i) {
+			optInContractPromises.push(
+				axios.post(
+					"http://localhost:5001/smartContract/optInVoteSmartContract",
+					{
+						userMnemonic: voters[i].accountMnemonic,
+						appId,
+					}
+				)
+			);
+		}
+
+		await Promise.all(optInContractPromises);
 	} catch (err) {
 		console.log(err);
 		return res.send({ phase: 2, err });
@@ -113,10 +149,10 @@ export const votingWorkflow = async (req, res) => {
 
 	// vote
 	try {
+		const votePromises = [];
 		for (let i = 0; i < NUM_VOTERS; i++) {
-			voteResp = await axios.post(
-				"http://localhost:5001/smartContract/submitVote",
-				{
+			votePromises.push(
+				axios.post("http://localhost:5001/smartContract/submitVote", {
 					userMnemonic: voters[i].accountMnemonic,
 					appId,
 					candidate:
@@ -124,9 +160,10 @@ export const votingWorkflow = async (req, res) => {
 					assetId,
 					receiver: creatorAccount.addr,
 					amount: 1,
-				}
+				})
 			);
 		}
+		await Promise.all(votePromises);
 	} catch (err) {
 		console.log(err);
 		return res.send({ phase: 3, err });
@@ -153,10 +190,16 @@ export const votingWorkflow = async (req, res) => {
 		return res.send({ phase: 5, err });
 	}
 
-	const creatorAssetHoldings = voteResp.data.creatorAssetHoldings.amount;
+	const creatorAssetHoldings = await axios.get(
+		"http://localhost:5001/asa/checkAssetBalance",
+		{ params: { assetId, addr: creatorAccount.addr } }
+	);
+
 	return res.send({
-		votesReceived: creatorAssetHoldings,
-		votingPercentage: `${(creatorAssetHoldings / NUM_VOTERS) * 100}%`,
+		votesReceived: creatorAssetHoldings.data.amount,
+		votingPercentage: `${
+			(creatorAssetHoldings.data.amount / NUM_VOTERS) * 100
+		}%`,
 		assetId,
 		appId,
 		voters,
