@@ -7,8 +7,9 @@ import {
 } from "../controllers/ASAs.js";
 const router = express.Router();
 
-router.post("/createVoteAsset", createVoteAsset);
 router.get("/checkAssetBalance", checkAssetBalance);
+
+router.post("/createVoteAsset", createVoteAsset);
 router.post("/optInToAsset", optInToAsset);
 router.post("/transferAsset", transferAsset);
 

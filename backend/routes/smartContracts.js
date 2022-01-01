@@ -3,9 +3,12 @@ import {
 	createVoteSmartContract,
 	optInVoteSmartContract,
 	submitVote,
+	readVoteSmartContractState,
 	deleteVoteSmartContract,
 } from "../controllers/smartContracts.js";
 const router = express.Router();
+
+router.get("/readVoteSmartContractState", readVoteSmartContractState);
 
 router.post("/createVoteSmartContract", createVoteSmartContract);
 router.post("/optInVoteSmartContract", optInVoteSmartContract);

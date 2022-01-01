@@ -42,7 +42,7 @@ export const createVoteSmartContract = async (req, res) => {
 		today.getUTCMonth(),
 		today.getUTCDate(),
 		today.getUTCHours(),
-		today.getUTCMinutes() + 8,
+		today.getUTCMinutes() + 2,
 		today.getUTCSeconds(),
 		today.getUTCMilliseconds()
 	);
@@ -239,6 +239,8 @@ export const submitVote = async (req, res) => {
 
 	return res.send({ voterAssetHoldings, creatorAssetHoldings });
 };
+
+export const readVoteSmartContractState = async (req, res) => {};
 
 export const deleteVoteSmartContract = async (req, res) => {
 	// define sender as creator

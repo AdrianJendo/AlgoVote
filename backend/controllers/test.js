@@ -3,7 +3,7 @@ import { algodClient, __dirname } from "../server.js";
 import axios from "axios";
 import { pollingDelay } from "../helpers/misc.js";
 
-const NUM_VOTERS = 4;
+const NUM_VOTERS = 1;
 const NUM_CANDIDATES = 2;
 const MIN_BALANCE = 1000000 + 100000 + 100000 + 50000; // micro algos -> 0.1 algo (min account balance) + 0.1 (to opt in and receive ASA) + 0.1 (to opt in to smart contract) + 0.05 (for 1 local byte slice)
 // note that the creator has a higher minimum balance because it is responsible for the global varaibles
@@ -108,7 +108,7 @@ export const votingWorkflow = async (req, res) => {
 		const blockchainStatus = await algodClient.status().do();
 		curBlock = blockchainStatus["last-round"];
 		console.log("current block: ", curBlock);
-		await pollingDelay();
+		await pollingDelay(5000);
 	} while (curBlock < startBlock);
 
 	// vote
@@ -132,6 +132,13 @@ export const votingWorkflow = async (req, res) => {
 		return res.send({ phase: 3, err });
 	}
 
+	// get the results
+	try {
+	} catch (err) {
+		console.log(err);
+		return res.send({ phase: 4, err });
+	}
+
 	// delete smart contract when vote ends
 	try {
 		await axios.post(
@@ -143,8 +150,9 @@ export const votingWorkflow = async (req, res) => {
 		);
 	} catch (err) {
 		console.log(err);
-		return res.send({ phase: 4, err });
+		return res.send({ phase: 5, err });
 	}
 
-	return res.send(voteResp);
+	console.log(voteResp);
+	return res.send({ voteResp: voteResp.data });
 };

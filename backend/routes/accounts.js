@@ -7,10 +7,10 @@ import {
 } from "../controllers/accounts.js";
 const router = express.Router();
 
-router.post("/createAlgoAccount", createAlgoAccount);
-router.post("/sendAlgo", sendAlgo);
-
 router.get("/checkAlgoBalance", checkAlgoBalance);
 router.get("/getPublicKey", getPublicKey);
+
+router.post("/createAlgoAccount", createAlgoAccount);
+router.post("/sendAlgo", sendAlgo);
 
 export default router;
