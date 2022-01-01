@@ -57,3 +57,9 @@ export const waitForConfirmation = async function (
 		"Transaction " + txId + " not confirmed after " + timeout + " rounds!"
 	);
 };
+
+export const pollingDelay = (ms = 1000) => {
+	return new Promise((resolve) => {
+		setTimeout(resolve, ms);
+	});
+};

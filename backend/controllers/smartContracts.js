@@ -42,7 +42,7 @@ export const createVoteSmartContract = async (req, res) => {
 		today.getUTCMonth(),
 		today.getUTCDate(),
 		today.getUTCHours(),
-		today.getUTCMinutes() + 2,
+		today.getUTCMinutes() + 8,
 		today.getUTCSeconds(),
 		today.getUTCMilliseconds()
 	);
@@ -60,8 +60,8 @@ export const createVoteSmartContract = async (req, res) => {
 	const startVoteSecs = Math.abs(Math.round((startVoteUTC - today) / 1000));
 	const endVoteSecs = Math.abs(Math.round((endVoteUTC - today) / 1000));
 
-	const status = await algodClient.status().do();
-	const blockRound = status["last-round"];
+	const blockchainStatus = await algodClient.status().do();
+	const blockRound = blockchainStatus["last-round"];
 	const startVotingBlock = Math.ceil(
 		blockRound + startVoteSecs / SECS_PER_BLOCK
 	);
@@ -113,7 +113,12 @@ export const createVoteSmartContract = async (req, res) => {
 	let appId = transactionResponse["application-index"];
 	console.log("Created new app-id: ", appId);
 
-	return res.send(transactionResponse);
+	return res.send({
+		appId,
+		startVotingBlock,
+		endVotingBlock,
+		confirmedRound: transactionResponse["confirmed-round"],
+	});
 };
 
 export const optInVoteSmartContract = async (req, res) => {
@@ -140,11 +145,16 @@ export const optInVoteSmartContract = async (req, res) => {
 	let signedTxn = txn.signTxn(userAccount.sk);
 	console.log("Signed transaction with txID: %s", txId);
 
-	// Submit the transaction
-	await algodClient.sendRawTransaction(signedTxn).do();
+	try {
+		// Submit the transaction
+		await algodClient.sendRawTransaction(signedTxn).do();
 
-	// Wait for confirmation
-	await waitForConfirmation(algodClient, txId);
+		// Wait for confirmation
+		await waitForConfirmation(algodClient, txId);
+	} catch (err) {
+		console.log(err);
+		return err;
+	}
 
 	// display results
 	let transactionResponse = await algodClient

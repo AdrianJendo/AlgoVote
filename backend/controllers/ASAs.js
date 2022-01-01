@@ -107,23 +107,27 @@ export const optInToAsset = async (req, res) => {
 		assetId,
 		params
 	);
+	try {
+		// Must be signed by the account wishing to opt in to the asset
+		const rawSignedTxn = opttxn.signTxn(senderAccount.sk);
+		let opttx = await algodClient.sendRawTransaction(rawSignedTxn).do();
+		console.log("Transaction : " + opttx.txId);
+		// wait for transaction to be confirmed
+		await waitForConfirmation(algodClient, opttx.txId);
 
-	// Must be signed by the account wishing to opt in to the asset
-	const rawSignedTxn = opttxn.signTxn(senderAccount.sk);
-	let opttx = await algodClient.sendRawTransaction(rawSignedTxn).do();
-	console.log("Transaction : " + opttx.txId);
-	// wait for transaction to be confirmed
-	await waitForConfirmation(algodClient, opttx.txId);
+		//You should now see the new asset listed in the account information
+		console.log("Account 3 = " + senderAccount.addr);
 
-	//You should now see the new asset listed in the account information
-	console.log("Account 3 = " + senderAccount.addr);
+		const assetHoldings = JSON.parse(
+			await printAssetHolding(algodClient, senderAccount.addr, assetId)
+		);
+		assetHoldings.optedIn = senderAccount.addr;
 
-	const assetHoldings = JSON.parse(
-		await printAssetHolding(algodClient, senderAccount.addr, assetId)
-	);
-	assetHoldings.optedIn = senderAccount.addr;
-
-	return res.send(assetHoldings);
+		return res.send(assetHoldings);
+	} catch (err) {
+		console.log(err);
+		return res.send(err);
+	}
 };
 
 export const transferAsset = async (req, res) => {
@@ -153,25 +157,32 @@ export const transferAsset = async (req, res) => {
 		params
 	);
 
-	// Must be signed by the account sending the asset
-	const rawSignedTxn = xtxn.signTxn(senderAccount.sk);
-	let xtx = await algodClient.sendRawTransaction(rawSignedTxn).do();
-	console.log("Transaction : " + xtx.txId);
-	// wait for transaction to be confirmed
-	await waitForConfirmation(algodClient, xtx.txId);
+	try {
+		// Must be signed by the account sending the asset
+		const rawSignedTxn = xtxn.signTxn(senderAccount.sk);
+		let xtx = await algodClient.sendRawTransaction(rawSignedTxn).do();
+		console.log("Transaction : " + xtx.txId);
+		// wait for transaction to be confirmed
+		await waitForConfirmation(algodClient, xtx.txId);
 
-	// You should now see the 10 assets listed in the account information
-	console.log("Account 3 = " + senderAccount.addr);
+		// You should now see the 10 assets listed in the account information
+		console.log("Account 3 = " + senderAccount.addr);
 
-	const tokensWithCreator = JSON.parse(
-		await printAssetHolding(algodClient, senderAccount.addr, assetId)
-	);
-	const tokensWithRecipient = JSON.parse(
-		await printAssetHolding(algodClient, recipient, assetId)
-	);
+		const tokensWithCreator = JSON.parse(
+			await printAssetHolding(algodClient, senderAccount.addr, assetId)
+		);
+		const tokensWithRecipient = JSON.parse(
+			await printAssetHolding(algodClient, recipient, assetId)
+		);
 
-	return res.send({ tokensWithCreator, tokensWithRecipient });
+		return res.send({ tokensWithCreator, tokensWithRecipient });
+	} catch (err) {
+		console.log(err);
+		return res.send(err);
+	}
 };
+
+// export const deleteAsset = asnyc(req, res) => {}
 
 // export const toggleFreeze = async (req, res) => {
 // 	// The asset was created and configured to allow freezing an account
