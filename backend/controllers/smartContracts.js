@@ -240,7 +240,39 @@ export const submitVote = async (req, res) => {
 	return res.send({ voterAssetHoldings, creatorAssetHoldings });
 };
 
-export const readVoteSmartContractState = async (req, res) => {};
+export const readVoteSmartContractState = async (req, res) => {
+	// define sender as creator
+	const creatorAddr = req.query.creatorAddr;
+	const appId = req.query.appId;
+
+	let accountInfoResponse = await algodClient
+		.accountInformation(creatorAddr)
+		.do();
+
+	for (let i = 0; i < accountInfoResponse["created-apps"].length; i++) {
+		if (accountInfoResponse["created-apps"][i].id == appId) {
+			console.log("Application's global state:");
+			for (
+				let n = 0;
+				n <
+				accountInfoResponse["created-apps"][i]["params"]["global-state"]
+					.length;
+				n++
+			) {
+				console.log(
+					accountInfoResponse["created-apps"][i]["params"][
+						"global-state"
+					][n]
+				);
+			}
+			return res.send(
+				accountInfoResponse["created-apps"][i]["params"]["global-state"]
+			);
+		}
+	}
+
+	return res.send(accountInfoResponse["created-apps"]);
+};
 
 export const deleteVoteSmartContract = async (req, res) => {
 	// define sender as creator
@@ -277,4 +309,36 @@ export const deleteVoteSmartContract = async (req, res) => {
 
 	console.log("Deleted app-id: ", appId);
 	return res.send(transactionResponse);
+};
+
+export const didUserVote = async (req, res) => {
+	// read local state of application from user account
+	const userAddr = req.query.userAddr;
+	const appId = req.query.appId;
+
+	let accountInfoResponse = await algodClient
+		.accountInformation(userAddr)
+		.do();
+
+	for (let i = 0; i < accountInfoResponse["apps-local-state"].length; i++) {
+		if (accountInfoResponse["apps-local-state"][i].id == appId) {
+			console.log("User's local state:");
+			console.log(
+				accountInfoResponse["apps-local-state"][i]["key-value"]
+			);
+			if (accountInfoResponse["apps-local-state"][i][`key-value`]) {
+				return res.send({
+					voted: accountInfoResponse["apps-local-state"][i][
+						`key-value`
+					][0],
+				});
+			} else {
+				return res.send(
+					"User opted in to this application, but did not vote"
+				);
+			}
+		}
+	}
+
+	return res.send("User did not participate in this application");
 };

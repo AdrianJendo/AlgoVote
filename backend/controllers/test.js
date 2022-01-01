@@ -3,7 +3,7 @@ import { algodClient, __dirname } from "../server.js";
 import axios from "axios";
 import { pollingDelay } from "../helpers/misc.js";
 
-const NUM_VOTERS = 1;
+const NUM_VOTERS = 2;
 const NUM_CANDIDATES = 2;
 const MIN_BALANCE = 1000000 + 100000 + 100000 + 50000; // micro algos -> 0.1 algo (min account balance) + 0.1 (to opt in and receive ASA) + 0.1 (to opt in to smart contract) + 0.05 (for 1 local byte slice)
 // note that the creator has a higher minimum balance because it is responsible for the global varaibles
@@ -141,18 +141,24 @@ export const votingWorkflow = async (req, res) => {
 
 	// delete smart contract when vote ends
 	try {
-		await axios.post(
-			"http://localhost:5001/smartContract/deleteVoteSmartContract",
-			{
-				creatorMnemonic,
-				appId,
-			}
-		);
+		// await axios.post(
+		// 	"http://localhost:5001/smartContract/deleteVoteSmartContract",
+		// 	{
+		// 		creatorMnemonic,
+		// 		appId,
+		// 	}
+		// );
 	} catch (err) {
 		console.log(err);
 		return res.send({ phase: 5, err });
 	}
 
-	console.log(voteResp);
-	return res.send({ voteResp: voteResp.data });
+	const creatorAssetHoldings = voteResp.data.creatorAssetHoldings.amount;
+	return res.send({
+		votesReceived: creatorAssetHoldings,
+		votingPercentage: `${(creatorAssetHoldings / NUM_VOTERS) * 100}%`,
+		assetId,
+		appId,
+		voters,
+	});
 };
