@@ -109,7 +109,7 @@ export const createVoteSmartContract = async (req, res) => {
 		.pendingTransactionInformation(txId)
 		.do();
 
-	console.log("txn response", transactionResponse);
+	// console.log("txn response", transactionResponse);
 	let appId = transactionResponse["application-index"];
 	console.log("Created new app-id: ", appId);
 
@@ -240,40 +240,6 @@ export const submitVote = async (req, res) => {
 	return res.send({ voterAssetHoldings, creatorAssetHoldings });
 };
 
-export const readVoteSmartContractState = async (req, res) => {
-	// define sender as creator
-	const creatorAddr = req.query.creatorAddr;
-	const appId = req.query.appId;
-
-	let accountInfoResponse = await algodClient
-		.accountInformation(creatorAddr)
-		.do();
-
-	for (let i = 0; i < accountInfoResponse["created-apps"].length; i++) {
-		if (accountInfoResponse["created-apps"][i].id == appId) {
-			console.log("Application's global state:");
-			for (
-				let n = 0;
-				n <
-				accountInfoResponse["created-apps"][i]["params"]["global-state"]
-					.length;
-				n++
-			) {
-				console.log(
-					accountInfoResponse["created-apps"][i]["params"][
-						"global-state"
-					][n]
-				);
-			}
-			return res.send(
-				accountInfoResponse["created-apps"][i]["params"]["global-state"]
-			);
-		}
-	}
-
-	return res.send(accountInfoResponse["created-apps"]);
-};
-
 export const deleteVoteSmartContract = async (req, res) => {
 	// define sender as creator
 	const creatorAccount = algosdk.mnemonicToSecretKey(
@@ -311,6 +277,29 @@ export const deleteVoteSmartContract = async (req, res) => {
 	return res.send(transactionResponse);
 };
 
+export const readVoteSmartContractState = async (req, res) => {
+	const appId = req.query.appId;
+
+	const application = await algodClient.getApplicationByID(appId).do();
+	const globalState = application.params["global-state"];
+
+	const decodedState = {};
+
+	console.log("app", application);
+	console.log("State", application.params["global-state"]);
+
+	for (let i = 0; i < globalState.length; i++) {
+		const state = globalState[i];
+		// https://forum.algorand.org/t/how-i-can-convert-value-of-global-state-to-human-readable/3551/2
+		decodedState[Buffer.from(state.key, "base64").toString()] =
+			state.value.type === 1
+				? application.params.creator // only the creator is a byteslice (type 1)
+				: state.value.uint;
+	}
+
+	return res.send(decodedState);
+};
+
 export const didUserVote = async (req, res) => {
 	// read local state of application from user account
 	const userAddr = req.query.userAddr;
@@ -322,23 +311,30 @@ export const didUserVote = async (req, res) => {
 
 	for (let i = 0; i < accountInfoResponse["apps-local-state"].length; i++) {
 		if (accountInfoResponse["apps-local-state"][i].id == appId) {
-			console.log("User's local state:");
-			console.log(
-				accountInfoResponse["apps-local-state"][i]["key-value"]
-			);
 			if (accountInfoResponse["apps-local-state"][i][`key-value`]) {
-				return res.send({
-					voted: accountInfoResponse["apps-local-state"][i][
-						`key-value`
-					][0],
-				});
+				const decodedLocalState = {};
+				const key =
+					accountInfoResponse["apps-local-state"][i][`key-value`][0]
+						.key;
+				const value =
+					accountInfoResponse["apps-local-state"][i][`key-value`][0]
+						.value.bytes;
+
+				decodedLocalState[Buffer.from(key, "base64").toString()] =
+					Buffer.from(value, "base64").toString();
+
+				return res.send({ ...decodedLocalState, status: true });
 			} else {
-				return res.send(
-					"User opted in to this application, but did not vote"
-				);
+				return res.send({
+					voted: "Registered but did not vote",
+					status: false,
+				});
 			}
 		}
 	}
 
-	return res.send("User did not participate in this application");
+	return res.send({
+		status: "Did not participate in application",
+		status: false,
+	});
 };

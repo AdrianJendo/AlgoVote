@@ -3,10 +3,10 @@ import { algodClient, __dirname } from "../server.js";
 import axios from "axios";
 import { pollingDelay } from "../helpers/misc.js";
 
-const NUM_VOTERS = 20;
+const NUM_VOTERS = 50;
 const NUM_CANDIDATES = 2;
-const MIN_BALANCE = 100000 + 100000 + 100000 + 50000 + 100000; // micro algos -> 0.1 algo (min account balance) + 0.1 (to opt in and receive ASA) + 0.1 (to opt in to smart contract) + 0.05 (for 1 local byte slice)
-// added an extra 100000 algos so that the account doesn't dip below the minimum during any transactions
+const MIN_BALANCE = 100000 + 100000 + 100000 + 50000 + 10000; // micro algos -> 0.1 algo (min account balance) + 0.1 (to opt in and receive ASA) + 0.1 (to opt in to smart contract) + 0.05 (for 1 local byte slice)
+// added an extra 10000 micro algos so that the account doesn't dip below the minimum during any transactions
 // note that the creator has a higher minimum balance because it is responsible for the global varaibles
 // the local byteslice variable is only responsible for keeping track on whether the account has voted or not
 
