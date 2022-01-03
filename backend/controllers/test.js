@@ -3,8 +3,8 @@ import { algodClient, __dirname } from "../server.js";
 import axios from "axios";
 import { pollingDelay } from "../helpers/misc.js";
 
-const NUM_VOTERS = 50;
-const NUM_CANDIDATES = 2;
+const NUM_VOTERS = 90;
+const CANDIDATES = ["Billy", "Jean", "Christian", "Dior"];
 const MIN_BALANCE = 100000 + 100000 + 100000 + 50000 + 10000; // micro algos -> 0.1 algo (min account balance) + 0.1 (to opt in and receive ASA) + 0.1 (to opt in to smart contract) + 0.05 (for 1 local byte slice)
 // added an extra 10000 micro algos so that the account doesn't dip below the minimum during any transactions
 // note that the creator has a higher minimum balance because it is responsible for the global varaibles
@@ -20,7 +20,6 @@ export const votingWorkflow = async (req, res) => {
 	const creatorAccount = algosdk.mnemonicToSecretKey(creatorMnemonic);
 	const voteTokenName = req.body.voteTokenName;
 	const voters = [];
-	const candidates = ["candidatea", "candidateb"];
 	let assetId;
 	let appId;
 	let startBlock;
@@ -44,6 +43,7 @@ export const votingWorkflow = async (req, res) => {
 			{
 				creatorMnemonic,
 				assetId,
+				numCandidates: CANDIDATES.length,
 			}
 		);
 		const smartContractData = smartContract.data;
@@ -150,13 +150,21 @@ export const votingWorkflow = async (req, res) => {
 	// vote
 	try {
 		const votePromises = [];
-		for (let i = 0; i < NUM_VOTERS; i++) {
+		for (let i = 0; i < NUM_VOTERS - 15; i++) {
+			// 15 voters don't vote
+			const rando = Math.random();
 			votePromises.push(
 				axios.post("http://localhost:5001/smartContract/submitVote", {
 					userMnemonic: voters[i].accountMnemonic,
 					appId,
 					candidate:
-						Math.random() < 0.5 ? candidates[0] : candidates[1],
+						rando < 0.25
+							? CANDIDATES[0]
+							: rando < 0.5
+							? CANDIDATES[1]
+							: rando < 0.75
+							? CANDIDATES[2]
+							: CANDIDATES[3],
 					assetId,
 					receiver: creatorAccount.addr,
 					amount: 1,

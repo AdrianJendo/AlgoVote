@@ -15,6 +15,7 @@ export const createVoteSmartContract = async (req, res) => {
 	);
 	const sender = creatorAccount.addr;
 	const assetId = req.body.assetId;
+	const numCandidates = req.body.numCandidates;
 
 	// get node suggested parameters
 	let params = await algodClient.getTransactionParams().do();
@@ -72,8 +73,6 @@ export const createVoteSmartContract = async (req, res) => {
 	args.push(algosdk.encodeUint64(assetId));
 	// const lsig = new algosdk.LogicSigAccount(vote_program, args);
 	// console.log("lsig : " + lsig.address());
-
-	const numCandidates = 2;
 
 	// create unsigned transaction
 	let txn = algosdk.makeApplicationCreateTxn(
@@ -334,7 +333,7 @@ export const didUserVote = async (req, res) => {
 	}
 
 	return res.send({
-		status: "Did not participate in application",
+		voted: "Did not participate in application",
 		status: false,
 	});
 };

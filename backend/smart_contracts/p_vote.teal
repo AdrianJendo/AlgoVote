@@ -138,23 +138,13 @@ app_local_get_ex // put voted variable to top of stack
 // if voted skip incrementing count
 bnz voted
 pop // pop voted variable from stack
-// can only vote for candidatea
-// or candidateb
-txna ApplicationArgs 1
-byte "candidatea" 
-==
-txna ApplicationArgs 1
-byte "candidateb" 
-==
-||
-bz failed
-// read existing vote candidate
-// in global state and increment vote
+// voting for candidate
+// read existing vote candidate in global state and increment vote
 int 0
 txna ApplicationArgs 1 // load candidate onto top of stack
 app_global_get_ex // read from application A (0) global state key B (candidate)
 bnz increment_existing
-pop // if current candidate has 0 votes (or DNE) pop last value
+pop // if current candidate has 0 votes (DNE in global storage) pop last value
 int 0 // add zero (current number of votes of candidate)
 increment_existing:
 int 1
