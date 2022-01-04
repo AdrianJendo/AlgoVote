@@ -1,4 +1,5 @@
 version: "3.8"
+
 services:
     frontend:
         build:
@@ -8,15 +9,20 @@ services:
             - ./frontend/src:/frontend/src
         env_file:
             - .env
+
     backend:
         build:
             context: ./backend
         volumes:
             - /backend/node_modules
-            - ./backend/api:/backend/api
+            - ./backend/controllers:/backend/controllers
+            - ./backend/helpers:/backend/helpers
+            - ./backend/routes:/backend/routes
+            - ./backend/smart_contracts:/backend/smart_contracts
             - ./backend/server.js:/backend/server.js
         env_file:
             - .env
+
     nginx:
         restart: always
         depends_on:

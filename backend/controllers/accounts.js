@@ -98,8 +98,9 @@ export const sendAlgo = async (req, res) => {
 
 export const checkAlgoBalance = async (req, res) => {
 	const accountAddr = req.query.addr;
+	const accountBalance = await getAlgoBalance(algodClient, accountAddr);
 	return res.send({
-		accountBalance: await getAlgoBalance(algodClient, accountAddr),
+		accountBalance: "abc",
 	});
 };
 
