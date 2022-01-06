@@ -26,8 +26,6 @@ const ALGOD_TOKEN = process.env.ALGOD_TOKEN
 const ALGOD_SERVER = process.env.ALGOD_SERVER || "http://localhost";
 const ALGOD_PORT = process.env.ALGOD_PORT;
 
-console.log(ALGOD_PORT, ALGOD_SERVER, ALGOD_TOKEN);
-
 // Express
 const app = express();
 
