@@ -1,0 +1,188 @@
+#pragma version 2
+// check if the app is being created
+// if so save creator
+int 0
+txn ApplicationID // check if the ApplicationID exists (if doesn't exist it equals zero)
+==
+bz not_creation // branch to target if ApplicationID is zero (bz -> branch if zero)
+byte "Creator"
+txn Sender // Sender address stored as "Creator" variable
+app_global_put // write previous valued to global storage (it's like a dictionary where "Creator" is the key, and Sender is the value)
+//2 args must be used on creation
+txn NumAppArgs
+int 3
+==
+bz failed // check if number of app args is 2 and branch if they are not equal
+//set timestamps
+byte "VoteBegin"
+txna ApplicationArgs 0 // access the first argument in the transaction
+btoi // converts big endian bytes to uint64
+app_global_put // put the first application argument into global storage with "VoteBegin" key
+byte "VoteEnd"
+txna ApplicationArgs 1 // put the 2nd application argument into global storage with "VoteEnd" key
+btoi
+app_global_put
+byte "AssetId"
+txna ApplicationArgs 2 // put the 3rd argument into global storage as "AssetID"
+btoi
+app_global_put
+int 1
+return // Returns the value on the top of the stack when the program terminates, for successful creation of smart contract, return 1
+not_creation: // branch for any call that is not contract creation
+// check if this is deletion ---
+int DeleteApplication
+txn OnCompletion
+==
+bz not_deletion // branch if not equal
+byte "Creator"
+app_global_get // Get the "Creator" byte from global storage
+txn Sender
+== // Check if the "Creator" is equal to the sender of the current transaction
+bz failed // Fail if "Creator" is not sender
+int 1
+return // Return 1 to complete app deletion
+not_deletion:
+//---
+// check if this is update ---
+int UpdateApplication
+txn OnCompletion
+==
+bz not_update
+byte "Creator"
+app_global_get
+txn Sender
+==
+bz failed
+int 1
+return
+not_update:
+//---
+// check for closeout
+int CloseOut
+txn OnCompletion
+== // branch if equal (not zero) -- bnz -> branch if not zero
+bnz close_out
+// register
+txna ApplicationArgs 0
+byte "register" // check if the first argument to the transaction is "register"
+==
+bnz register
+//vote
+txna ApplicationArgs 0
+byte "vote" // check if the first argument to the transaction is "vote"
+==
+bnz vote
+int 0 // handle case where arguement is either not "register" or not "vote"
+return
+vote:
+//verify in voting rounds
+global Round
+byte "VoteBegin"
+app_global_get // check that current Round is after votebegin
+>=
+global Round
+byte "VoteEnd"
+app_global_get // and check that current Round is before voteEnd
+<=
+&&
+bz failed // if one of the above conditions is false, branch to failed
+// Check that the account has opted in
+// account offset (0 == sender, 
+// 1 == txn.accounts[0], 2 == txn.accounts[1], etc..)
+int 0 // offset of 0 corresponds to sender
+txn ApplicationID // B -> AppId
+app_opted_in // check if account A (0 -> sender) opted in to application B (specified by AppId)
+bz failed
+// check if they have the vote token
+// sender
+int 0 // offset 0 for sender
+// not hard-coded assetid
+byte "AssetId"
+app_global_get
+// returns frozen an asset balance
+// pop frozen
+asset_holding_get AssetBalance
+pop
+// does voter have at least 1 vote token
+int 1
+>=
+bz failed
+// two transactions
+global GroupSize
+int 2
+==
+bz failed
+// second txn is an asset transfer
+gtxn 1 TypeEnum
+int 4
+==
+bz failed
+// creator receiving the vote token
+byte "Creator"
+app_global_get
+gtxn 1 AssetReceiver
+==
+bz failed
+// verify the proper token is being spent
+gtxn 1 XferAsset
+// not hard-coded
+byte "AssetId"
+app_global_get
+==
+bz failed
+// check local to see if they have voted
+int 0 // sender
+txn ApplicationID
+byte "voted"
+app_local_get_ex // put voted variable to top of stack
+// if voted skip incrementing count
+bnz voted
+pop // pop voted variable from stack
+// voting for candidate
+// read existing vote candidate in global state and increment vote
+int 0
+txna ApplicationArgs 1 // load candidate onto top of stack
+app_global_get_ex // read from application A (0) global state key B (candidate)
+bnz increment_existing
+pop // if current candidate has 0 votes (DNE in global storage) pop last value
+int 0 // add zero (current number of votes of candidate)
+increment_existing:
+int 1
++
+store 1
+txna ApplicationArgs 1
+load 1
+app_global_put // store number of votes in global state
+// store the voters choice in local state
+int 0 // sender
+byte "voted"
+txna ApplicationArgs 1
+app_local_put // put the voters candidate in local storage
+int 1
+return
+voted:
+pop
+int 1
+return
+register:
+global Round
+byte "VoteBegin"
+app_global_get
+<=
+int OptIn
+txn OnCompletion
+==
+&&
+bz failed
+int 1
+return
+//call if this is a closeout op
+close_out:
+int 1
+return
+failed:
+int 0
+return
+finished:
+int 1
+return
