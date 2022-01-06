@@ -17,7 +17,16 @@ export const __dirname = path.dirname(__filename);
 
 // Environment variables
 dotenv.config();
-const port = process.env.BACKEND_PORT || 5001;
+const BACKEND_PORT = process.env.BACKEND_PORT || 5001;
+const ALGOD_TOKEN = process.env.ALGOD_TOKEN
+	? {
+			"X-API-Key": process.env.ALGOD_TOKEN,
+	  }
+	: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+const ALGOD_SERVER = process.env.ALGOD_SERVER || "http://localhost";
+const ALGOD_PORT = process.env.ALGOD_PORT;
+
+console.log(ALGOD_PORT, ALGOD_SERVER, ALGOD_TOKEN);
 
 // Express
 const app = express();
@@ -33,19 +42,15 @@ app.use("/test", testRoutes);
 app.use("/submitVote", submitVoteRoutes);
 
 // Algorand
-// create client object to connect to sandbox's algod client
-const algodToken =
-	"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-const algodServer = "http://localhost";
-const algodPort = 4001;
-let algodClient = new algosdk.Algodv2(algodToken, algodServer, algodPort);
+// create client object
+let algodClient = new algosdk.Algodv2(ALGOD_TOKEN, ALGOD_SERVER, ALGOD_PORT);
 
 app.get("/", (req, res) => {
-	res.send(`Listening on port ${port}!`);
+	res.send(`Listening on BACKEND_PORT ${BACKEND_PORT}!`);
 });
 
-app.listen(port, () => {
-	console.log(`Server started on port ${port}`);
+app.listen(BACKEND_PORT, () => {
+	console.log(`Server started on BACKEND_PORT ${BACKEND_PORT}`);
 });
 
 export { algodClient };
