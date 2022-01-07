@@ -5,7 +5,7 @@ import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import DirectionsIcon from "@mui/icons-material/Directions";
 import { VoteInfoContext } from "context/VoteInfoContext";
-import shouldAddParticipant from "utils/ShouldAddParticipant";
+import shouldAddPerson from "utils/ShouldAddPerson";
 
 export default function CustomizedInputBase({ index }) {
 	const [textValue, setTextValue] = React.useState("");
@@ -18,7 +18,7 @@ export default function CustomizedInputBase({ index }) {
 		const participants = voteInfo[index] ? voteInfo[index] : {};
 		for (let i = 0; i < names.length; ++i) {
 			const name = names[i];
-			if (shouldAddParticipant(name, voteInfo, index)) {
+			if (shouldAddPerson(name, voteInfo, index)) {
 				if (participants[name] && index === "participantData") {
 					participants[name]++;
 				} else if (participants[name]) {
