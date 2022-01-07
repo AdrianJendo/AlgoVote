@@ -28,8 +28,8 @@ const SelectCandidates = () => {
 			setVoteInfo({ ...voteInfo, candidateData: null });
 		} else if (voteInfo.candidateUploadType) {
 			setVoteInfo({ ...voteInfo, candidateUploadType: null });
-		} else if (voteInfo.candidateMethod) {
-			setVoteInfo({ ...voteInfo, candidateMethod: null });
+		} else if (voteInfo.candidateUploadMethod) {
+			setVoteInfo({ ...voteInfo, candidateUploadMethod: null });
 		} else {
 			setVoteInfo({ ...voteInfo, activeStep: voteInfo.activeStep - 1 });
 		}
@@ -41,7 +41,7 @@ const SelectCandidates = () => {
 				What will be the choices for your vote?
 			</Typography>
 
-			{voteInfo.candidateMethod === null && (
+			{voteInfo.candidateUploadMethod === null && (
 				<FillDiv>
 					<Typography sx={typographySX(4)}>
 						Select a method to add candidates
@@ -51,7 +51,7 @@ const SelectCandidates = () => {
 							onClick={() =>
 								setVoteInfo({
 									...voteInfo,
-									candidateMethod: "file",
+									candidateUploadMethod: "file",
 								})
 							}
 						>
@@ -61,7 +61,7 @@ const SelectCandidates = () => {
 							onClick={() =>
 								setVoteInfo({
 									...voteInfo,
-									candidateMethod: "manual",
+									candidateUploadMethod: "manual",
 								})
 							}
 						>
@@ -70,7 +70,7 @@ const SelectCandidates = () => {
 					</ButtonGroup>
 				</FillDiv>
 			)}
-			{voteInfo.candidateMethod === "file" &&
+			{voteInfo.candidateUploadMethod === "file" &&
 				voteInfo.candidateUploadType === null && (
 					<FillDiv>
 						<Typography sx={typographySX(4)}>
@@ -112,8 +112,8 @@ const SelectCandidates = () => {
 										<div>
 											<center>
 												<Typography variant="caption">
-													An example of a valid format
-													is shown below:
+													Example of valid format
+													shown below:
 												</Typography>
 											</center>
 
@@ -169,8 +169,8 @@ const SelectCandidates = () => {
 										<div>
 											<center>
 												<Typography variant="caption">
-													An example of a valid format
-													is shown below:
+													Example of valid format
+													shown below:
 												</Typography>
 											</center>
 
@@ -216,7 +216,7 @@ const SelectCandidates = () => {
 						</label>
 					</FillDiv>
 				)}
-			{(voteInfo.candidateMethod === "manual" ||
+			{(voteInfo.candidateUploadMethod === "manual" ||
 				voteInfo.candidateData !== null) && (
 				<ManualUploadDiv>
 					<ManualUploadSubDiv>
@@ -228,12 +228,12 @@ const SelectCandidates = () => {
 				</ManualUploadDiv>
 			)}
 			<ButtonGroup variant="contained" sx={buttonGroupSX(75)}>
-				{voteInfo.candidateFormat !== null && (
+				{voteInfo.candidateUploadMethod !== null && (
 					<Button
 						onClick={() =>
 							setVoteInfo({
 								...voteInfo,
-								candidateMethod: null,
+								candidateUploadMethod: null,
 								candidateUploadType: null,
 								candidateData: null,
 							})

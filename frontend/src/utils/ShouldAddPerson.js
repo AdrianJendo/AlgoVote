@@ -1,8 +1,9 @@
-const shouldAddParticipant = (value, voteInfo, dataType) => {
+const shouldAddPerson = (value, voteInfo, dataType) => {
 	return (
-		value !== "" && // make sure not empty OR
-		value.length === 58 // make sure address is correct length
-		// call api to check if the address is valid
+		value !== "" && // make sure not empty AND
+		((value.length === 58 && // make sure address is correct length
+			true) || // call api to check if the address is valid)
+			dataType === "candidateData") // check if its a candidate
 	);
 
 	// return (
@@ -17,4 +18,4 @@ const shouldAddParticipant = (value, voteInfo, dataType) => {
 	// );
 };
 
-export default shouldAddParticipant;
+export default shouldAddPerson;

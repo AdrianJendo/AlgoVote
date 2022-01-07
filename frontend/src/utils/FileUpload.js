@@ -1,5 +1,5 @@
 import * as XLSX from "xlsx";
-import shouldAddParticipant from "utils/ShouldAddParticipant";
+import shouldAddPerson from "utils/ShouldAddPerson";
 
 // Handle .txt and .csv files
 export const txtUploadHandler = (e, voteInfo, setVoteInfo, dataType) => {
@@ -22,7 +22,7 @@ export const txtUploadHandler = (e, voteInfo, setVoteInfo, dataType) => {
 				.join(",")
 				.split(","); // Split element in list of values
 			for (let j = 0; j < content.length; j++) {
-				if (shouldAddParticipant(content[j], voteInfo, dataType)) {
+				if (shouldAddPerson(content[j], voteInfo, dataType)) {
 					const participant = content[j].toLowerCase();
 					if (participants[participant]) {
 						participants[participant]++;
@@ -72,7 +72,7 @@ export const excelUploadHandler = async (
 				.split(","); // Split element in list of values
 			/* Update state */
 			for (let j = 0; j < content.length; j++) {
-				if (shouldAddParticipant(content[j], voteInfo, dataType)) {
+				if (shouldAddPerson(content[j], voteInfo, dataType)) {
 					let numVotes = 1;
 					const participant = content[j].toLowerCase();
 
