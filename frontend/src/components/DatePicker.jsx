@@ -5,7 +5,7 @@ import TimePicker from "@mui/lab/TimePicker";
 import { DateValueContext } from "context/DateValueContext";
 import { styled } from "@mui/system";
 import isSameDate from "utils/IsSameDate";
-import { delay } from "utils/Constants";
+import { MINUTES_DELAY, DELAY } from "utils/Constants";
 import HelpIcon from "@mui/icons-material/Help";
 
 const typographySX = (top) => ({ position: "relative", top: `${top}%` });
@@ -46,8 +46,8 @@ export default function ResponsiveDatePickers({
 				selectedTime && label !== "End"
 					? selectedTime
 					: label === "Start"
-					? new Date(new Date().getTime() + delay + 60 * 1000)
-					: new Date(earliestTime.getTime() + delay + 60 * 1000),
+					? new Date(new Date().getTime() + DELAY + 60 * 1000)
+					: new Date(earliestTime.getTime() + DELAY + 60 * 1000),
 		});
 	}, [
 		earliestDate,
@@ -85,7 +85,7 @@ export default function ResponsiveDatePickers({
 		if (label === "Start") {
 			if (
 				isSameDate(dateValue.value, new Date()) &&
-				newValue < new Date(new Date().getTime() + delay) // handle case where we are trying to start a vote today and we try setting the time too early
+				newValue < new Date(new Date().getTime() + DELAY) // handle case where we are trying to start a vote today and we try setting the time too early
 			) {
 				setDateValue({
 					...dateValue,
@@ -102,8 +102,8 @@ export default function ResponsiveDatePickers({
 		} else {
 			if (
 				isSameDate(dateValue.value, earliestDate) &&
-				(newValue < new Date(earliestTime.getTime() + delay) || // handle case where we are try to end the date on the same day but before the earliest time possible
-					newValue < new Date(new Date().getTime() + delay)) // also need to check that the new value is not in the past
+				(newValue < new Date(earliestTime.getTime() + DELAY) || // handle case where we are try to end the date on the same day but before the earliest time possible
+					newValue < new Date(new Date().getTime() + DELAY)) // also need to check that the new value is not in the past
 			) {
 				setDateValue({
 					...dateValue,
@@ -123,7 +123,7 @@ export default function ResponsiveDatePickers({
 	return (
 		<div style={{ position: "relative", height: "100%" }}>
 			<Typography sx={typographySX(2)} variant="h5">
-				What will be the choices for your vote?
+				When will your vote {label.toLowerCase()}?
 			</Typography>
 			<InlineDiv>
 				<MarginDiv>
@@ -153,12 +153,12 @@ export default function ResponsiveDatePickers({
 						minTime={
 							label === "Start"
 								? isSameDate(dateValue.value, new Date())
-									? new Date(new Date().getTime() + delay)
+									? new Date(new Date().getTime() + DELAY)
 									: new Date(0, 0, 0)
 								: isSameDate(dateValue.value, new Date()) // this one is a lot more complicated because we need to check (a) if the end date is today,
-								? new Date(new Date().getTime() + delay)
+								? new Date(new Date().getTime() + DELAY)
 								: isSameDate(dateValue.value, earliestDate) // and (b) if the date is the same date as the earliest start date
-								? new Date(earliestTime.getTime() + delay)
+								? new Date(earliestTime.getTime() + DELAY)
 								: new Date(0, 0, 0)
 						}
 						renderInput={(params) => <TextField {...params} />}
@@ -170,7 +170,7 @@ export default function ResponsiveDatePickers({
 								left: "69%",
 								top: "35px",
 							}}
-							title={`${label} time must be at least 5 minutes from ${
+							title={`${label} time must be at least ${MINUTES_DELAY} minutes from ${
 								label === "Start" ? "now" : "start time"
 							}.`}
 							placement="right"

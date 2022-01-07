@@ -56,8 +56,9 @@ const ReviewDetails = () => {
 			style={{
 				position: "relative",
 				height: "100%",
-				width: "60%",
-				left: "20%",
+				width: "75%",
+				left: "50%",
+				transform: "translate(-50%, 0)",
 			}}
 		>
 			<Typography
