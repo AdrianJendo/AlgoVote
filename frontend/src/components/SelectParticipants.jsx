@@ -1,8 +1,10 @@
 import React, { useContext } from "react";
-import { Button, Typography, ButtonGroup } from "@mui/material";
+import { Button, Typography, ButtonGroup, TextField } from "@mui/material";
 import { VoteInfoContext } from "context/VoteInfoContext";
 import StickyHeadTable from "components/RenderTable";
 import { txtUploadHandler, excelUploadHandler } from "utils/FileUpload";
+import cancelVote from "utils/CancelVote";
+import { generateAlgorandAccounts } from "utils/AlgoFunctions";
 import {
 	FillDiv,
 	Input,
@@ -16,39 +18,38 @@ import CustomizedInputBase from "components/TextInput";
 import HelpIcon from "@mui/icons-material/Help";
 import HelperTooltip from "components/HelperTooltip";
 
-const emails1 = require("images/emails1.png");
-const emails2 = require("images/emails2.png");
-const emails3 = require("images/emails3.png");
-const phoneNumbers1 = require("images/phoneNumbers1.png");
-const phoneNumbers2 = require("images/phoneNumbers2.png");
-const phoneNumbers3 = require("images/phoneNumbers3.png");
+// const emails1 = require("images/emails1.png");
+// const emails2 = require("images/emails2.png");
+// const emails3 = require("images/emails3.png");
+// const phoneNumbers1 = require("images/phoneNumbers1.png");
+// const phoneNumbers2 = require("images/phoneNumbers2.png");
+// const phoneNumbers3 = require("images/phoneNumbers3.png");
+const preFundedAccountsXlsx = require("images/preFundedAccountsXlsx.png");
+const preFundedAccounts = require("images/preFundedAccounts.png");
 
 const SelectParticipants = () => {
 	const [voteInfo, setVoteInfo] = useContext(VoteInfoContext);
 
 	const goBack = () => {
-		if (
-			voteInfo.participantData &&
-			voteInfo.participantMethod === "upload"
-		) {
-			setVoteInfo({ ...voteInfo, participantData: null });
-		} else if (
-			voteInfo.participantData &&
-			voteInfo.participantMethod === "manual"
-		) {
+		if (voteInfo.participantData) {
+			setVoteInfo({ ...voteInfo, participantData: null, numAccounts: 0 });
+		} else if (voteInfo.participantUploadType) {
 			setVoteInfo({
 				...voteInfo,
-				participantMethod: null,
-				participantData: null,
+				participantUploadType: null,
 			});
-		} else if (voteInfo.participantUploadType) {
-			setVoteInfo({ ...voteInfo, participantUploadType: null });
-		} else if (voteInfo.participantMethod) {
-			setVoteInfo({ ...voteInfo, participantMethod: null });
-		} else if (voteInfo.participantFormat) {
-			setVoteInfo({ ...voteInfo, participantFormat: null });
+		} else if (voteInfo.participantUploadMethod) {
+			setVoteInfo({
+				...voteInfo,
+				participantUploadMethod: null,
+			});
+		} else if (voteInfo.accountFundingType) {
+			setVoteInfo({
+				...voteInfo,
+				accountFundingType: null,
+			});
 		} else if (voteInfo.voteStarted) {
-			setVoteInfo({ ...voteInfo, voteStarted: false });
+			cancelVote(setVoteInfo);
 		}
 	};
 
@@ -58,68 +59,83 @@ const SelectParticipants = () => {
 				Who will be participating in your vote?
 			</Typography>
 
-			{voteInfo.participantFormat === null && (
+			{/* Select Account Type (newAccounts or preFundedAccounts) */}
+			{voteInfo.accountFundingType === null && (
 				<FillDiv>
 					<Typography sx={typographySX(4)}>
-						How will your participants be identified for this vote?
+						What accounts will be used in this vote
 					</Typography>
 					<ButtonGroup variant="contained" sx={buttonGroupSX(10)}>
 						<Button
 							onClick={() =>
 								setVoteInfo({
 									...voteInfo,
-									participantFormat: "email",
+									accountFundingType: "newAccounts",
 								})
 							}
 						>
-							Email
+							New Accounts
 						</Button>
 						<Button
 							onClick={() =>
 								setVoteInfo({
 									...voteInfo,
-									participantFormat: "phone",
+									accountFundingType: "preFundedAccounts",
 								})
 							}
 						>
-							Phone Number
+							Pre-funded Accounts
 						</Button>
-						{/* <Button
-							onClick={() =>
-								setVoteInfo({
-									...voteInfo,
-									participantFormat: "singleID",
-								})
-							}
-						>
-							ID Number
-						</Button>
-						<Button
-							onClick={() =>
-								setVoteInfo({
-									...voteInfo,
-									participantFormat: "keyValuePair",
-								})
-							}
-						>
-							Key-Value Pair
-						</Button> */}
 					</ButtonGroup>
 				</FillDiv>
 			)}
 
-			{voteInfo.participantFormat !== null &&
-				voteInfo.participantMethod === null && (
+			{/* If accountFundingType === newAccounts, enter how many accounts you want to generate */}
+			{voteInfo.accountFundingType === "newAccounts" &&
+				voteInfo.participantData === null && (
 					<FillDiv>
 						<Typography sx={typographySX(4)}>
-							Select a method to add participants
+							How many accounts will you be funding for this vote?
+						</Typography>
+						<TextField
+							sx={{
+								marginTop: "40px",
+								width: "175px",
+								fontSize: "40px",
+							}}
+							autoFocus={true}
+							value={voteInfo.numAccounts}
+							placeholder="Number of participants"
+							variant="standard"
+							onChange={(e) => {
+								const val = e.target.value;
+								if (
+									val % 1 === 0 &&
+									val[val.length - 1] !== "."
+								) {
+									setVoteInfo({
+										...voteInfo,
+										numAccounts: e.target.value,
+									});
+								}
+							}}
+						/>
+					</FillDiv>
+				)}
+
+			{/* If accountFundingType === preFundedAccounts AND upload method not chosen, choose upload method (file or manual) */}
+			{voteInfo.accountFundingType === "preFundedAccounts" &&
+				voteInfo.participantUploadMethod === null && (
+					<FillDiv>
+						<Typography sx={typographySX(4)}>
+							Select a method to upload existing Algorand Accounts
 						</Typography>
 						<ButtonGroup variant="contained" sx={buttonGroupSX(10)}>
 							<Button
 								onClick={() =>
 									setVoteInfo({
 										...voteInfo,
-										participantMethod: "upload",
+										participantUploadMethod: "file",
 									})
 								}
 							>
@@ -129,7 +145,7 @@ const SelectParticipants = () => {
 								onClick={() =>
 									setVoteInfo({
 										...voteInfo,
-										participantMethod: "manual",
+										participantUploadMethod: "manual",
 									})
 								}
 							>
@@ -138,7 +154,10 @@ const SelectParticipants = () => {
 						</ButtonGroup>
 					</FillDiv>
 				)}
-			{voteInfo.participantMethod === "upload" &&
+
+			{/* If accountFundingType === preFundedAccounts AND upload method === file, choose file type */}
+			{voteInfo.accountFundingType === "preFundedAccounts" &&
+				voteInfo.participantUploadMethod === "file" &&
 				voteInfo.participantUploadType === null && (
 					<FillDiv>
 						<Typography sx={typographySX(4)}>
@@ -169,42 +188,26 @@ const SelectParticipants = () => {
 						</ButtonGroup>
 					</FillDiv>
 				)}
+
+			{/* Excel Upload */}
 			{voteInfo.participantUploadType === "excel" &&
 				voteInfo.participantData === null && (
 					<FillDiv>
 						<Typography sx={typographySX(4)}>
-							Upload a file{" "}
+							Upload a file
 							<sup>
 								<HelperTooltip
 									title={
 										<div>
 											<center>
 												<Typography variant="caption">
-													Examples of valid formats
-													are shown below:
+													Example of valid format
+													shown below:
 												</Typography>
 											</center>
 											<div style={{ display: "flex" }}>
 												<img
-													src={
-														voteInfo.participantFormat ===
-														"email"
-															? emails1
-															: phoneNumbers1
-													}
-													alt="Err"
-													height="160px"
-													style={{
-														padding: "5px",
-													}}
-												/>
-												<img
-													src={
-														voteInfo.participantFormat ===
-														"email"
-															? emails2
-															: phoneNumbers2
-													}
+													src={preFundedAccountsXlsx}
 													alt="Err"
 													height="160px"
 													style={{
@@ -245,30 +248,27 @@ const SelectParticipants = () => {
 						</label>
 					</FillDiv>
 				)}
+
+			{/* csv/text Upload */}
 			{voteInfo.participantUploadType === "txt" &&
 				voteInfo.participantData === null && (
 					<FillDiv>
 						<Typography sx={typographySX(4)}>
-							Upload a file{" "}
+							Upload a file
 							<sup>
 								<HelperTooltip
 									title={
 										<div>
 											<center>
 												<Typography variant="caption">
-													An example of a valid format
-													is shown below:
+													Example of valid format
+													shown below:
 												</Typography>
 											</center>
 											<img
-												src={
-													voteInfo.participantFormat ===
-													"email"
-														? emails3
-														: phoneNumbers3
-												}
+												src={preFundedAccounts}
 												alt="Err"
-												height="100px"
+												height="80px"
 												style={{
 													padding: "5px",
 												}}
@@ -306,7 +306,9 @@ const SelectParticipants = () => {
 						</label>
 					</FillDiv>
 				)}
-			{(voteInfo.participantMethod === "manual" ||
+
+			{/* If accountFundingType === preFundedAccounts AND (upload method === manual OR upload method === file AND data already uploaded), enter participants manually */}
+			{(voteInfo.participantUploadMethod === "manual" ||
 				voteInfo.participantData !== null) && (
 				<ManualUploadDiv>
 					<ManualUploadSubDiv>
@@ -317,16 +319,51 @@ const SelectParticipants = () => {
 					</TableSubDiv>
 				</ManualUploadDiv>
 			)}
+
+			{/* TEMP : option to send notification to participants*/}
+			{/* {voteInfo.accountFundingType === "preFundedAccounts" &&
+				voteInfo.contactParticipantMethod === null && (
+					<FillDiv>
+						<Typography sx={typographySX(4)}>
+							How will users be notified of this vote?
+						</Typography>
+						<ButtonGroup variant="contained" sx={buttonGroupSX(10)}>
+							<Button
+								onClick={() =>
+									setVoteInfo({
+										...voteInfo,
+										contactParticipantMethod: "email",
+									})
+								}
+							>
+								Email
+							</Button>
+							<Button
+								onClick={() =>
+									setVoteInfo({
+										...voteInfo,
+										contactParticipantMethod: "phone",
+									})
+								}
+							>
+								Phone Number
+							</Button>
+						</ButtonGroup>
+					</FillDiv>
+				)} */}
+
+			{/* Reset / back button controls */}
 			<ButtonGroup variant="contained" sx={buttonGroupSX(75)}>
-				{voteInfo.participantFormat !== null && (
+				{voteInfo.accountFundingType !== null && (
 					<Button
 						onClick={() =>
 							setVoteInfo({
 								...voteInfo,
-								participantFormat: null,
-								participantMethod: null,
+								accountFundingType: null,
+								participantUploadMethod: null,
 								participantUploadType: null,
 								participantData: null,
+								numAccounts: 0,
 							})
 						}
 					>
@@ -334,8 +371,40 @@ const SelectParticipants = () => {
 					</Button>
 				)}
 				<Button onClick={goBack}>
-					{voteInfo.participantFormat == null ? "Cancel" : "Go Back"}
+					{voteInfo.accountFundingType === null ? "Cancel" : "Back"}
 				</Button>
+				{voteInfo.accountFundingType === "newAccounts" &&
+					voteInfo.numAccounts > 0 &&
+					voteInfo.participantData === null && (
+						<Button
+							onClick={() =>
+								generateAlgorandAccounts(voteInfo.numAccounts)
+									.then((accounts) => {
+										// save accounts somewhere
+										console.log(accounts);
+										const participantData = {};
+										for (
+											let i = 0;
+											i < accounts.length;
+											i++
+										) {
+											participantData[
+												accounts[i].accountAddr
+											] = 1;
+										}
+										setVoteInfo({
+											...voteInfo,
+											participantData,
+										});
+									})
+									.catch((err) => {
+										console.log(err);
+									})
+							}
+						>
+							Next
+						</Button>
+					)}
 			</ButtonGroup>
 		</div>
 	);

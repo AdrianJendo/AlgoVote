@@ -13,6 +13,7 @@ const ButtonDiv = styled("div")({
 	position: "absolute",
 	left: "50%",
 	top: "20%",
+	transform: "translate(-50%, 0)",
 });
 
 const StepperDiv = styled("div")({
@@ -103,8 +104,18 @@ const VoteWorkflow = () => {
 						onClick={() =>
 							setVoteInfo({ ...voteInfo, voteStarted: true })
 						}
+						sx={{ margin: "5px" }}
 					>
-						Create vote
+						Create Vote
+					</Button>
+					<Button
+						variant="contained"
+						onClick={() =>
+							setVoteInfo({ ...voteInfo, voteStarted: true })
+						}
+						sx={{ margin: "5px" }}
+					>
+						Participate in Vote
 					</Button>
 				</ButtonDiv>
 			)}

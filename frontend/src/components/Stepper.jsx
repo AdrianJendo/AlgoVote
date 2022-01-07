@@ -13,6 +13,7 @@ import { VoteInfoContext } from "context/VoteInfoContext";
 import { DateValueContext } from "context/DateValueContext";
 import { delay } from "utils/Constants";
 import isSameDate from "utils/IsSameDate";
+import cancelVote from "utils/CancelVote";
 import { styled } from "@mui/system";
 import Check from "@mui/icons-material/Check";
 
@@ -158,22 +159,7 @@ export default function VerticalLinearStepper() {
 		const activeStep = voteInfo.activeStep;
 		if (activeStep === 0) {
 			//cancelling
-			setVoteInfo({
-				...voteInfo,
-				voteStarted: false,
-				participantFormat: null,
-				participantMethod: null,
-				participantUploadType: null,
-				candidateFormat: null,
-				candidateMethod: null,
-				candidateUploadType: null,
-				participantData: null,
-				candidateData: null,
-				startDate: null,
-				endDate: null,
-				paymentReceived: false,
-				confirmed: false,
-			});
+			cancelVote(setVoteInfo);
 		} else {
 			setVoteInfo({ ...voteInfo, activeStep: activeStep - 1 });
 		}

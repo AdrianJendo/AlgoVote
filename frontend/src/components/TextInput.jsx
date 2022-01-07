@@ -57,8 +57,8 @@ export default function CustomizedInputBase({ index }) {
 		>
 			<InputBase
 				sx={{ ml: 1, flex: 1 }}
-				placeholder={`Add a ${
-					index === "participantData" ? "participant" : "candidate"
+				placeholder={`Add a${
+					index === "participantData" ? "n address" : " candidate"
 				}`}
 				inputProps={{ "aria-label": "add participant" }}
 				value={textValue}
