@@ -6,6 +6,7 @@ const cancelVote = (setVoteInfo) => {
 		participantUploadMethod: null,
 		participantUploadType: null,
 		participantData: null,
+		privatePublicKeyPairs: null,
 		numAccounts: 0,
 		candidateUploadMethod: null,
 		candidateUploadType: null,

@@ -13,6 +13,7 @@ export const VoteInfoProvider = (props) => {
 		participantUploadType: null, // csv/text or excel (for file)
 		participantData: null, // uploaded partipcant data
 		numAccounts: 0, // number of accounts
+		privatePublicKeyPairs: null, // if accountFundingType === newAccounts, then we keep track of public-private-keys which are needed for voting
 
 		candidateUploadMethod: null, // Upload file or manual
 		candidateUploadType: null, // csv/text or excel (for file)

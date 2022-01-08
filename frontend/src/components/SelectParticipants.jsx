@@ -32,7 +32,12 @@ const SelectParticipants = () => {
 
 	const goBack = () => {
 		if (voteInfo.participantData) {
-			setVoteInfo({ ...voteInfo, participantData: null, numAccounts: 0 });
+			setVoteInfo({
+				...voteInfo,
+				participantData: null,
+				numAccounts: 0,
+				privatePublicKeyPairs: null,
+			});
 		} else if (voteInfo.participantUploadType) {
 			setVoteInfo({
 				...voteInfo,
@@ -363,6 +368,7 @@ const SelectParticipants = () => {
 								participantUploadMethod: null,
 								participantUploadType: null,
 								participantData: null,
+								privatePublicKeyPairs: null,
 								numAccounts: 0,
 							})
 						}

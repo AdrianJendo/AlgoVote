@@ -76,15 +76,16 @@ export const excelUploadHandler = async (
 					let numVotes = 1;
 					const participant = content[j].toLowerCase();
 
-					if (
-						j < content.length - 1 &&
-						voteInfo.participantFormat === "email" && // check if it's an email
-						dataType === "participantData" &&
-						content[j + 1] !== "" &&
-						!content[j + 1].includes("@")
-					) {
-						numVotes = parseInt(content[++j]);
-					}
+					// handling participants with more than 1 vote (currently not supported)
+					// if (
+					// 	j < content.length - 1 &&
+					// 	voteInfo.participantFormat === "email" && // check if it's an email
+					// 	dataType === "participantData" &&
+					// 	content[j + 1] !== "" &&
+					// 	!content[j + 1].includes("@")
+					// ) {
+					// 	numVotes = parseInt(content[++j]);
+					// }
 
 					if (participants[participant]) {
 						participants[participant] += numVotes;
