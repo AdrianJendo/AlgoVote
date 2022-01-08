@@ -14,10 +14,13 @@ export default function CustomizedInputBase({ index }) {
 	const inputRef = React.useRef();
 
 	const addValue = () => {
-		const names = textValue.toLowerCase().split(" ").join("").split(",");
+		const names = textValue.split(" ").join("").split(","); // handles comma separated names
 		const participants = voteInfo[index] ? voteInfo[index] : {};
 		for (let i = 0; i < names.length; ++i) {
-			const name = names[i];
+			const name =
+				index === "participantData"
+					? names[i].toUpperCase() // participants are addresses so enforce upper case,
+					: names[i].toLowerCase(); // force candidates to be lower case for simplicity
 			if (shouldAddPerson(name, voteInfo, index)) {
 				if (participants[name] && index === "participantData") {
 					participants[name]++;

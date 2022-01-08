@@ -23,7 +23,11 @@ export const txtUploadHandler = (e, voteInfo, setVoteInfo, dataType) => {
 				.split(","); // Split element in list of values
 			for (let j = 0; j < content.length; j++) {
 				if (shouldAddPerson(content[j], voteInfo, dataType)) {
-					const participant = content[j].toLowerCase();
+					const participant =
+						dataType === "participantData"
+							? content[j].toUpperCase() // participants are addresses so enforce upper case,
+							: content[j].toLowerCase(); // force candidates to be lower case for simplicity
+
 					if (participants[participant]) {
 						participants[participant]++;
 					} else {
@@ -74,7 +78,10 @@ export const excelUploadHandler = async (
 			for (let j = 0; j < content.length; j++) {
 				if (shouldAddPerson(content[j], voteInfo, dataType)) {
 					let numVotes = 1;
-					const participant = content[j].toLowerCase();
+					const participant =
+						dataType === "participantData"
+							? content[j].toUpperCase() // participants are addresses so enforce upper case,
+							: content[j].toLowerCase(); // force candidates to be lower case for simplicity
 
 					// handling participants with more than 1 vote (currently not supported)
 					// if (

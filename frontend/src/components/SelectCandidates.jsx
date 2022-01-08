@@ -24,7 +24,16 @@ const SelectCandidates = () => {
 	const [voteInfo, setVoteInfo] = useContext(VoteInfoContext);
 
 	const goBack = () => {
-		if (voteInfo.candidateData) {
+		if (
+			voteInfo.candidateData &&
+			voteInfo.candidateUploadMethod === "manual"
+		) {
+			setVoteInfo({
+				...voteInfo,
+				candidateData: null,
+				candidateUploadMethod: null,
+			});
+		} else if (voteInfo.candidateData) {
 			setVoteInfo({ ...voteInfo, candidateData: null });
 		} else if (voteInfo.candidateUploadType) {
 			setVoteInfo({ ...voteInfo, candidateUploadType: null });
@@ -228,21 +237,22 @@ const SelectCandidates = () => {
 				</ManualUploadDiv>
 			)}
 			<ButtonGroup variant="contained" sx={buttonGroupSX(75)}>
-				{voteInfo.candidateUploadMethod !== null && (
-					<Button
-						onClick={() =>
-							setVoteInfo({
-								...voteInfo,
-								candidateUploadMethod: null,
-								candidateUploadType: null,
-								candidateData: null,
-							})
-						}
-					>
-						Reset
-					</Button>
-				)}
-				<Button onClick={goBack}>Go Back</Button>
+				{voteInfo.candidateUploadMethod !== null &&
+					voteInfo.candidateUploadMethod !== "manual" && (
+						<Button
+							onClick={() =>
+								setVoteInfo({
+									...voteInfo,
+									candidateUploadMethod: null,
+									candidateUploadType: null,
+									candidateData: null,
+								})
+							}
+						>
+							Reset
+						</Button>
+					)}
+				<Button onClick={goBack}>Back</Button>
 			</ButtonGroup>
 		</div>
 	);
