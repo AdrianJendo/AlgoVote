@@ -120,7 +120,7 @@ const SelectParticipants = () => {
 								) {
 									setVoteInfo({
 										...voteInfo,
-										numAccounts: e.target.value,
+										numAccounts: parseInt(e.target.value),
 									});
 								}
 							}}
@@ -386,21 +386,26 @@ const SelectParticipants = () => {
 							onClick={() =>
 								generateAlgorandAccounts(voteInfo.numAccounts)
 									.then((accounts) => {
-										// save accounts somewhere
-										console.log(accounts);
+										// save accounts
 										const participantData = {};
+										const privatePublicKeyPairs = {};
 										for (
 											let i = 0;
 											i < accounts.length;
 											i++
 										) {
+											privatePublicKeyPairs[
+												accounts[i].accountAddr
+											] = accounts[i].accountMnemonic;
 											participantData[
 												accounts[i].accountAddr
 											] = 1;
 										}
+
 										setVoteInfo({
 											...voteInfo,
 											participantData,
+											privatePublicKeyPairs,
 										});
 									})
 									.catch((err) => {
