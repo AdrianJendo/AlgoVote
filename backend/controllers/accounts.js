@@ -2,6 +2,7 @@ import algosdk from "algosdk";
 import { algodClient } from "../server.js";
 import { getAlgoBalance } from "../helpers/accounts.js";
 import { waitForConfirmation } from "../helpers/misc.js";
+import CryptoJS from "crypto-js";
 
 export const createAlgoAccount = (req, res) => {
 	try {
@@ -105,7 +106,18 @@ export const checkAlgoBalance = async (req, res) => {
 };
 
 export const getPublicKey = async (req, res) => {
-	const account = algosdk.mnemonicToSecretKey(req.query.mnemonic);
+	try {
+		const decryptedMnemonic = CryptoJS.AES.decrypt(
+			decodeURIComponent(req.query.mnemonic),
+			process.env.ENCRYPTION_KEY
+		).toString(CryptoJS.enc.Utf8);
 
-	return res.send({ addr: account.addr });
+		console.log(decryptedMnemonic);
+
+		const account = algosdk.mnemonicToSecretKey(decryptedMnemonic);
+
+		return res.send({ addr: account.addr });
+	} catch (error) {
+		return res.send(error.message);
+	}
 };

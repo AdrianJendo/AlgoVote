@@ -1,8 +1,13 @@
 import express from "express";
-import { getRoute, votingWorkflow } from "../controllers/test.js";
+import {
+	getRoute,
+	votingWorkflow,
+	encryptMnemonic,
+} from "../controllers/test.js";
 const router = express.Router();
 
 router.get("/", getRoute);
+router.get("/encryptMnemonic", encryptMnemonic);
 
 router.post("/votingWorkflow", votingWorkflow);
 
