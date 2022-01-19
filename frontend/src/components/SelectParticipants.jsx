@@ -120,7 +120,8 @@ const SelectParticipants = () => {
 								) {
 									setVoteInfo({
 										...voteInfo,
-										numAccounts: parseInt(e.target.value),
+										numAccounts:
+											val === "" ? 0 : parseInt(val),
 									});
 								}
 							}}
