@@ -109,7 +109,7 @@ export const getPublicKey = async (req, res) => {
 	try {
 		const decryptedMnemonic = CryptoJS.AES.decrypt(
 			decodeURIComponent(req.query.mnemonic),
-			process.env.ENCRYPTION_KEY
+			process.env.REACT_APP_ENCRYPTION_KEY
 		).toString(CryptoJS.enc.Utf8);
 
 		console.log(decryptedMnemonic);

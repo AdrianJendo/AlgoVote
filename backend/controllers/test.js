@@ -18,7 +18,7 @@ export const getRoute = (req, res) => {
 export const encryptMnemonic = (req, res) => {
 	const encryptedMnemonic = CryptoJS.AES.encrypt(
 		req.query.mnemonic,
-		process.env.ENCRYPTION_KEY
+		process.env.REACT_APP_ENCRYPTION_KEY
 	).toString();
 
 	res.send({ encryptedMnemonic: encodeURIComponent(encryptedMnemonic) });

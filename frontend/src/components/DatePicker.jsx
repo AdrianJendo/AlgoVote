@@ -38,7 +38,7 @@ export default function ResponsiveDatePickers({
 
 	// Idk this some fucking nuts shit setting the right time was such a pain in the ass
 	React.useEffect(() => {
-		console.log(label, selectedDate, earliestDate);
+		// console.log(label, selectedDate, earliestDate);
 		setDateValue({
 			error: false,
 			value: selectedDate ? selectedDate : earliestDate,

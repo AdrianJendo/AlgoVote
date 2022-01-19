@@ -4,19 +4,53 @@ import { Button, Typography, TextField } from "@mui/material";
 // import {  } from "utils/AlgoFunctions";
 // import HelpIcon from "@mui/icons-material/Help";
 // import HelperTooltip from "components/HelperTooltip";
+import axios from "axios";
+import CryptoJS from "crypto-js";
 
 const Payment = () => {
 	const [secretKey, setSecretKey] = useState("");
 
-	const isMnemonicValid = (str) => {
-		console.log(str, str.split(" "), str.split(" ").length);
-		return str.split(" ").length !== 25; // check that number of words in mnemonic is 25
+	const isMnemonicInvalid = (str) => {
+		const mnemonicArr = str.split(" ");
+		return mnemonicArr.length !== 25 || mnemonicArr[24] === ""; // check that number of words in mnemonic is 25
 	};
 
 	const submitSecretKey = async () => {
 		// validate that secret key exists
+		const encryptedMnemonic = encodeURIComponent(
+			CryptoJS.AES.encrypt(
+				secretKey,
+				process.env.REACT_APP_ENCRYPTION_KEY
+			).toString()
+		);
 
-		return true;
+		const resp = await axios.get("/api/algoAccount/getPublicKey", {
+			params: { mnemonic: encryptedMnemonic },
+		});
+
+		if (resp.data.addr) {
+			// success
+
+			// If newAccounts, check that the creator has enough funds to cover all the voting accounts (use participantData.length)
+
+			// Else, check that they have enough funds to distribute the tokens and create the smart contract (& vote token)
+
+			// Create vote token (use participantData and numVotes to get supply - different participants might have different numVotes)
+
+			// Create smart contract
+
+			// ^^ Consider some sort of progress bar up to this point
+
+			// If using newAccounts, give the creator the option to disperse funds & opt in to smart contract & opt in to vote tokens (need to disperse funds). Else, do nothing...
+			// Done. Can't send out vote tokens or do anything else -> Now participants must opt in to smart contract & vote tokens
+
+			// If using newAccounts, export the secret keys and public keys to excel or something
+
+			return resp.data;
+		} else {
+			//failure
+			return { error: resp.data };
+		}
 	};
 
 	return (
@@ -57,7 +91,7 @@ const Payment = () => {
 				variant="contained"
 				onClick={submitSecretKey}
 				sx={{ mt: 1, mr: 1 }}
-				disabled={isMnemonicValid(secretKey)}
+				disabled={isMnemonicInvalid(secretKey)}
 			>
 				Submit
 			</Button>
