@@ -1,9 +1,7 @@
 import React, { useState, useContext } from "react";
 import { Button, Typography, TextField } from "@mui/material";
 import { VoteInfoContext } from "context/VoteInfoContext";
-// import {  } from "utils/AlgoFunctions";
-// import HelpIcon from "@mui/icons-material/Help";
-// import HelperTooltip from "components/HelperTooltip";
+import ProgressBar from "components/ProgressBar";
 import axios from "axios";
 import encodeURIMnemonic from "utils/EncodeMnemonic";
 import * as XLSX from "xlsx";
@@ -11,9 +9,10 @@ import * as XLSX from "xlsx";
 const MIN_VOTER_BALANCE = 100000 + 100000 + 100000 + 50000 + 10000; // micro algos -> 0.1 algo (min account balance) + 0.1 (to opt in and receive ASA) + 0.1 (to opt in to smart contract) + 0.05 (for 1 local byte slice)
 
 const Payment = () => {
-	const [voteInfo, setVoteInfo] = useContext(VoteInfoContext);
-	const [voteName, setVoteName] = useState("");
+	const voteInfo = useContext(VoteInfoContext)[0];
+	const voteName = useState("")[0];
 	const [secretKey, setSecretKey] = useState("");
+	const [progressBar, setProgressBar] = useState(null);
 
 	const isMnemonicInvalid = (str) => {
 		const mnemonicArr = str.split(" ");
@@ -59,6 +58,7 @@ const Payment = () => {
 				// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 				// Create vote token
+				setProgressBar(0);
 				// Get Supply
 				let numVoteTokens = 0;
 				Object.values(voteInfo.participantData).map((numVotes) => {
@@ -71,10 +71,10 @@ const Payment = () => {
 					numIssued: numVoteTokens,
 					assetName: voteName === "" ? `Algo Vote Token` : voteName,
 				});
-
 				const assetId = tokenResp.data.assetId;
 
 				// Create smart contract
+				setProgressBar(20);
 				const smartContractResp = await axios.post(
 					"/api/smartContract/createVoteSmartContract",
 					{
@@ -84,7 +84,6 @@ const Payment = () => {
 							.length,
 					}
 				);
-
 				const appId = smartContractResp.data.appId;
 
 				if (voteInfo.accountFundingType === "newAccounts") {
@@ -95,7 +94,9 @@ const Payment = () => {
 						voteInfo.participantData
 					);
 					const participantAccounts = voteInfo.privatePublicKeyPairs;
+					const candidates = Object.keys(voteInfo.candidateData);
 					// fund new account with minimum balance
+					setProgressBar(40);
 					for (const accountAddr of participantAddresses) {
 						fundAccountPromises.push(
 							axios.post("/api/algoAccount/sendAlgo", {
@@ -109,6 +110,7 @@ const Payment = () => {
 					await Promise.all(fundAccountPromises);
 
 					// opt in to receive vote token
+					setProgressBar(60);
 					for (const accountAddr of participantAddresses) {
 						const accountMnemonic =
 							participantAccounts[accountAddr];
@@ -123,6 +125,7 @@ const Payment = () => {
 					await Promise.all(optInTokenPromises);
 
 					// opt in to voting contract
+					setProgressBar(80);
 					for (const accountAddr of participantAddresses) {
 						const accountMnemonic =
 							participantAccounts[accountAddr];
@@ -138,6 +141,9 @@ const Payment = () => {
 						);
 					}
 					await Promise.all(optInContractPromises);
+
+					// export to excel
+					setProgressBar(99);
 					const wb = XLSX.utils.book_new();
 					const ws_name = "Vote Data";
 
@@ -151,8 +157,6 @@ const Payment = () => {
 							"Vote End",
 						],
 					];
-
-					const candidates = Object.keys(voteInfo.candidateData);
 
 					for (
 						let i = 0;
@@ -182,13 +186,14 @@ const Payment = () => {
 						ws_data.push(row);
 					}
 					var ws = XLSX.utils.aoa_to_sheet(ws_data);
-
 					/* Add the worksheet to the workbook */
 					XLSX.utils.book_append_sheet(wb, ws, ws_name);
-
-					// export to excel
 					XLSX.writeFile(wb, "VoteData.xlsx");
 				}
+
+				setTimeout(() => {
+					setProgressBar(100);
+				}, 2500);
 
 				return resp.data;
 			} else {
@@ -239,15 +244,27 @@ const Payment = () => {
 				variant="contained"
 				onClick={submitSecretKey}
 				sx={{ mt: 1, mr: 1 }}
-				disabled={isMnemonicInvalid(secretKey)}
+				disabled={isMnemonicInvalid(secretKey) || progressBar !== null}
 			>
 				Submit
 			</Button>
-			{/* {excelData !== null && (
-				<CSVLink data={excelData.data} headers={excelData.headers}>
-					Download me
-				</CSVLink>
-			)} */}
+			{progressBar !== null && (
+				<div style={{ padding: "50px" }}>
+					{progressBar < 100 ? (
+						<ProgressBar value={progressBar} />
+					) : (
+						<div>
+							<Typography
+								sx={{ marginBottom: "20px" }}
+								variant="h5"
+							>
+								Vote successfully created. Return to home
+							</Typography>
+							<Button variant="contained">Return to Home</Button>
+						</div>
+					)}
+				</div>
+			)}
 		</div>
 	);
 };
