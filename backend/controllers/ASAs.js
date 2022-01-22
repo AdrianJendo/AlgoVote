@@ -2,62 +2,68 @@ import algosdk from "algosdk";
 import { algodClient } from "../server.js";
 import { printAssetHolding, printCreatedAsset } from "../helpers/ASAs.js";
 import { waitForConfirmation } from "../helpers/misc.js";
+import decodeURIMnemonic from "../helpers/decodeMnemonic.js";
 
 export const createVoteAsset = async (req, res) => {
-	const creatorAccount = algosdk.mnemonicToSecretKey(
-		req.body.creatorMnemonic
-	);
-	const numIssued = req.body.numIssued;
-	const assetName = req.body.assetName;
-	const defaultFrozen = false;
-	const unitName = "VOTE";
-	const managerAddr = undefined;
-	const reserveAddr = undefined;
-	const freezeAddr = creatorAccount.addr;
-	const clawbackAddr = creatorAccount.addr;
-	const totalIssuance = numIssued; // Fungible tokens have totalIssuance greater than 1
-	const decimals = 0; // Fungible tokens typically have decimals greater than 0
-	let params = await algodClient.getTransactionParams().do();
-	//comment out the next two lines to use suggested fee
-	params.fee = 1000;
-	params.flatFee = true;
-	const note = undefined;
-	const assetURL = undefined;
-	let assetMetadataHash = "16efaa3924a6fd9d3a4824799a4ac65d";
+	try {
+		const creatorAccount = algosdk.mnemonicToSecretKey(
+			decodeURIMnemonic(req.body.creatorMnemonic)
+		);
+		const numIssued = req.body.numIssued;
+		const assetName = req.body.assetName;
+		const defaultFrozen = false;
+		const unitName = "VOTE";
+		const managerAddr = undefined;
+		const reserveAddr = undefined;
+		const freezeAddr = creatorAccount.addr;
+		const clawbackAddr = creatorAccount.addr;
+		const totalIssuance = numIssued; // Fungible tokens have totalIssuance greater than 1
+		const decimals = 0; // Fungible tokens typically have decimals greater than 0
+		let params = await algodClient.getTransactionParams().do();
+		//comment out the next two lines to use suggested fee
+		params.fee = 1000;
+		params.flatFee = true;
+		const note = undefined;
+		const assetURL = undefined;
+		let assetMetadataHash = "16efaa3924a6fd9d3a4824799a4ac65d";
 
-	// signing and sending "txn" allows "addr" to create an asset
-	let txn = algosdk.makeAssetCreateTxnWithSuggestedParams(
-		creatorAccount.addr,
-		note,
-		totalIssuance,
-		decimals,
-		defaultFrozen,
-		managerAddr,
-		reserveAddr,
-		freezeAddr,
-		clawbackAddr,
-		unitName,
-		assetName,
-		assetURL,
-		assetMetadataHash,
-		params
-	);
+		// signing and sending "txn" allows "addr" to create an asset
+		let txn = algosdk.makeAssetCreateTxnWithSuggestedParams(
+			creatorAccount.addr,
+			note,
+			totalIssuance,
+			decimals,
+			defaultFrozen,
+			managerAddr,
+			reserveAddr,
+			freezeAddr,
+			clawbackAddr,
+			unitName,
+			assetName,
+			assetURL,
+			assetMetadataHash,
+			params
+		);
 
-	let rawSignedTxn = txn.signTxn(creatorAccount.sk);
-	let tx = await algodClient.sendRawTransaction(rawSignedTxn).do();
-	console.log("Transaction : " + tx.txId);
-	// wait for transaction to be confirmed
-	await waitForConfirmation(algodClient, tx.txId);
-	// Get the new asset's information from the creator account
-	let ptx = await algodClient.pendingTransactionInformation(tx.txId).do();
-	const assetId = ptx["asset-index"];
+		let rawSignedTxn = txn.signTxn(creatorAccount.sk);
+		let tx = await algodClient.sendRawTransaction(rawSignedTxn).do();
+		console.log("Transaction : " + tx.txId);
+		// wait for transaction to be confirmed
+		await waitForConfirmation(algodClient, tx.txId);
+		// Get the new asset's information from the creator account
+		let ptx = await algodClient.pendingTransactionInformation(tx.txId).do();
+		const assetId = ptx["asset-index"];
 
-	const assetData = JSON.parse(
-		await printCreatedAsset(algodClient, creatorAccount.addr, assetId)
-	);
-	assetData.assetId = assetId;
+		const assetData = JSON.parse(
+			await printCreatedAsset(algodClient, creatorAccount.addr, assetId)
+		);
+		assetData.assetId = assetId;
 
-	return res.send(assetData);
+		return res.send(assetData);
+	} catch (err) {
+		console.log(err);
+		return res.status(500).send(err.message);
+	}
 };
 
 export const checkAssetBalance = async (req, res) => {
@@ -83,7 +89,9 @@ export const optInToAsset = async (req, res) => {
 	params.fee = 1000;
 	params.flatFee = true;
 
-	const senderAccount = algosdk.mnemonicToSecretKey(req.body.senderMnemonic);
+	const senderAccount = algosdk.mnemonicToSecretKey(
+		decodeURIMnemonic(req.body.senderMnemonic)
+	);
 	const assetId = req.body.assetId;
 	let sender = senderAccount.addr;
 	let recipient = sender;
