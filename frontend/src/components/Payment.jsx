@@ -6,7 +6,7 @@ import { VoteInfoContext } from "context/VoteInfoContext";
 // import HelperTooltip from "components/HelperTooltip";
 import axios from "axios";
 import encodeURIMnemonic from "utils/EncodeMnemonic";
-// import { CSVLink } from "react-csv";
+import * as XLSX from "xlsx";
 
 const MIN_VOTER_BALANCE = 100000 + 100000 + 100000 + 50000 + 10000; // micro algos -> 0.1 algo (min account balance) + 0.1 (to opt in and receive ASA) + 0.1 (to opt in to smart contract) + 0.05 (for 1 local byte slice)
 
@@ -14,7 +14,6 @@ const Payment = () => {
 	const [voteInfo, setVoteInfo] = useContext(VoteInfoContext);
 	const [voteName, setVoteName] = useState("");
 	const [secretKey, setSecretKey] = useState("");
-	const [excelData, setExcelData] = useState(null);
 
 	const isMnemonicInvalid = (str) => {
 		const mnemonicArr = str.split(" ");
@@ -32,10 +31,10 @@ const Payment = () => {
 
 			if (resp.data.addr) {
 				// success
-				const creatorAddr = resp.data.addr;
 
 				// MIN BALANCE CALCULATION
 				// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+				// const creatorAddr = resp.data.addr;
 				// creator needs approx. 0.1 algo balance + 0.1 algo for ASA numAccounts * participantMinBalance +
 				// 0.001 * numAccounts (send token txn fee) + 0.001 * 2 (create smart contract and ASA fee) +
 				// 4 * int + 1 * global vars
@@ -87,11 +86,6 @@ const Payment = () => {
 				);
 
 				const appId = smartContractResp.data.appId;
-				const startVotingBlock =
-					smartContractResp.data.startVotingBlock;
-				const endVotingBlock = smartContractResp.data.endVotingBlock;
-
-				console.log(voteInfo);
 
 				if (voteInfo.accountFundingType === "newAccounts") {
 					const fundAccountPromises = [];
@@ -144,37 +138,57 @@ const Payment = () => {
 						);
 					}
 					await Promise.all(optInContractPromises);
+					const wb = XLSX.utils.book_new();
+					const ws_name = "Vote Data";
+
+					/* make worksheet */
+					const ws_data = [
+						[
+							"Address",
+							"Secret Key",
+							"Candidates",
+							"Vote Start",
+							"Vote End",
+						],
+					];
+
+					const candidates = Object.keys(voteInfo.candidateData);
+
+					for (
+						let i = 0;
+						i <
+						Math.max(
+							participantAddresses.length,
+							candidates.length
+						);
+						++i
+					) {
+						const row = ["", "", "", "", ""];
+
+						if (i < participantAddresses.length) {
+							row[0] = participantAddresses[i];
+							row[1] =
+								participantAccounts[participantAddresses[i]];
+						}
+
+						if (i < candidates.length) {
+							row[2] = candidates[i];
+						}
+
+						if (i === 0) {
+							row[3] = voteInfo.startTime.toString();
+							row[4] = voteInfo.endTime.toString();
+						}
+						ws_data.push(row);
+					}
+					var ws = XLSX.utils.aoa_to_sheet(ws_data);
+
+					/* Add the worksheet to the workbook */
+					XLSX.utils.book_append_sheet(wb, ws, ws_name);
 
 					// export to excel
-					const excelHeaders = [
-						{ label: "Address", key: "addr" },
-						{ label: "Secret Key", key: "sk" },
-						{ label: "Vote Start", key: "voteStart" },
-						{ label: "Vote End", key: "voteEnd" },
-						{ label: "Candidates", key: "candidates" },
-					];
-					const excelData = [];
-					for (const accountAddr of participantAddresses) {
-						const accountMnemonic =
-							participantAccounts[accountAddr];
-						excelData.push({
-							addr: accountAddr,
-							sk: accountMnemonic,
-						});
-					}
-					excelData.push({
-						voteStart: voteInfo.startTime,
-						voteEnd: voteInfo.endTime,
-					});
-					for (const candidate of Object.keys(
-						voteInfo.candidateData
-					)) {
-						excelData.push(candidate);
-					}
-					setExcelData({ data: excelData, headers: excelHeaders });
-					console.log("GREAT SUCCESS");
+					XLSX.writeFile(wb, "VoteData.xlsx");
 				}
-				// If using newAccounts, export the secret keys and public keys to excel or something
 
 				return resp.data;
 			} else {
