@@ -23,6 +23,8 @@ export const VoteInfoProvider = (props) => {
 		startTime: null, // start time of vote
 		endDate: null, // end date of vote
 		endTime: null, // start time of vote
+
+		voteCreated: false, // set to true when payment is successful
 	});
 	return (
 		<VoteInfoContext.Provider value={[voteInfo, setVoteInfo]}>

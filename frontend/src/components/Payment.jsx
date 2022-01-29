@@ -4,12 +4,13 @@ import { VoteInfoContext } from "context/VoteInfoContext";
 import ProgressBar from "components/ProgressBar";
 import axios from "axios";
 import encodeURIMnemonic from "utils/EncodeMnemonic";
+import cancelVote from "utils/CancelVote";
 import * as XLSX from "xlsx";
 
 const MIN_VOTER_BALANCE = 100000 + 100000 + 100000 + 50000 + 10000; // micro algos -> 0.1 algo (min account balance) + 0.1 (to opt in and receive ASA) + 0.1 (to opt in to smart contract) + 0.05 (for 1 local byte slice)
 
 const Payment = () => {
-	const voteInfo = useContext(VoteInfoContext)[0];
+	const [voteInfo, setVoteInfo] = useContext(VoteInfoContext);
 	const voteName = useState("")[0];
 	const [secretKey, setSecretKey] = useState("");
 	const [progressBar, setProgressBar] = useState(null);
@@ -86,6 +87,7 @@ const Payment = () => {
 				);
 				const appId = smartContractResp.data.appId;
 
+				const wb = XLSX.utils.book_new(); // for data export
 				if (voteInfo.accountFundingType === "newAccounts") {
 					const fundAccountPromises = [];
 					const optInTokenPromises = [];
@@ -144,7 +146,6 @@ const Payment = () => {
 
 					// export to excel
 					setProgressBar(99);
-					const wb = XLSX.utils.book_new();
 					const ws_name = "Vote Data";
 
 					/* make worksheet */
@@ -155,6 +156,8 @@ const Payment = () => {
 							"Candidates",
 							"Vote Start",
 							"Vote End",
+							"Token ID",
+							"Contract ID",
 						],
 					];
 
@@ -182,18 +185,21 @@ const Payment = () => {
 						if (i === 0) {
 							row[3] = voteInfo.startTime.toString();
 							row[4] = voteInfo.endTime.toString();
+							row[5] = assetId;
+							row[6] = appId;
 						}
 						ws_data.push(row);
 					}
 					var ws = XLSX.utils.aoa_to_sheet(ws_data);
 					/* Add the worksheet to the workbook */
 					XLSX.utils.book_append_sheet(wb, ws, ws_name);
-					XLSX.writeFile(wb, "VoteData.xlsx");
 				}
 
 				setTimeout(() => {
+					XLSX.writeFile(wb, "VoteData.xlsx");
 					setProgressBar(100);
-				}, 2500);
+					setVoteInfo({ ...voteInfo, voteCreated: true });
+				}, 2000);
 
 				return resp.data;
 			} else {
@@ -260,7 +266,12 @@ const Payment = () => {
 							>
 								Vote successfully created. Return to home
 							</Typography>
-							<Button variant="contained">Return to Home</Button>
+							<Button
+								variant="contained"
+								onClick={() => cancelVote(setVoteInfo)}
+							>
+								Return to Home
+							</Button>
 						</div>
 					)}
 				</div>

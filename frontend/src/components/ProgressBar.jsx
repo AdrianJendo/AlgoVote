@@ -5,7 +5,6 @@ import Box from "@mui/material/Box";
 
 const CircularProgressBar = (props) => {
 	const getText = (val) => {
-		console.log(val, val < 100);
 		switch (val) {
 			case 0:
 				return "Creating vote token";

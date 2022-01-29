@@ -97,7 +97,8 @@ export default function VerticalLinearStepper() {
 			(voteInfo.activeStep === 1 && voteInfo.candidateData) ||
 			(voteInfo.activeStep === 2 && !dateValue.error) ||
 			(voteInfo.activeStep === 3 && !dateValue.error) ||
-			voteInfo.activeStep === 4
+			voteInfo.activeStep === 4 ||
+			(voteInfo.activeStep === 5 && voteInfo.voteCreated)
 		) {
 			setReadyToContinue(true);
 		} else {
@@ -149,6 +150,8 @@ export default function VerticalLinearStepper() {
 					endTime: new Date(dateValue.timeValue.setSeconds(0)),
 				});
 			}
+		} else if (voteInfo.activeStep === 5) {
+			cancelVote(setVoteInfo);
 		} else {
 			setVoteInfo({
 				...voteInfo,
