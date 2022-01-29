@@ -5,7 +5,7 @@ import MuiAccordion from "@mui/material/Accordion";
 import MuiAccordionSummary from "@mui/material/AccordionSummary";
 import MuiAccordionDetails from "@mui/material/AccordionDetails";
 import { styled } from "@mui/system";
-import ReviewInfoTable from "components/Base/RenderTable";
+import ReviewInfoTable from "components/base/RenderTable";
 import TimesTable from "components/createWorkflow/TimesTable";
 
 const Accordion = styled((props) => (

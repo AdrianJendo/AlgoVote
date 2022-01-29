@@ -1,7 +1,7 @@
 import * as React from "react";
 import { ParticipateContext } from "context/ParticipateContext";
 import { cancelParticipate } from "utils/CancelVote";
-import Stepper from "components/Base/Stepper";
+import Stepper from "components/base/Stepper";
 
 const steps = [
 	{

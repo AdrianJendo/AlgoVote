@@ -1,5 +1,5 @@
-import Base from "components/Base/Base";
-import AppBar from "components/Base/AppBar";
+import Base from "components/base/Base";
+import AppBar from "components/base/AppBar";
 import { lightTheme, darkTheme } from "theme/Themes";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { useState } from "react";

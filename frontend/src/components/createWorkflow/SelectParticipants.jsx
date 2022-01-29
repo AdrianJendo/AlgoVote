@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { Button, Typography, ButtonGroup, TextField } from "@mui/material";
 import { VoteInfoContext } from "context/VoteInfoContext";
-import StickyHeadTable from "components/Base/RenderTable";
+import StickyHeadTable from "components/base/RenderTable";
 import { txtUploadHandler, excelUploadHandler } from "utils/FileUpload";
 import { cancelVote } from "utils/CancelVote";
 import { generateAlgorandAccounts } from "utils/AlgoFunctions";

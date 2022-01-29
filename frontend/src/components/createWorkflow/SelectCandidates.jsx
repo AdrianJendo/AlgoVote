@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { Button, Typography, ButtonGroup } from "@mui/material";
 import { VoteInfoContext } from "context/VoteInfoContext";
-import StickyHeadTable from "components/Base/RenderTable";
+import StickyHeadTable from "components/base/RenderTable";
 import { txtUploadHandler, excelUploadHandler } from "utils/FileUpload";
 
 import {
