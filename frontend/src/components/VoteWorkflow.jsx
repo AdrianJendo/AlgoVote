@@ -11,6 +11,13 @@ import DatePicker from "components/DatePicker";
 import ReviewDetails from "components/ReviewDetails";
 import Payment from "components/Payment";
 
+// Paricipate workflow
+import ReviewAndPay from "components/participateWorkflow/ReviewAndPay";
+import SelectVote from "components/participateWorkflow/SelectVote";
+import SelectCandidate from "components/participateWorkflow/SelectCandidate";
+import EnterPublicKey from "components/participateWorkflow/EnterPublicKey";
+import RegisterOrVote from "components/participateWorkflow/RegisterOrVote";
+
 const ButtonDiv = styled("div")({
 	position: "absolute",
 	left: "50%",
@@ -120,44 +127,11 @@ const VoteWorkflow = () => {
 								textAlign: "center",
 							}}
 						>
-							{voteInfo.activeStep === 0 && (
-								<SelectParticipants />
-							)}
-							{voteInfo.activeStep === 1 && <SelectCandidates />}
-							{/* {voteInfo.activeStep === 2 && (
-								<DatePicker
-									earliestDate={earliestStartDate}
-									selectedDate={voteInfo.startDate}
-									selectedTime={voteInfo.startTime}
-									endDate={
-										new Date(
-											new Date().getFullYear() + 7,
-											new Date().getMonth(),
-											new Date().getDate()
-										)
-									}
-									label="Start"
-								/>
-							)}
-							{voteInfo.activeStep === 3 && (
-								<DatePicker
-									earliestDate={voteInfo.startDate}
-									earliestTime={voteInfo.startTime}
-									selectedDate={voteInfo.endDate}
-									selectedTime={voteInfo.endTime}
-									endDate={
-										new Date(
-											voteInfo.startDate.getFullYear() +
-												7,
-											voteInfo.startDate.getMonth(),
-											voteInfo.startDate.getDate()
-										)
-									}
-									label="End"
-								/>
-							)}
-							{voteInfo.activeStep === 4 && <ReviewDetails />}
-							{voteInfo.activeStep === 5 && <Payment />} */}
+							{voteInfo.activeStep === 0 && <RegisterOrVote />}
+							{voteInfo.activeStep === 1 && <EnterPublicKey />}
+							{voteInfo.activeStep === 2 && <SelectVote />}
+							{voteInfo.activeStep === 3 && <SelectCandidate />}
+							{voteInfo.activeStep === 4 && <ReviewAndPay />}
 						</Paper>
 					</PaperDiv>
 				</div>
