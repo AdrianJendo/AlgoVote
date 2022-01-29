@@ -1,9 +1,10 @@
-import Base from "components/Base.jsx";
-import AppBar from "components/AppBar";
+import Base from "components/base/Base";
+import AppBar from "components/base/AppBar";
 import { lightTheme, darkTheme } from "theme/Themes";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { useState } from "react";
 import { VoteInfoProvider } from "context/VoteInfoContext";
+import { ParticipateProvider } from "context/ParticipateContext";
 import { DateValueProvider } from "context/DateValueContext";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
@@ -17,10 +18,12 @@ function App() {
 		>
 			<LocalizationProvider dateAdapter={AdapterDateFns}>
 				<VoteInfoProvider>
-					<DateValueProvider>
-						<AppBar dark={dark} setDark={setDark} />
-						<Base />
-					</DateValueProvider>
+					<ParticipateProvider>
+						<DateValueProvider>
+							<AppBar dark={dark} setDark={setDark} />
+							<Base />
+						</DateValueProvider>
+					</ParticipateProvider>
 				</VoteInfoProvider>
 			</LocalizationProvider>
 		</ThemeProvider>

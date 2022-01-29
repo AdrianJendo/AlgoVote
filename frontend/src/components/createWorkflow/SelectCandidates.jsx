@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { Button, Typography, ButtonGroup } from "@mui/material";
 import { VoteInfoContext } from "context/VoteInfoContext";
-import StickyHeadTable from "components/RenderTable";
+import StickyHeadTable from "components/base/RenderTable";
 import { txtUploadHandler, excelUploadHandler } from "utils/FileUpload";
 
 import {
@@ -13,9 +13,9 @@ import {
 	ManualUploadDiv,
 	ManualUploadSubDiv,
 } from "utils/ParticipantsStyle";
-import CustomizedInputBase from "components/TextInput";
+import CustomizedInputBase from "components/createWorkflow/TextInput";
 import HelpIcon from "@mui/icons-material/Help";
-import HelperTooltip from "components/HelperTooltip";
+import HelperTooltip from "components/createWorkflow/HelperTooltip";
 
 const candidates1 = require("images/candidates1.png");
 const candidates2 = require("images/candidates2.png");
@@ -24,12 +24,21 @@ const SelectCandidates = () => {
 	const [voteInfo, setVoteInfo] = useContext(VoteInfoContext);
 
 	const goBack = () => {
-		if (voteInfo.candidateData) {
+		if (
+			voteInfo.candidateData &&
+			voteInfo.candidateUploadMethod === "manual"
+		) {
+			setVoteInfo({
+				...voteInfo,
+				candidateData: null,
+				candidateUploadMethod: null,
+			});
+		} else if (voteInfo.candidateData) {
 			setVoteInfo({ ...voteInfo, candidateData: null });
 		} else if (voteInfo.candidateUploadType) {
 			setVoteInfo({ ...voteInfo, candidateUploadType: null });
-		} else if (voteInfo.candidateMethod) {
-			setVoteInfo({ ...voteInfo, candidateMethod: null });
+		} else if (voteInfo.candidateUploadMethod) {
+			setVoteInfo({ ...voteInfo, candidateUploadMethod: null });
 		} else {
 			setVoteInfo({ ...voteInfo, activeStep: voteInfo.activeStep - 1 });
 		}
@@ -41,7 +50,7 @@ const SelectCandidates = () => {
 				What will be the choices for your vote?
 			</Typography>
 
-			{voteInfo.candidateMethod === null && (
+			{voteInfo.candidateUploadMethod === null && (
 				<FillDiv>
 					<Typography sx={typographySX(4)}>
 						Select a method to add candidates
@@ -51,7 +60,7 @@ const SelectCandidates = () => {
 							onClick={() =>
 								setVoteInfo({
 									...voteInfo,
-									candidateMethod: "file",
+									candidateUploadMethod: "file",
 								})
 							}
 						>
@@ -61,7 +70,7 @@ const SelectCandidates = () => {
 							onClick={() =>
 								setVoteInfo({
 									...voteInfo,
-									candidateMethod: "manual",
+									candidateUploadMethod: "manual",
 								})
 							}
 						>
@@ -70,7 +79,7 @@ const SelectCandidates = () => {
 					</ButtonGroup>
 				</FillDiv>
 			)}
-			{voteInfo.candidateMethod === "file" &&
+			{voteInfo.candidateUploadMethod === "file" &&
 				voteInfo.candidateUploadType === null && (
 					<FillDiv>
 						<Typography sx={typographySX(4)}>
@@ -112,8 +121,8 @@ const SelectCandidates = () => {
 										<div>
 											<center>
 												<Typography variant="caption">
-													An example of a valid format
-													is shown below:
+													Example of valid format
+													shown below:
 												</Typography>
 											</center>
 
@@ -169,8 +178,8 @@ const SelectCandidates = () => {
 										<div>
 											<center>
 												<Typography variant="caption">
-													An example of a valid format
-													is shown below:
+													Example of valid format
+													shown below:
 												</Typography>
 											</center>
 
@@ -216,7 +225,7 @@ const SelectCandidates = () => {
 						</label>
 					</FillDiv>
 				)}
-			{(voteInfo.candidateMethod === "manual" ||
+			{(voteInfo.candidateUploadMethod === "manual" ||
 				voteInfo.candidateData !== null) && (
 				<ManualUploadDiv>
 					<ManualUploadSubDiv>
@@ -228,21 +237,22 @@ const SelectCandidates = () => {
 				</ManualUploadDiv>
 			)}
 			<ButtonGroup variant="contained" sx={buttonGroupSX(75)}>
-				{voteInfo.candidateFormat !== null && (
-					<Button
-						onClick={() =>
-							setVoteInfo({
-								...voteInfo,
-								candidateMethod: null,
-								candidateUploadType: null,
-								candidateData: null,
-							})
-						}
-					>
-						Reset
-					</Button>
-				)}
-				<Button onClick={goBack}>Go Back</Button>
+				{voteInfo.candidateUploadMethod !== null &&
+					voteInfo.candidateUploadMethod !== "manual" && (
+						<Button
+							onClick={() =>
+								setVoteInfo({
+									...voteInfo,
+									candidateUploadMethod: null,
+									candidateUploadType: null,
+									candidateData: null,
+								})
+							}
+						>
+							Reset
+						</Button>
+					)}
+				<Button onClick={goBack}>Back</Button>
 			</ButtonGroup>
 		</div>
 	);

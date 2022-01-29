@@ -24,7 +24,7 @@ export default function StickyHeadTable({ stage }) {
 	const columns =
 		stage === "participants"
 			? [
-					{ id: "name", label: "Name", minWidth: 170 },
+					{ id: "name", label: "Account Address", minWidth: 170 },
 					{ id: "numVotes", label: "Number of Votes", minWidth: 170 },
 					{ id: "cancel", label: "", width: 50, align: "right" },
 			  ]

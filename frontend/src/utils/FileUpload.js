@@ -1,5 +1,5 @@
 import * as XLSX from "xlsx";
-import shouldAddParticipant from "utils/ShouldAddParticipant";
+import shouldAddPerson from "utils/ShouldAddPerson";
 
 // Handle .txt and .csv files
 export const txtUploadHandler = (e, voteInfo, setVoteInfo, dataType) => {
@@ -22,8 +22,12 @@ export const txtUploadHandler = (e, voteInfo, setVoteInfo, dataType) => {
 				.join(",")
 				.split(","); // Split element in list of values
 			for (let j = 0; j < content.length; j++) {
-				if (shouldAddParticipant(content[j], voteInfo, dataType)) {
-					const participant = content[j].toLowerCase();
+				if (shouldAddPerson(content[j], voteInfo, dataType)) {
+					const participant =
+						dataType === "participantData"
+							? content[j].toUpperCase() // participants are addresses so enforce upper case,
+							: content[j].toLowerCase(); // force candidates to be lower case for simplicity
+
 					if (participants[participant]) {
 						participants[participant]++;
 					} else {
@@ -72,19 +76,23 @@ export const excelUploadHandler = async (
 				.split(","); // Split element in list of values
 			/* Update state */
 			for (let j = 0; j < content.length; j++) {
-				if (shouldAddParticipant(content[j], voteInfo, dataType)) {
+				if (shouldAddPerson(content[j], voteInfo, dataType)) {
 					let numVotes = 1;
-					const participant = content[j].toLowerCase();
+					const participant =
+						dataType === "participantData"
+							? content[j].toUpperCase() // participants are addresses so enforce upper case,
+							: content[j].toLowerCase(); // force candidates to be lower case for simplicity
 
-					if (
-						j < content.length - 1 &&
-						voteInfo.participantFormat === "email" && // check if it's an email
-						dataType === "participantData" &&
-						content[j + 1] !== "" &&
-						!content[j + 1].includes("@")
-					) {
-						numVotes = parseInt(content[++j]);
-					}
+					// handling participants with more than 1 vote (currently not supported)
+					// if (
+					// 	j < content.length - 1 &&
+					// 	voteInfo.participantFormat === "email" && // check if it's an email
+					// 	dataType === "participantData" &&
+					// 	content[j + 1] !== "" &&
+					// 	!content[j + 1].includes("@")
+					// ) {
+					// 	numVotes = parseInt(content[++j]);
+					// }
 
 					if (participants[participant]) {
 						participants[participant] += numVotes;

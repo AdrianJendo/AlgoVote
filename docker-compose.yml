@@ -9,6 +9,8 @@ services:
             - ./frontend/src:/frontend/src
         env_file:
             - .env
+        environment:
+            - WDS_SOCKET_PORT=0 # Fixes bug where websocket connection is fixed to default port 3000
 
     backend:
         build:

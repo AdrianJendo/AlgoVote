@@ -5,8 +5,8 @@ import MuiAccordion from "@mui/material/Accordion";
 import MuiAccordionSummary from "@mui/material/AccordionSummary";
 import MuiAccordionDetails from "@mui/material/AccordionDetails";
 import { styled } from "@mui/system";
-import StickyHeadTable from "components/RenderTable";
-import TimesTable from "components/TimesTable";
+import ReviewInfoTable from "components/base/RenderTable";
+import TimesTable from "components/createWorkflow/TimesTable";
 
 const Accordion = styled((props) => (
 	<MuiAccordion disableGutters elevation={0} square {...props} />
@@ -56,8 +56,9 @@ const ReviewDetails = () => {
 			style={{
 				position: "relative",
 				height: "100%",
-				width: "60%",
-				left: "20%",
+				width: "75%",
+				left: "50%",
+				transform: "translate(-50%, 0)",
 			}}
 		>
 			<Typography
@@ -84,7 +85,7 @@ const ReviewDetails = () => {
 							maxHeight: "calc(80vh - 200px)",
 						}}
 					>
-						<StickyHeadTable stage="participants" />
+						<ReviewInfoTable stage="participants" />
 					</div>
 				</AccordionDetails>
 			</Accordion>
@@ -105,7 +106,7 @@ const ReviewDetails = () => {
 							maxHeight: "calc(80vh - 200px)",
 						}}
 					>
-						<StickyHeadTable stage="candidates" />
+						<ReviewInfoTable stage="candidates" />
 					</div>
 				</AccordionDetails>
 			</Accordion>

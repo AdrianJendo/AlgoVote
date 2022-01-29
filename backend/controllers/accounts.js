@@ -2,6 +2,7 @@ import algosdk from "algosdk";
 import { algodClient } from "../server.js";
 import { getAlgoBalance } from "../helpers/accounts.js";
 import { waitForConfirmation } from "../helpers/misc.js";
+import decodeURIMnemonic from "../helpers/decodeMnemonic.js";
 
 export const createAlgoAccount = (req, res) => {
 	try {
@@ -23,7 +24,7 @@ export const createAlgoAccount = (req, res) => {
 export const sendAlgo = async (req, res) => {
 	try {
 		const senderAccount = algosdk.mnemonicToSecretKey(
-			req.body.senderMnemonic
+			decodeURIMnemonic(req.body.senderMnemonic)
 		);
 		const receiverAddr = req.body.receiver;
 		const amount = req.body.amount;
@@ -105,7 +106,12 @@ export const checkAlgoBalance = async (req, res) => {
 };
 
 export const getPublicKey = async (req, res) => {
-	const account = algosdk.mnemonicToSecretKey(req.query.mnemonic);
+	try {
+		const decryptedMnemonic = decodeURIMnemonic(req.query.mnemonic);
+		const account = algosdk.mnemonicToSecretKey(decryptedMnemonic);
 
-	return res.send({ addr: account.addr });
+		return res.send({ addr: account.addr });
+	} catch (error) {
+		return res.send(error.message);
+	}
 };

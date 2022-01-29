@@ -1,7 +1,8 @@
 import algosdk from "algosdk";
 import { algodClient, __dirname } from "../server.js";
-import axios from "axios";
 import { pollingDelay } from "../helpers/misc.js";
+import axios from "axios";
+import CryptoJS from "crypto-js";
 
 const NUM_VOTERS = 90;
 const CANDIDATES = ["Billy", "Jean", "Christian", "Dior"];
@@ -12,6 +13,15 @@ const MIN_BALANCE = 100000 + 100000 + 100000 + 50000 + 10000; // micro algos -> 
 
 export const getRoute = (req, res) => {
 	res.send([{ some: "jsondata", get: "this is get route" }]);
+};
+
+export const encryptMnemonic = (req, res) => {
+	const encryptedMnemonic = CryptoJS.AES.encrypt(
+		req.query.mnemonic,
+		process.env.REACT_APP_ENCRYPTION_KEY
+	).toString();
+
+	res.send({ encryptedMnemonic: encodeURIComponent(encryptedMnemonic) });
 };
 
 export const votingWorkflow = async (req, res) => {

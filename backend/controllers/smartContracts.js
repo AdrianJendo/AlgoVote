@@ -5,124 +5,132 @@ import { algodClient, __dirname } from "../server.js";
 import { printAssetHolding } from "../helpers/ASAs.js";
 import { waitForConfirmation } from "../helpers/misc.js";
 import { readTeal } from "../helpers/smartContracts.js";
+import decodeURIMnemonic from "../helpers/decodeMnemonic.js";
 
 const SECS_PER_BLOCK = 4.5;
 
 // Read in teal file
 export const createVoteSmartContract = async (req, res) => {
-	const creatorAccount = algosdk.mnemonicToSecretKey(
-		req.body.creatorMnemonic
-	);
-	const sender = creatorAccount.addr;
-	const assetId = req.body.assetId;
-	const numCandidates = req.body.numCandidates;
-
-	// get node suggested parameters
-	let params = await algodClient.getTransactionParams().do();
-	// comment out the next two lines to use suggested fee
-	params.fee = 1000;
-	params.flatFee = true;
-
-	// declare onComplete as NoOp
-	const onComplete = algosdk.OnApplicationComplete.NoOpOC;
-
-	const vote_opt_out = path.join(
-		__dirname,
-		"smart_contracts/p_vote_opt_out.teal"
-	);
-	const vote = path.join(__dirname, "smart_contracts/p_vote.teal");
-
-	const vote_program = await readTeal(algodClient, vote);
-	const opt_out_program = await readTeal(algodClient, vote_opt_out);
-
-	// integer parameter
-	const args = [];
-	const today = new Date();
-	const startVoteUTC = Date.UTC(
-		today.getUTCFullYear(),
-		today.getUTCMonth(),
-		today.getUTCDate(),
-		today.getUTCHours(),
-		today.getUTCMinutes() + 2,
-		today.getUTCSeconds(),
-		today.getUTCMilliseconds()
-	);
-	const endVoteUTC = Date.UTC(
-		today.getUTCFullYear(),
-		today.getUTCMonth(),
-		today.getUTCDate(),
-		today.getUTCHours(),
-		today.getUTCMinutes() + 10,
-		today.getUTCSeconds(),
-		today.getUTCMilliseconds()
-	);
-
-	// We can also try omitting all this code and using startVoteUTC and endVoteUTC directly... then either using 'global LatestTimestamp' or passing in the timestamp at which registration was attempted
-	const startVoteSecs = Math.abs(Math.round((startVoteUTC - today) / 1000));
-	const endVoteSecs = Math.abs(Math.round((endVoteUTC - today) / 1000));
-
-	const blockchainStatus = await algodClient.status().do();
-	const blockRound = blockchainStatus["last-round"];
-	const startVotingBlock = Math.ceil(
-		blockRound + startVoteSecs / SECS_PER_BLOCK
-	);
-	const endVotingBlock = Math.ceil(blockRound + endVoteSecs / SECS_PER_BLOCK);
-
-	args.push(algosdk.encodeUint64(startVotingBlock));
-	args.push(algosdk.encodeUint64(endVotingBlock));
-	args.push(algosdk.encodeUint64(assetId));
-	// const lsig = new algosdk.LogicSigAccount(vote_program, args);
-	// console.log("lsig : " + lsig.address());
-
-	// create unsigned transaction
-	let txn = algosdk.makeApplicationCreateTxn(
-		sender,
-		params,
-		onComplete,
-		vote_program,
-		opt_out_program,
-		0, // local integers
-		1, // local byteslices
-		args.length + numCandidates, // global integers (startVotingBlock, endVotingBlock, assetId, numCandidates)
-		1, // global byteslices (1 for creator address)
-		args
-	);
-	let txId = txn.txID().toString();
-
-	// Sign the transaction
-	let signedTxn = txn.signTxn(creatorAccount.sk);
-	console.log("Signed transaction with txID: %s", txId);
-
-	// Submit the transaction
 	try {
+		const creatorAccount = algosdk.mnemonicToSecretKey(
+			decodeURIMnemonic(req.body.creatorMnemonic)
+		);
+		const sender = creatorAccount.addr;
+		const assetId = req.body.assetId;
+		const numCandidates = req.body.numCandidates;
+
+		// get node suggested parameters
+		let params = await algodClient.getTransactionParams().do();
+		// comment out the next two lines to use suggested fee
+		params.fee = 1000;
+		params.flatFee = true;
+
+		// declare onComplete as NoOp
+		const onComplete = algosdk.OnApplicationComplete.NoOpOC;
+
+		const vote_opt_out = path.join(
+			__dirname,
+			"smart_contracts/p_vote_opt_out.teal"
+		);
+		const vote = path.join(__dirname, "smart_contracts/p_vote.teal");
+
+		const vote_program = await readTeal(algodClient, vote);
+		const opt_out_program = await readTeal(algodClient, vote_opt_out);
+
+		// integer parameter
+		const args = [];
+		const today = new Date();
+		const startVoteUTC = Date.UTC(
+			today.getUTCFullYear(),
+			today.getUTCMonth(),
+			today.getUTCDate(),
+			today.getUTCHours(),
+			today.getUTCMinutes() + 2,
+			today.getUTCSeconds(),
+			today.getUTCMilliseconds()
+		);
+		const endVoteUTC = Date.UTC(
+			today.getUTCFullYear(),
+			today.getUTCMonth(),
+			today.getUTCDate(),
+			today.getUTCHours(),
+			today.getUTCMinutes() + 10,
+			today.getUTCSeconds(),
+			today.getUTCMilliseconds()
+		);
+
+		// We can also try omitting all this code and using startVoteUTC and endVoteUTC directly... then either using 'global LatestTimestamp' or passing in the timestamp at which registration was attempted
+		const startVoteSecs = Math.abs(
+			Math.round((startVoteUTC - today) / 1000)
+		);
+		const endVoteSecs = Math.abs(Math.round((endVoteUTC - today) / 1000));
+
+		const blockchainStatus = await algodClient.status().do();
+		const blockRound = blockchainStatus["last-round"];
+		const startVotingBlock = Math.ceil(
+			blockRound + startVoteSecs / SECS_PER_BLOCK
+		);
+		const endVotingBlock = Math.ceil(
+			blockRound + endVoteSecs / SECS_PER_BLOCK
+		);
+
+		args.push(algosdk.encodeUint64(startVotingBlock));
+		args.push(algosdk.encodeUint64(endVotingBlock));
+		args.push(algosdk.encodeUint64(assetId));
+		// const lsig = new algosdk.LogicSigAccount(vote_program, args);
+		// console.log("lsig : " + lsig.address());
+
+		// create unsigned transaction
+		let txn = algosdk.makeApplicationCreateTxn(
+			sender,
+			params,
+			onComplete,
+			vote_program,
+			opt_out_program,
+			0, // local integers
+			1, // local byteslices
+			args.length + numCandidates, // global integers (startVotingBlock, endVotingBlock, assetId, numCandidates)
+			1, // global byteslices (1 for creator address)
+			args
+		);
+		let txId = txn.txID().toString();
+
+		// Sign the transaction
+		let signedTxn = txn.signTxn(creatorAccount.sk);
+		console.log("Signed transaction with txID: %s", txId);
+
+		// Submit the transaction
 		await algodClient.sendRawTransaction(signedTxn).do();
 
 		// Wait for confirmation
 		await waitForConfirmation(algodClient, txId);
+
+		// display results
+		let transactionResponse = await algodClient
+			.pendingTransactionInformation(txId)
+			.do();
+
+		// console.log("txn response", transactionResponse);
+		let appId = transactionResponse["application-index"];
+		console.log("Created new app-id: ", appId);
+
+		return res.send({
+			appId,
+			startVotingBlock,
+			endVotingBlock,
+			confirmedRound: transactionResponse["confirmed-round"],
+		});
 	} catch (err) {
 		console.log(err);
+		return res.status(500).send(err.message);
 	}
-
-	// display results
-	let transactionResponse = await algodClient
-		.pendingTransactionInformation(txId)
-		.do();
-
-	// console.log("txn response", transactionResponse);
-	let appId = transactionResponse["application-index"];
-	console.log("Created new app-id: ", appId);
-
-	return res.send({
-		appId,
-		startVotingBlock,
-		endVotingBlock,
-		confirmedRound: transactionResponse["confirmed-round"],
-	});
 };
 
 export const optInVoteSmartContract = async (req, res) => {
 	// get accounts from mnemonic
-	const userAccount = algosdk.mnemonicToSecretKey(req.body.userMnemonic);
+	const userAccount = algosdk.mnemonicToSecretKey(
+		decodeURIMnemonic(req.body.userMnemonic)
+	);
 	const sender = userAccount.addr;
 	const appId = req.body.appId;
 
