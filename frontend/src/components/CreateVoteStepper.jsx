@@ -1,67 +1,15 @@
 import * as React from "react";
-import {
-	Box,
-	Stepper,
-	Step,
-	StepLabel,
-	StepContent,
-	Button,
-	Typography,
-} from "@mui/material";
 import { VoteInfoContext } from "context/VoteInfoContext";
+import { cancelVote } from "utils/CancelVote";
 import { DateValueContext } from "context/DateValueContext";
 import { MINUTES_DELAY, DELAY } from "utils/Constants";
 import isSameDate from "utils/IsSameDate";
-import { cancelVote } from "utils/CancelVote";
-import { styled } from "@mui/system";
-import Check from "@mui/icons-material/Check";
-
-const StepIconRoot = styled("div")(({ theme, ownerState }) => ({
-	color: theme.palette.primary.main,
-
-	"& .background": {
-		width: 24,
-		height: 24,
-		borderRadius: "50%",
-		color: "#fff",
-		backgroundColor:
-			ownerState.active || ownerState.completed
-				? theme.palette.primary.main
-				: theme.stepperButtonColor,
-	},
-}));
-
-function StepIcon(props) {
-	const { active, completed, icon, className } = props;
-	return (
-		<StepIconRoot ownerState={{ active, completed }} className={className}>
-			{completed ? (
-				// <div className="background">
-				// 	<Check sx={{ fontSize: 20 }} />
-				// </div>
-				<Check />
-			) : (
-				<div className="background">
-					<div className="icon">
-						<Typography
-							sx={{
-								fontSize: "12px",
-								transform: "translate(8.5px, 3px)",
-							}}
-						>
-							{icon}
-						</Typography>
-					</div>
-				</div>
-			)}
-		</StepIconRoot>
-	);
-}
+import Stepper from "components/Stepper";
 
 const steps = [
 	{
 		label: "Select Voting Participants",
-		description: `Select who will be participating in your vote.`,
+		description: "Select who will be participating in your vote.",
 	},
 	{
 		label: "Specify Vote Options",
@@ -69,19 +17,21 @@ const steps = [
 	},
 	{
 		label: "Specify Start Date",
-		description: `Choose when your vote will start.`,
+		description: "Choose when your vote will start.",
 	},
 	{
 		label: "Specify End Date",
-		description: `Choose when your vote will end.`,
+		description: "Choose when your vote will end.",
 	},
 	{
 		label: "Review Details",
-		description: `Review the details of this transaction and click 'Continue'.`,
+		description:
+			"Review the details of this transaction and click 'Continue'.",
 	},
 	{
 		label: "Payment",
-		description: `A gas fee of X algo is required to execute this smart contract on the blockchain. Make the payment to finalize this vote contract.`,
+		description:
+			"A gas fee of X algo is required to execute this smart contract on the blockchain. Make the payment to finalize this vote contract.",
 	},
 ];
 
@@ -159,63 +109,14 @@ export default function VerticalLinearStepper() {
 		}
 	};
 
-	const handleBack = () => {
-		const activeStep = voteInfo.activeStep;
-		if (activeStep === 0) {
-			//cancelling
-			cancelVote(setVoteInfo);
-		} else {
-			setVoteInfo({ ...voteInfo, activeStep: activeStep - 1 });
-		}
-	};
-
 	return (
-		<Box sx={{ maxWidth: 300 }}>
-			<Stepper activeStep={voteInfo.activeStep} orientation="vertical">
-				{steps.map((step, index) => (
-					<Step key={step.label}>
-						<StepLabel
-							optional={
-								index === steps.length - 1 ? (
-									<Typography variant="caption">
-										Last step
-									</Typography>
-								) : null
-							}
-							StepIconComponent={StepIcon}
-						>
-							{step.label}
-						</StepLabel>
-						<StepContent>
-							<Typography>{step.description}</Typography>
-							<Box sx={{ mb: 2 }}>
-								<div>
-									<Button
-										variant="contained"
-										onClick={handleNext}
-										sx={{ mt: 1, mr: 1 }}
-										disabled={!readyToContinue}
-									>
-										{index === steps.length - 1
-											? "Finish"
-											: "Continue"}
-									</Button>
-
-									<Button
-										// disabled={index === 0}
-										variant="text"
-										onClick={handleBack}
-										disabled={voteInfo.voteCreated}
-										sx={{ mt: 1, mr: 1 }}
-									>
-										{index > 0 ? "Back" : "Cancel"}
-									</Button>
-								</div>
-							</Box>
-						</StepContent>
-					</Step>
-				))}
-			</Stepper>
-		</Box>
+		<Stepper
+			steps={steps}
+			stepInfo={voteInfo}
+			setStepInfo={setVoteInfo}
+			handleNext={handleNext}
+			readyToContinue={readyToContinue}
+			cancelStepper={cancelVote}
+		/>
 	);
 }

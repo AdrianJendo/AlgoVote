@@ -3,7 +3,8 @@ import { Button, Paper } from "@mui/material";
 import { styled } from "@mui/system";
 import { VoteInfoContext } from "context/VoteInfoContext";
 import { ParticipateContext } from "context/ParticipateContext";
-import VerticalLinearStepper from "components/CreateVoteStepper";
+import CreateVoteStepper from "components/CreateVoteStepper";
+import ParticipateVoteStepper from "components/ParticipateVoteStepper";
 import SelectParticipants from "components/SelectParticipants";
 import SelectCandidates from "components/SelectCandidates";
 import DatePicker from "components/DatePicker";
@@ -48,59 +49,120 @@ const VoteWorkflow = () => {
 	return (
 		<StyledBackground>
 			{voteInfo.voteStarted && (
-				<StepperDiv>
-					<VerticalLinearStepper />
-				</StepperDiv>
+				<div style={{ width: "100%", height: "100%" }}>
+					<StepperDiv>
+						<CreateVoteStepper />
+					</StepperDiv>
+					<PaperDiv>
+						<Paper
+							sx={{
+								position: "relative",
+								height: "100%",
+								width: "80%",
+								left: "20%",
+								textAlign: "center",
+							}}
+						>
+							{voteInfo.activeStep === 0 && (
+								<SelectParticipants />
+							)}
+							{voteInfo.activeStep === 1 && <SelectCandidates />}
+							{voteInfo.activeStep === 2 && (
+								<DatePicker
+									earliestDate={earliestStartDate}
+									selectedDate={voteInfo.startDate}
+									selectedTime={voteInfo.startTime}
+									endDate={
+										new Date(
+											new Date().getFullYear() + 7,
+											new Date().getMonth(),
+											new Date().getDate()
+										)
+									}
+									label="Start"
+								/>
+							)}
+							{voteInfo.activeStep === 3 && (
+								<DatePicker
+									earliestDate={voteInfo.startDate}
+									earliestTime={voteInfo.startTime}
+									selectedDate={voteInfo.endDate}
+									selectedTime={voteInfo.endTime}
+									endDate={
+										new Date(
+											voteInfo.startDate.getFullYear() +
+												7,
+											voteInfo.startDate.getMonth(),
+											voteInfo.startDate.getDate()
+										)
+									}
+									label="End"
+								/>
+							)}
+							{voteInfo.activeStep === 4 && <ReviewDetails />}
+							{voteInfo.activeStep === 5 && <Payment />}
+						</Paper>
+					</PaperDiv>
+				</div>
 			)}
-			{voteInfo.voteStarted ? (
-				<PaperDiv>
-					<Paper
-						sx={{
-							position: "relative",
-							height: "100%",
-							width: "80%",
-							left: "20%",
-							textAlign: "center",
-						}}
-					>
-						{voteInfo.activeStep === 0 && <SelectParticipants />}
-						{voteInfo.activeStep === 1 && <SelectCandidates />}
-						{voteInfo.activeStep === 2 && (
-							<DatePicker
-								earliestDate={earliestStartDate}
-								selectedDate={voteInfo.startDate}
-								selectedTime={voteInfo.startTime}
-								endDate={
-									new Date(
-										new Date().getFullYear() + 7,
-										new Date().getMonth(),
-										new Date().getDate()
-									)
-								}
-								label="Start"
-							/>
-						)}
-						{voteInfo.activeStep === 3 && (
-							<DatePicker
-								earliestDate={voteInfo.startDate}
-								earliestTime={voteInfo.startTime}
-								selectedDate={voteInfo.endDate}
-								selectedTime={voteInfo.endTime}
-								endDate={
-									new Date(
-										voteInfo.startDate.getFullYear() + 7,
-										voteInfo.startDate.getMonth(),
-										voteInfo.startDate.getDate()
-									)
-								}
-								label="End"
-							/>
-						)}
-						{voteInfo.activeStep === 4 && <ReviewDetails />}
-						{voteInfo.activeStep === 5 && <Payment />}
-					</Paper>
-				</PaperDiv>
-			) : (
+			{participateInfo.voteStarted && (
+				<div style={{ width: "100%", height: "100%" }}>
+					<StepperDiv>
+						<ParticipateVoteStepper />
+					</StepperDiv>
+					<PaperDiv>
+						<Paper
+							sx={{
+								position: "relative",
+								height: "100%",
+								width: "80%",
+								left: "20%",
+								textAlign: "center",
+							}}
+						>
+							{voteInfo.activeStep === 0 && (
+								<SelectParticipants />
+							)}
+							{voteInfo.activeStep === 1 && <SelectCandidates />}
+							{/* {voteInfo.activeStep === 2 && (
+								<DatePicker
+									earliestDate={earliestStartDate}
+									selectedDate={voteInfo.startDate}
+									selectedTime={voteInfo.startTime}
+									endDate={
+										new Date(
+											new Date().getFullYear() + 7,
+											new Date().getMonth(),
+											new Date().getDate()
+										)
+									}
+									label="Start"
+								/>
+							)}
+							{voteInfo.activeStep === 3 && (
+								<DatePicker
+									earliestDate={voteInfo.startDate}
+									earliestTime={voteInfo.startTime}
+									selectedDate={voteInfo.endDate}
+									selectedTime={voteInfo.endTime}
+									endDate={
+										new Date(
+											voteInfo.startDate.getFullYear() +
+												7,
+											voteInfo.startDate.getMonth(),
+											voteInfo.startDate.getDate()
+										)
+									}
+									label="End"
+								/>
+							)}
+							{voteInfo.activeStep === 4 && <ReviewDetails />}
+							{voteInfo.activeStep === 5 && <Payment />} */}
+						</Paper>
+					</PaperDiv>
+				</div>
+			)}
+			{!voteInfo.voteStarted && !participateInfo.voteStarted && (
 				<ButtonDiv>
 					<Button
 						variant="contained"

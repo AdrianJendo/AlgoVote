@@ -1,81 +1,29 @@
 import * as React from "react";
-import {
-	Box,
-	Stepper,
-	Step,
-	StepLabel,
-	StepContent,
-	Button,
-	Typography,
-} from "@mui/material";
 import { ParticipateContext } from "context/ParticipateContext";
 import { cancelParticipate } from "utils/CancelVote";
-import { styled } from "@mui/system";
-import Check from "@mui/icons-material/Check";
-
-const StepIconRoot = styled("div")(({ theme, ownerState }) => ({
-	color: theme.palette.primary.main,
-
-	"& .background": {
-		width: 24,
-		height: 24,
-		borderRadius: "50%",
-		color: "#fff",
-		backgroundColor:
-			ownerState.active || ownerState.completed
-				? theme.palette.primary.main
-				: theme.stepperButtonColor,
-	},
-}));
-
-function StepIcon(props) {
-	const { active, completed, icon, className } = props;
-	return (
-		<StepIconRoot ownerState={{ active, completed }} className={className}>
-			{completed ? (
-				<Check />
-			) : (
-				<div className="background">
-					<div className="icon">
-						<Typography
-							sx={{
-								fontSize: "12px",
-								transform: "translate(8.5px, 3px)",
-							}}
-						>
-							{icon}
-						</Typography>
-					</div>
-				</div>
-			)}
-		</StepIconRoot>
-	);
-}
+import Stepper from "components/Stepper";
 
 const steps = [
 	{
-		label: "Select Voting Participants",
-		description: `Select who will be participating in your vote.`,
+		label: "Register or vote",
+		description: "Are you registering for a vote or voting?",
 	},
 	{
-		label: "Specify Vote Options",
-		description: "Select the possible candidates for the vote.",
+		label: "Enter public key",
+		description: "Enter your public key to see all your eligible votes.",
 	},
 	{
-		label: "Specify Start Date",
-		description: `Choose when your vote will start.`,
+		label: "Choose a vote",
+		description: "Choose an eligible vote to participate in.",
 	},
 	{
-		label: "Specify End Date",
-		description: `Choose when your vote will end.`,
+		label: "Choose your candidate",
+		description: "Select the candidate you would like to vote for.",
 	},
 	{
-		label: "Review Details",
-		description: `Review the details of this transaction and click 'Continue'.`,
-	},
-	{
-		label: "Payment",
-		description: `A gas fee of X algo is required to execute this smart contract on the blockchain. Make the payment to finalize this vote contract.`,
+		label: "Review & Pay",
+		description:
+			"Review the details of this transaction and enter your private key to pay the transaction fees.",
 	},
 ];
 
@@ -118,55 +66,14 @@ export default function VerticalLinearStepper() {
 	};
 
 	return (
-		<Box sx={{ maxWidth: 300 }}>
-			<Stepper
-				activeStep={participateInfo.activeStep}
-				orientation="vertical"
-			>
-				{steps.map((step, index) => (
-					<Step key={step.label}>
-						<StepLabel
-							optional={
-								index === steps.length - 1 ? (
-									<Typography variant="caption">
-										Last step
-									</Typography>
-								) : null
-							}
-							StepIconComponent={StepIcon}
-						>
-							{step.label}
-						</StepLabel>
-						<StepContent>
-							<Typography>{step.description}</Typography>
-							<Box sx={{ mb: 2 }}>
-								<div>
-									<Button
-										variant="contained"
-										onClick={handleNext}
-										sx={{ mt: 1, mr: 1 }}
-										disabled={!readyToContinue}
-									>
-										{index === steps.length - 1
-											? "Finish"
-											: "Continue"}
-									</Button>
-
-									<Button
-										// disabled={index === 0}
-										variant="text"
-										onClick={handleBack}
-										disabled={participateInfo.voteCreated}
-										sx={{ mt: 1, mr: 1 }}
-									>
-										{index > 0 ? "Back" : "Cancel"}
-									</Button>
-								</div>
-							</Box>
-						</StepContent>
-					</Step>
-				))}
-			</Stepper>
-		</Box>
+		<Stepper
+			steps={steps}
+			stepInfo={participateInfo}
+			setStepInfo={setParticipateInfo}
+			handleNext={handleNext}
+			readyToContinue={readyToContinue}
+			handleBack={handleBack}
+			cancelStepper={cancelParticipate}
+		/>
 	);
 }
