@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Typography } from "@mui/material";
+import { TextField, Typography } from "@mui/material";
 import { ParticipateContext } from "context/ParticipateContext";
 
 const EnterPublicKey = () => {
@@ -20,8 +20,28 @@ const EnterPublicKey = () => {
 				component="div"
 				sx={{ flexGrow: 1, padding: "10px" }}
 			>
-				Header
+				Enter your public key below to see eligible votes
 			</Typography>
+			<div
+				style={{
+					position: "relative",
+					alighItems: "center",
+					padding: "20px",
+				}}
+			>
+				<TextField
+					label="Public Key"
+					placeholder="Paste Public Key"
+					sx={{ width: "700px" }}
+					value={participateInfo.publicKey}
+					onChange={(e) =>
+						setParticipateInfo({
+							...participateInfo,
+							publicKey: e.target.value,
+						})
+					}
+				/>
+			</div>
 		</div>
 	);
 };

@@ -1,7 +1,6 @@
 import React, { useContext } from "react";
 import { Button, Typography, ButtonGroup } from "@mui/material";
 import { ParticipateContext } from "context/ParticipateContext";
-
 import { FillDiv, typographySX, buttonGroupSX } from "utils/ParticipantsStyle";
 
 const RegisterOrVote = () => {
@@ -18,8 +17,13 @@ const RegisterOrVote = () => {
 				<Typography sx={typographySX(4)}>
 					Select one of the options below
 				</Typography>
-				<ButtonGroup variant="contained" sx={buttonGroupSX(10)}>
+				<ButtonGroup sx={buttonGroupSX(10)}>
 					<Button
+						variant={
+							participateInfo.registerOrVote === "register"
+								? "contained"
+								: "outlined"
+						}
 						onClick={() =>
 							setParticipateInfo({
 								...participateInfo,
@@ -30,6 +34,11 @@ const RegisterOrVote = () => {
 						Registering
 					</Button>
 					<Button
+						variant={
+							participateInfo.registerOrVote === "vote"
+								? "contained"
+								: "outlined"
+						}
 						onClick={() =>
 							setParticipateInfo({
 								...participateInfo,

@@ -77,25 +77,16 @@ const WorkflowStepper = (props) => {
 							<Typography>{step.description}</Typography>
 							<Box sx={{ mb: 2 }}>
 								<div>
-									{handleNext !== null ? (
-										<Button
-											variant="contained"
-											onClick={handleNext}
-											sx={{ mt: 1, mr: 1 }}
-											disabled={!readyToContinue}
-										>
-											{index === steps.length - 1
-												? "Finish"
-												: "Continue"}
-										</Button>
-									) : (
-										<div
-											style={{
-												display: "inline-block",
-												width: "116px",
-											}}
-										></div>
-									)}
+									<Button
+										variant="contained"
+										onClick={handleNext}
+										sx={{ mt: 1, mr: 1 }}
+										disabled={!readyToContinue}
+									>
+										{index === steps.length - 1
+											? "Finish"
+											: "Continue"}
+									</Button>
 
 									<Button
 										variant="text"

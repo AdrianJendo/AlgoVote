@@ -129,11 +129,19 @@ const VoteWorkflow = () => {
 								textAlign: "center",
 							}}
 						>
-							{voteInfo.activeStep === 0 && <RegisterOrVote />}
-							{voteInfo.activeStep === 1 && <EnterPublicKey />}
-							{voteInfo.activeStep === 2 && <SelectVote />}
-							{voteInfo.activeStep === 3 && <SelectCandidate />}
-							{voteInfo.activeStep === 4 && <ReviewAndPay />}
+							{participateInfo.activeStep === 0 && (
+								<RegisterOrVote />
+							)}
+							{participateInfo.activeStep === 1 && (
+								<EnterPublicKey />
+							)}
+							{participateInfo.activeStep === 2 && <SelectVote />}
+							{participateInfo.activeStep === 3 && (
+								<SelectCandidate />
+							)}
+							{participateInfo.activeStep === 4 && (
+								<ReviewAndPay />
+							)}
 						</Paper>
 					</PaperDiv>
 				</div>

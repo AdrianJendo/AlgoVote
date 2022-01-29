@@ -21,8 +21,9 @@ export const cancelVote = (setVoteInfo) => {
 export const cancelParticipate = (setParticipateInfo) => {
 	setParticipateInfo({
 		voteStarted: false,
+		registerOrVote: null,
 		activeStep: 0,
-		participantPublicKey: null,
+		publicKey: "",
 		voteAssetId: null,
 	});
 };
