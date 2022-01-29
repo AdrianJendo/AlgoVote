@@ -98,7 +98,7 @@ export default function VerticalLinearStepper() {
 			(voteInfo.activeStep === 2 && !dateValue.error) ||
 			(voteInfo.activeStep === 3 && !dateValue.error) ||
 			voteInfo.activeStep === 4 ||
-			(voteInfo.activeStep === 5 && voteInfo.voteCreated)
+			voteInfo.voteCreated
 		) {
 			setReadyToContinue(true);
 		} else {
@@ -210,6 +210,7 @@ export default function VerticalLinearStepper() {
 										// disabled={index === 0}
 										variant="text"
 										onClick={handleBack}
+										disabled={voteInfo.voteCreated}
 										sx={{ mt: 1, mr: 1 }}
 									>
 										{index > 0 ? "Back" : "Cancel"}
