@@ -54,24 +54,7 @@ const StepIcon = (props) => {
 };
 
 const WorkflowStepper = (props) => {
-	const {
-		steps,
-		stepInfo,
-		setStepInfo,
-		handleNext,
-		readyToContinue,
-		cancelStepper,
-	} = props;
-
-	const handleBack = () => {
-		const activeStep = stepInfo.activeStep;
-		if (activeStep === 0) {
-			//cancelling
-			cancelStepper(setStepInfo);
-		} else {
-			setStepInfo({ ...stepInfo, activeStep: activeStep - 1 });
-		}
-	};
+	const { steps, stepInfo, handleNext, readyToContinue, handleBack } = props;
 
 	return (
 		<Box sx={{ maxWidth: 300 }}>
@@ -94,16 +77,25 @@ const WorkflowStepper = (props) => {
 							<Typography>{step.description}</Typography>
 							<Box sx={{ mb: 2 }}>
 								<div>
-									<Button
-										variant="contained"
-										onClick={handleNext}
-										sx={{ mt: 1, mr: 1 }}
-										disabled={!readyToContinue}
-									>
-										{index === steps.length - 1
-											? "Finish"
-											: "Continue"}
-									</Button>
+									{handleNext !== null ? (
+										<Button
+											variant="contained"
+											onClick={handleNext}
+											sx={{ mt: 1, mr: 1 }}
+											disabled={!readyToContinue}
+										>
+											{index === steps.length - 1
+												? "Finish"
+												: "Continue"}
+										</Button>
+									) : (
+										<div
+											style={{
+												display: "inline-block",
+												width: "116px",
+											}}
+										></div>
+									)}
 
 									<Button
 										variant="text"

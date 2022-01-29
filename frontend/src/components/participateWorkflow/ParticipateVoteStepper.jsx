@@ -6,7 +6,7 @@ import Stepper from "components/base/Stepper";
 const steps = [
 	{
 		label: "Register or vote",
-		description: "Are you registering for a vote or voting?",
+		description: "Are you registering or voting?",
 	},
 	{
 		label: "Enter public key",
@@ -30,27 +30,19 @@ const steps = [
 export default function VerticalLinearStepper() {
 	const [participateInfo, setParticipateInfo] =
 		React.useContext(ParticipateContext);
-	const [readyToContinue, setReadyToContinue] = React.useState(false);
 
 	React.useEffect(() => {
-		if (true) {
-			setReadyToContinue(true);
-		} else {
-			setReadyToContinue(false);
-		}
-	}, [participateInfo]);
-
-	const handleNext = () => {
-		if (false) {
-		} else if (participateInfo.activeStep === 5) {
-			cancelParticipate(setParticipateInfo);
-		} else {
+		if (
+			participateInfo.activeStep === 0 &&
+			participateInfo.registerOrVote
+		) {
 			setParticipateInfo({
 				...participateInfo,
 				activeStep: participateInfo.activeStep + 1,
 			});
+		} else {
 		}
-	};
+	}, [participateInfo, setParticipateInfo]);
 
 	const handleBack = () => {
 		const activeStep = participateInfo.activeStep;
@@ -70,8 +62,7 @@ export default function VerticalLinearStepper() {
 			steps={steps}
 			stepInfo={participateInfo}
 			setStepInfo={setParticipateInfo}
-			handleNext={handleNext}
-			readyToContinue={readyToContinue}
+			handleNext={null}
 			handleBack={handleBack}
 			cancelStepper={cancelParticipate}
 		/>
