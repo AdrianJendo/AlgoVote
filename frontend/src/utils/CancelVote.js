@@ -1,4 +1,4 @@
-const cancelVote = (setVoteInfo) => {
+export const cancelVote = (setVoteInfo) => {
 	setVoteInfo({
 		voteStarted: false,
 		activeStep: 0,
@@ -18,4 +18,11 @@ const cancelVote = (setVoteInfo) => {
 	});
 };
 
-export default cancelVote;
+export const cancelParticipate = (setParticipateInfo) => {
+	setParticipateInfo({
+		voteStarted: false,
+		activeStep: 0,
+		participantPublicKey: null,
+		voteAssetId: null,
+	});
+};

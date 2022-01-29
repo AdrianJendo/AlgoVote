@@ -4,7 +4,7 @@ import { VoteInfoContext } from "context/VoteInfoContext";
 import ProgressBar from "components/ProgressBar";
 import axios from "axios";
 import encodeURIMnemonic from "utils/EncodeMnemonic";
-import cancelVote from "utils/CancelVote";
+import { cancelVote } from "utils/CancelVote";
 import * as XLSX from "xlsx";
 
 const MIN_VOTER_BALANCE = 100000 + 100000 + 100000 + 50000 + 10000; // micro algos -> 0.1 algo (min account balance) + 0.1 (to opt in and receive ASA) + 0.1 (to opt in to smart contract) + 0.05 (for 1 local byte slice)

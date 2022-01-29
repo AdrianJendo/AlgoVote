@@ -2,7 +2,8 @@ import React, { useContext } from "react";
 import { Button, Paper } from "@mui/material";
 import { styled } from "@mui/system";
 import { VoteInfoContext } from "context/VoteInfoContext";
-import VerticalLinearStepper from "components/Stepper";
+import { ParticipateContext } from "context/ParticipateContext";
+import VerticalLinearStepper from "components/CreateVoteStepper";
 import SelectParticipants from "components/SelectParticipants";
 import SelectCandidates from "components/SelectCandidates";
 import DatePicker from "components/DatePicker";
@@ -40,6 +41,8 @@ const StyledBackground = styled("div")(
 
 const VoteWorkflow = () => {
 	const [voteInfo, setVoteInfo] = useContext(VoteInfoContext);
+	const [participateInfo, setParticipateInfo] =
+		useContext(ParticipateContext);
 
 	const earliestStartDate = new Date(); // earliest start date is today
 	return (
@@ -111,7 +114,10 @@ const VoteWorkflow = () => {
 					<Button
 						variant="contained"
 						onClick={() =>
-							setVoteInfo({ ...voteInfo, voteStarted: true })
+							setParticipateInfo({
+								...participateInfo,
+								voteStarted: true,
+							})
 						}
 						sx={{ margin: "5px" }}
 					>

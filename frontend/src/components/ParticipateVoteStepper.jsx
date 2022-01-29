@@ -6,14 +6,10 @@ import {
 	StepLabel,
 	StepContent,
 	Button,
-	Paper,
 	Typography,
 } from "@mui/material";
-import { VoteInfoContext } from "context/VoteInfoContext";
-import { DateValueContext } from "context/DateValueContext";
-import { MINUTES_DELAY, DELAY } from "utils/Constants";
-import isSameDate from "utils/IsSameDate";
-import cancelVote from "utils/CancelVote";
+import { ParticipateContext } from "context/ParticipateContext";
+import { cancelParticipate } from "utils/CancelVote";
 import { styled } from "@mui/system";
 import Check from "@mui/icons-material/Check";
 
@@ -37,9 +33,6 @@ function StepIcon(props) {
 	return (
 		<StepIconRoot ownerState={{ active, completed }} className={className}>
 			{completed ? (
-				// <div className="background">
-				// 	<Check sx={{ fontSize: 20 }} />
-				// </div>
 				<Check />
 			) : (
 				<div className="background">
@@ -87,96 +80,49 @@ const steps = [
 ];
 
 export default function VerticalLinearStepper() {
-	const [voteInfo, setVoteInfo] = React.useContext(VoteInfoContext);
-	const dateValue = React.useContext(DateValueContext)[0];
+	const [participateInfo, setParticipateInfo] =
+		React.useContext(ParticipateContext);
 	const [readyToContinue, setReadyToContinue] = React.useState(false);
 
 	React.useEffect(() => {
-		if (
-			(voteInfo.activeStep === 0 && voteInfo.participantData) ||
-			(voteInfo.activeStep === 1 && voteInfo.candidateData) ||
-			(voteInfo.activeStep === 2 && !dateValue.error) ||
-			(voteInfo.activeStep === 3 && !dateValue.error) ||
-			voteInfo.activeStep === 4 ||
-			voteInfo.voteCreated
-		) {
+		if (true) {
 			setReadyToContinue(true);
 		} else {
 			setReadyToContinue(false);
 		}
-	}, [voteInfo, dateValue]);
+	}, [participateInfo]);
 
 	const handleNext = () => {
-		if (voteInfo.activeStep === 2) {
-			// Start date stuff
-			if (
-				!isSameDate(dateValue.value, new Date()) ||
-				dateValue.timeValue - new Date(new Date().getTime() + DELAY) > 0
-			) {
-				setVoteInfo({
-					...voteInfo,
-					activeStep: voteInfo.activeStep + 1,
-					startDate: dateValue.value,
-					startTime: new Date(dateValue.timeValue.setSeconds(0)),
-				});
-			} else {
-				alert(
-					`Update start time or date to be ${MINUTES_DELAY} minutes after the current time`
-				);
-			}
-		} else if (voteInfo.activeStep === 3) {
-			// End date stuff
-			if (
-				(isSameDate(dateValue.value, new Date()) &&
-					(dateValue.timeValue -
-						new Date(new Date().getTime() + DELAY) <
-						0 ||
-						dateValue.timeValue -
-							new Date(voteInfo.startTime.getTime() + DELAY) <
-							0)) || // check if the date is today and we are choosing a time in the past or too early
-				(isSameDate(dateValue.value, voteInfo.startDate) &&
-					dateValue.timeValue -
-						new Date(voteInfo.startTime.getTime() + DELAY) <
-						0)
-			) {
-				alert(
-					"Update end time or date to be after current time + DELAY"
-				);
-			} else {
-				setVoteInfo({
-					...voteInfo,
-					activeStep: voteInfo.activeStep + 1,
-					endDate: dateValue.value,
-					endTime: new Date(dateValue.timeValue.setSeconds(0)),
-				});
-			}
-		} else if (voteInfo.activeStep === 5) {
-			cancelVote(setVoteInfo);
+		if (false) {
+		} else if (participateInfo.activeStep === 5) {
+			cancelParticipate(setParticipateInfo);
 		} else {
-			setVoteInfo({
-				...voteInfo,
-				activeStep: voteInfo.activeStep + 1,
+			setParticipateInfo({
+				...participateInfo,
+				activeStep: participateInfo.activeStep + 1,
 			});
 		}
 	};
 
 	const handleBack = () => {
-		const activeStep = voteInfo.activeStep;
+		const activeStep = participateInfo.activeStep;
 		if (activeStep === 0) {
 			//cancelling
-			cancelVote(setVoteInfo);
+			cancelParticipate(setParticipateInfo);
 		} else {
-			setVoteInfo({ ...voteInfo, activeStep: activeStep - 1 });
+			setParticipateInfo({
+				...participateInfo,
+				activeStep: activeStep - 1,
+			});
 		}
-	};
-
-	const handleReset = () => {
-		setVoteInfo({ ...voteInfo, activeStep: 0 });
 	};
 
 	return (
 		<Box sx={{ maxWidth: 300 }}>
-			<Stepper activeStep={voteInfo.activeStep} orientation="vertical">
+			<Stepper
+				activeStep={participateInfo.activeStep}
+				orientation="vertical"
+			>
 				{steps.map((step, index) => (
 					<Step key={step.label}>
 						<StepLabel
@@ -210,7 +156,7 @@ export default function VerticalLinearStepper() {
 										// disabled={index === 0}
 										variant="text"
 										onClick={handleBack}
-										disabled={voteInfo.voteCreated}
+										disabled={participateInfo.voteCreated}
 										sx={{ mt: 1, mr: 1 }}
 									>
 										{index > 0 ? "Back" : "Cancel"}
@@ -221,16 +167,6 @@ export default function VerticalLinearStepper() {
 					</Step>
 				))}
 			</Stepper>
-			{voteInfo.activeStep === steps.length && (
-				<Paper square elevation={0} sx={{ p: 3 }}>
-					<Typography>
-						All steps completed - you&apos;re finished
-					</Typography>
-					<Button onClick={handleReset} sx={{ mt: 1, mr: 1 }}>
-						Reset - temp
-					</Button>
-				</Paper>
-			)}
 		</Box>
 	);
 }
