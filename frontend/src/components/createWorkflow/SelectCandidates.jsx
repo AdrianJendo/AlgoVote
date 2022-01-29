@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { Button, Typography, ButtonGroup } from "@mui/material";
 import { VoteInfoContext } from "context/VoteInfoContext";
-import StickyHeadTable from "components/RenderTable";
+import StickyHeadTable from "components/Base/RenderTable";
 import { txtUploadHandler, excelUploadHandler } from "utils/FileUpload";
 
 import {
@@ -13,9 +13,9 @@ import {
 	ManualUploadDiv,
 	ManualUploadSubDiv,
 } from "utils/ParticipantsStyle";
-import CustomizedInputBase from "components/TextInput";
+import CustomizedInputBase from "components/createWorkflow/TextInput";
 import HelpIcon from "@mui/icons-material/Help";
-import HelperTooltip from "components/HelperTooltip";
+import HelperTooltip from "components/createWorkflow/HelperTooltip";
 
 const candidates1 = require("images/candidates1.png");
 const candidates2 = require("images/candidates2.png");

@@ -53,7 +53,7 @@ const StepIcon = (props) => {
 	);
 };
 
-export default Stepper = (props) => {
+const WorkflowStepper = (props) => {
 	const {
 		steps,
 		stepInfo,
@@ -122,3 +122,5 @@ export default Stepper = (props) => {
 		</Box>
 	);
 };
+
+export default WorkflowStepper;

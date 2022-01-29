@@ -1,6 +1,6 @@
 import React from "react";
 import { styled } from "@mui/system";
-import VoteWorkflow from "components/VoteWorkflow";
+import VoteWorkflow from "components/Base/VoteWorkflow";
 
 const Dashboard = styled("div")(
 	({ theme }) => `

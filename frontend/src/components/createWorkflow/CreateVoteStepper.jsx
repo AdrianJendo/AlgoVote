@@ -4,7 +4,7 @@ import { cancelVote } from "utils/CancelVote";
 import { DateValueContext } from "context/DateValueContext";
 import { MINUTES_DELAY, DELAY } from "utils/Constants";
 import isSameDate from "utils/IsSameDate";
-import Stepper from "components/Stepper";
+import Stepper from "components/Base/Stepper";
 
 const steps = [
 	{

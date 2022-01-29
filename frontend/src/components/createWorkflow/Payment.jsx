@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { Button, Typography, TextField } from "@mui/material";
 import { VoteInfoContext } from "context/VoteInfoContext";
-import ProgressBar from "components/ProgressBar";
+import ProgressBar from "components/createWorkflow/ProgressBar";
 import axios from "axios";
 import encodeURIMnemonic from "utils/EncodeMnemonic";
 import { cancelVote } from "utils/CancelVote";

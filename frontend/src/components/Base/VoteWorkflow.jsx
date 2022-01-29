@@ -3,13 +3,15 @@ import { Button, Paper } from "@mui/material";
 import { styled } from "@mui/system";
 import { VoteInfoContext } from "context/VoteInfoContext";
 import { ParticipateContext } from "context/ParticipateContext";
-import CreateVoteStepper from "components/CreateVoteStepper";
-import ParticipateVoteStepper from "components/ParticipateVoteStepper";
-import SelectParticipants from "components/SelectParticipants";
-import SelectCandidates from "components/SelectCandidates";
-import DatePicker from "components/DatePicker";
-import ReviewDetails from "components/ReviewDetails";
-import Payment from "components/Payment";
+
+// Create workflow
+import CreateVoteStepper from "components/createWorkflow/CreateVoteStepper";
+import ParticipateVoteStepper from "components/participateWorkflow/ParticipateVoteStepper";
+import SelectParticipants from "components/createWorkflow/SelectParticipants";
+import SelectCandidates from "components/createWorkflow/SelectCandidates";
+import DatePicker from "components/createWorkflow/DatePicker";
+import ReviewDetails from "components/createWorkflow/ReviewDetails";
+import Payment from "components/createWorkflow/Payment";
 
 // Paricipate workflow
 import ReviewAndPay from "components/participateWorkflow/ReviewAndPay";
