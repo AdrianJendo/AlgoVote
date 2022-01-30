@@ -8,6 +8,8 @@ export const ParticipateProvider = (props) => {
 		activeStep: 0, // current step of workflow
 		registerOrVote: null, // either "register" or "vote"
 		publicKey: "",
+		sk: "",
+		appId: "",
 		voteAssetId: null, // vote token id
 	});
 	return (

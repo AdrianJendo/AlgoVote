@@ -20,7 +20,7 @@ const EnterPublicKey = () => {
 				component="div"
 				sx={{ flexGrow: 1, padding: "10px" }}
 			>
-				Enter your public key below to see eligible votes
+				Enter the application id and your secret key below
 			</Typography>
 			<div
 				style={{
@@ -30,14 +30,28 @@ const EnterPublicKey = () => {
 				}}
 			>
 				<TextField
-					label="Public Key"
-					placeholder="Paste Public Key"
-					sx={{ width: "700px" }}
-					value={participateInfo.publicKey}
+					label="Application Id"
+					placeholder="Enter App Id"
+					sx={{ width: "200px", margin: "20px" }}
+					value={participateInfo.appId}
 					onChange={(e) =>
 						setParticipateInfo({
 							...participateInfo,
-							publicKey: e.target.value,
+							appId: e.target.value,
+						})
+					}
+				/>
+				<TextField
+					label="Secret Key"
+					placeholder="Paste Secret Key"
+					multiline
+					rows={4}
+					sx={{ width: "400px", margin: "20px" }}
+					value={participateInfo.sk}
+					onChange={(e) =>
+						setParticipateInfo({
+							...participateInfo,
+							sk: e.target.value,
 						})
 					}
 				/>

@@ -1,8 +1,8 @@
 import * as React from "react";
 import { ParticipateContext } from "context/ParticipateContext";
 import { cancelParticipate } from "utils/CancelVote";
-import isPublicKeyValid from "utils/participate/IsPublicKeyValid";
 import Stepper from "components/base/Stepper";
+import isMnemonicValid from "utils/IsMnemonicValid";
 
 const steps = [
 	{
@@ -10,12 +10,8 @@ const steps = [
 		description: "Are you registering or voting?",
 	},
 	{
-		label: "Enter public key",
-		description: "Enter your public key to see all your eligible votes.",
-	},
-	{
-		label: "Choose a vote",
-		description: "Choose an eligible vote to participate in.",
+		label: "Enter vote information",
+		description: "Enter the application id and sk to your voting account",
 	},
 	{
 		label: "Choose your candidate",
@@ -38,7 +34,9 @@ export default function VerticalLinearStepper() {
 			(participateInfo.activeStep === 0 &&
 				participateInfo.registerOrVote) ||
 			(participateInfo.activeStep === 1 &&
-				isPublicKeyValid(participateInfo.publicKey))
+				isMnemonicValid(participateInfo.sk) &&
+				participateInfo.appId &&
+				!isNaN(participateInfo.appId))
 		) {
 			setReadyToContinue(true);
 		} else {

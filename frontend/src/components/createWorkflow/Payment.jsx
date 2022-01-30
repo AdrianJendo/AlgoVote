@@ -4,17 +4,13 @@ import { VoteInfoContext } from "context/VoteInfoContext";
 import ProgressBar from "components/createWorkflow/ProgressBar";
 import { cancelVote } from "utils/CancelVote";
 import submitSecretKey from "utils/SubmitSecretKey";
+import isMnemonicValid from "utils/IsMnemonicValid";
 
 const Payment = () => {
 	const [voteInfo, setVoteInfo] = useContext(VoteInfoContext);
 	const voteName = useState("")[0];
 	const [secretKey, setSecretKey] = useState("");
 	const [progressBar, setProgressBar] = useState(null);
-
-	const isMnemonicInvalid = (str) => {
-		const mnemonicArr = str.split(" ");
-		return mnemonicArr.length !== 25 || mnemonicArr[24] === ""; // check that number of words in mnemonic is 25
-	};
 
 	return (
 		<div
@@ -62,7 +58,7 @@ const Payment = () => {
 					})
 				}
 				sx={{ mt: 1, mr: 1 }}
-				disabled={isMnemonicInvalid(secretKey) || progressBar !== null}
+				disabled={!isMnemonicValid(secretKey) || progressBar !== null}
 			>
 				Submit
 			</Button>
