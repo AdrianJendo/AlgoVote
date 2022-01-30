@@ -17,7 +17,7 @@ import Payment from "components/createWorkflow/Payment";
 import ReviewAndPay from "components/participateWorkflow/ReviewAndPay";
 import SelectVote from "components/participateWorkflow/SelectVote";
 import SelectCandidate from "components/participateWorkflow/SelectCandidate";
-import EnterPublicKey from "components/participateWorkflow/EnterPublicKey";
+import EnterPublicKey from "components/participateWorkflow/EnterVoteInfo";
 import RegisterOrVote from "components/participateWorkflow/RegisterOrVote";
 
 const ButtonDiv = styled("div")({

@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { TextField, Typography } from "@mui/material";
 import { ParticipateContext } from "context/ParticipateContext";
 
-const EnterPublicKey = () => {
+const EnterVoteInfo = () => {
 	const [participateInfo, setParticipateInfo] =
 		useContext(ParticipateContext);
 
@@ -60,4 +60,4 @@ const EnterPublicKey = () => {
 	);
 };
 
-export default EnterPublicKey;
+export default EnterVoteInfo;
