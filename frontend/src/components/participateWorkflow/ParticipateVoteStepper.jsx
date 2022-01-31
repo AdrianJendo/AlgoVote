@@ -59,7 +59,6 @@ export default function VerticalLinearStepper() {
 			let voteEnd;
 
 			for (const key of Object.keys(state.data)) {
-				console.log(key);
 				if (key === "AssetId") {
 					assetId = state.data[key];
 
@@ -81,8 +80,6 @@ export default function VerticalLinearStepper() {
 							},
 						}
 					);
-
-					console.log(assetBalance, key);
 
 					if (!assetBalance.data) {
 						alert("You do not hold the vote token for this vote.");

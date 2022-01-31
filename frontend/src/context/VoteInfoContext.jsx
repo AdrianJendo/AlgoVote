@@ -24,6 +24,7 @@ export const VoteInfoProvider = (props) => {
 		endDate: null, // end date of vote
 		endTime: null, // start time of vote
 
+		voteSubmitted: false, // set to true when payment is made
 		voteCreated: false, // set to true when payment is successful
 	});
 	return (

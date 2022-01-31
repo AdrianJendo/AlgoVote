@@ -11,6 +11,7 @@ const Payment = () => {
 	const voteName = useState("")[0];
 	const [secretKey, setSecretKey] = useState("");
 	const [progressBar, setProgressBar] = useState(null);
+	const [appId, setAppId] = useState(null);
 
 	return (
 		<div
@@ -48,15 +49,16 @@ const Payment = () => {
 			</div>
 			<Button
 				variant="contained"
-				onClick={() =>
-					submitSecretKey({
+				onClick={async () => {
+					const newAppId = await submitSecretKey({
 						secretKey,
 						voteInfo,
 						setVoteInfo,
 						setProgressBar,
 						voteName,
-					})
-				}
+					});
+					setAppId(newAppId);
+				}}
 				sx={{ mt: 1, mr: 1 }}
 				disabled={!isMnemonicValid(secretKey) || progressBar !== null}
 			>
@@ -64,7 +66,7 @@ const Payment = () => {
 			</Button>
 			{progressBar !== null && (
 				<div style={{ padding: "50px" }}>
-					{progressBar < 100 ? (
+					{progressBar < 100 || appId === null ? (
 						<ProgressBar value={progressBar} />
 					) : (
 						<div>
@@ -72,7 +74,9 @@ const Payment = () => {
 								sx={{ marginBottom: "20px" }}
 								variant="h5"
 							>
-								Vote successfully created. Return to home
+								Vote with application id{" "}
+								<i style={{ color: "green" }}>{appId}</i>{" "}
+								successfully created. Return to home
 							</Typography>
 							<Button
 								variant="contained"

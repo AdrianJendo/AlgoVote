@@ -15,6 +15,8 @@ export const cancelVote = (setVoteInfo) => {
 		startTime: null,
 		endDate: null,
 		endTime: null,
+		voteSubmitted: false,
+		voteCreated: false,
 	});
 };
 

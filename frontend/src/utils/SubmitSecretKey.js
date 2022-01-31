@@ -8,6 +8,8 @@ const submitSecretKey = async (props) => {
 	const { secretKey, voteInfo, setVoteInfo, setProgressBar, voteName } =
 		props;
 	try {
+		setVoteInfo({ ...voteInfo, voteSubmitted: true });
+
 		// validate that secret key exists
 		const encryptedMnemonic = encodeURIMnemonic(secretKey);
 
@@ -78,6 +80,7 @@ const submitSecretKey = async (props) => {
 			if (voteInfo.accountFundingType === "newAccounts") {
 				const fundAccountPromises = [];
 				const optInTokenPromises = [];
+				const sendTokenPromises = [];
 				const optInContractPromises = [];
 				const participantAddresses = Object.keys(
 					voteInfo.participantData
@@ -114,6 +117,29 @@ const submitSecretKey = async (props) => {
 				}
 				await Promise.all(optInTokenPromises);
 
+				// TEMP ----------------------------------------------------------------------------------------------------------------------------------------
+				// Remove this and then later we only send out the vote tokens when the vote starts to whoever has registered for it. Actually for newAccounts we can probably keep this here
+				// but will need to update the logic for accounts that already exist
+				// There is also a known bug when mixing newAccounts with prefunded accounts that needs to be fixed at some point
+
+				// send out vote tokens from creator
+				for (const receiver of participantAddresses) {
+					const amount = voteInfo.participantData[receiver];
+					const senderMnemonic = encryptedMnemonic;
+
+					sendTokenPromises.push(
+						axios.post("/api/asa/transferAsset", {
+							senderMnemonic,
+							receiver,
+							assetId,
+							amount,
+						})
+					);
+				}
+				await Promise.all(optInTokenPromises);
+
+				// -----------------------------------------------------------------------------------------------------------------------------------------------
+
 				// opt in to voting contract
 				setProgressBar(80);
 				for (const accountAddr of participantAddresses) {
@@ -140,13 +166,13 @@ const submitSecretKey = async (props) => {
 				/* make worksheet */
 				const ws_data = [
 					[
-						"Address",
-						"Secret Key",
+						"Application ID",
+						"Token ID",
 						"Candidates",
 						"Vote Start",
 						"Vote End",
-						"Token ID",
-						"Contract ID",
+						"Participant Address",
+						"Secret Key",
 					],
 				];
 
@@ -158,21 +184,22 @@ const submitSecretKey = async (props) => {
 				) {
 					const row = ["", "", "", "", ""];
 
-					if (i < participantAddresses.length) {
-						row[0] = participantAddresses[i];
-						row[1] = participantAccounts[participantAddresses[i]];
+					if (i === 0) {
+						row[0] = appId;
+						row[1] = assetId;
+						row[3] = voteInfo.startTime.toString();
+						row[4] = voteInfo.endTime.toString();
 					}
 
 					if (i < candidates.length) {
 						row[2] = candidates[i];
 					}
 
-					if (i === 0) {
-						row[3] = voteInfo.startTime.toString();
-						row[4] = voteInfo.endTime.toString();
-						row[5] = assetId;
-						row[6] = appId;
+					if (i < participantAddresses.length) {
+						row[5] = participantAddresses[i];
+						row[6] = participantAccounts[participantAddresses[i]];
 					}
+
 					ws_data.push(row);
 				}
 				var ws = XLSX.utils.aoa_to_sheet(ws_data);
@@ -186,7 +213,7 @@ const submitSecretKey = async (props) => {
 				setVoteInfo({ ...voteInfo, voteCreated: true });
 			}, 2000);
 
-			return resp.data;
+			return appId;
 		} else {
 			//failure
 			return { error: resp.data };

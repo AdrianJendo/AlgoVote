@@ -91,7 +91,9 @@ const WorkflowStepper = (props) => {
 									<Button
 										variant="text"
 										onClick={handleBack}
-										disabled={stepInfo.voteCreated}
+										disabled={
+											stepInfo.voteSubmitted === true
+										}
 										sx={{ mt: 1, mr: 1 }}
 									>
 										{index > 0 ? "Back" : "Cancel"}
