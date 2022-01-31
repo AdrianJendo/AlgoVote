@@ -67,7 +67,9 @@ const submitSecretKey = async (props) => {
 				{
 					creatorMnemonic: encryptedMnemonic,
 					assetId,
-					numCandidates: Object.keys(voteInfo.candidateData).length,
+					candidates: JSON.stringify(
+						Object.keys(voteInfo.candidateData)
+					),
 				}
 			);
 			const appId = smartContractResp.data.appId;
@@ -100,12 +102,15 @@ const submitSecretKey = async (props) => {
 				setProgressBar(60);
 				for (const accountAddr of participantAddresses) {
 					const accountMnemonic = participantAccounts[accountAddr];
-					optInTokenPromises.push(
-						axios.post("/api/asa/optInToAsset", {
-							senderMnemonic: encodeURIMnemonic(accountMnemonic),
-							assetId,
-						})
-					);
+					if (accountMnemonic) {
+						optInTokenPromises.push(
+							axios.post("/api/asa/optInToAsset", {
+								senderMnemonic:
+									encodeURIMnemonic(accountMnemonic),
+								assetId,
+							})
+						);
+					}
 				}
 				await Promise.all(optInTokenPromises);
 
@@ -113,16 +118,18 @@ const submitSecretKey = async (props) => {
 				setProgressBar(80);
 				for (const accountAddr of participantAddresses) {
 					const accountMnemonic = participantAccounts[accountAddr];
-					optInContractPromises.push(
-						axios.post(
-							"/api/smartContract/optInVoteSmartContract",
-							{
-								userMnemonic:
-									encodeURIMnemonic(accountMnemonic),
-								appId,
-							}
-						)
-					);
+					if (accountMnemonic) {
+						optInContractPromises.push(
+							axios.post(
+								"/api/smartContract/optInVoteSmartContract",
+								{
+									userMnemonic:
+										encodeURIMnemonic(accountMnemonic),
+									appId,
+								}
+							)
+						);
+					}
 				}
 				await Promise.all(optInContractPromises);
 
