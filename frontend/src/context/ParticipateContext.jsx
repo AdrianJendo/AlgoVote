@@ -7,10 +7,12 @@ export const ParticipateProvider = (props) => {
 		voteStarted: false, // checks if workflow has started
 		activeStep: 0, // current step of workflow
 		registerOrVote: null, // either "register" or "vote"
-		publicKey: "",
-		sk: "",
-		appId: "",
-		voteAssetId: null, // vote token id
+		voteBegin: null, // vote start block
+		voteEnd: null, // vote end block
+		sk: "", // secret key of participant
+		appId: "", // smart contract application id
+		assetId: null, // vote token id
+		candidates: [], // list of candidates
 	});
 	return (
 		<ParticipateContext.Provider

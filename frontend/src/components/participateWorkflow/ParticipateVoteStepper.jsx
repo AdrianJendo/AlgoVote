@@ -3,6 +3,8 @@ import { ParticipateContext } from "context/ParticipateContext";
 import { cancelParticipate } from "utils/CancelVote";
 import Stepper from "components/base/Stepper";
 import isMnemonicValid from "utils/IsMnemonicValid";
+import encodeURIMnemonic from "utils/EncodeMnemonic";
+import axios from "axios";
 
 const steps = [
 	{
@@ -44,11 +46,76 @@ export default function VerticalLinearStepper() {
 		}
 	}, [participateInfo, setParticipateInfo]);
 
-	const handleNext = () => {
-		setParticipateInfo({
-			...participateInfo,
-			activeStep: participateInfo.activeStep + 1,
-		});
+	const handleNext = async () => {
+		if (participateInfo.activeStep === 1) {
+			const state = await axios.get(
+				"/api/smartContract/readVoteSmartContractState",
+				{ params: { appId: participateInfo.appId } }
+			);
+
+			const candidates = [];
+			let assetId;
+			let voteBegin;
+			let voteEnd;
+
+			for (const key of Object.keys(state.data)) {
+				console.log(key);
+				if (key === "AssetId") {
+					assetId = state.data[key];
+
+					const userAccount = await axios.get(
+						"/api/algoAccount/getPublicKey",
+						{
+							params: {
+								mnemonic: encodeURIMnemonic(participateInfo.sk),
+							},
+						}
+					);
+					const addr = userAccount.data.addr;
+					const assetBalance = await axios.get(
+						"/api/asa/checkAssetBalance",
+						{
+							params: {
+								addr,
+								assetId,
+							},
+						}
+					);
+
+					console.log(assetBalance, key);
+
+					if (!assetBalance.data) {
+						alert("You do not hold the vote token for this vote.");
+						return;
+					} else if (assetBalance.data.amount < 1) {
+						alert(
+							"You cannot participate in this vote with a vote token balance of 0."
+						);
+						return;
+					}
+				} else if (key === "VoteBegin") {
+					voteBegin = state.data[key];
+				} else if (key === "VoteEnd") {
+					voteEnd = state.data[key];
+				} else if (key !== "Creator") {
+					candidates.push(key);
+				}
+			}
+
+			setParticipateInfo({
+				...participateInfo,
+				voteBegin,
+				voteEnd,
+				assetId,
+				candidates,
+				activeStep: participateInfo.activeStep + 1,
+			});
+		} else {
+			setParticipateInfo({
+				...participateInfo,
+				activeStep: participateInfo.activeStep + 1,
+			});
+		}
 	};
 
 	const handleBack = () => {

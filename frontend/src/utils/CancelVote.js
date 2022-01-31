@@ -21,9 +21,13 @@ export const cancelVote = (setVoteInfo) => {
 export const cancelParticipate = (setParticipateInfo) => {
 	setParticipateInfo({
 		voteStarted: false,
-		registerOrVote: null,
 		activeStep: 0,
-		publicKey: "",
-		voteAssetId: null,
+		registerOrVote: null,
+		voteBegin: null,
+		voteEnd: null,
+		sk: "",
+		appId: "",
+		assetId: null,
+		candidates: [],
 	});
 };
