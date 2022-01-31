@@ -15,7 +15,6 @@ import Payment from "components/createWorkflow/Payment";
 
 // Paricipate workflow
 import ReviewAndPay from "components/participateWorkflow/ReviewAndPay";
-import SelectVote from "components/participateWorkflow/SelectVote";
 import SelectCandidate from "components/participateWorkflow/SelectCandidate";
 import EnterPublicKey from "components/participateWorkflow/EnterVoteInfo";
 import RegisterOrVote from "components/participateWorkflow/RegisterOrVote";
@@ -135,11 +134,10 @@ const VoteWorkflow = () => {
 							{participateInfo.activeStep === 1 && (
 								<EnterPublicKey />
 							)}
-							{participateInfo.activeStep === 2 && <SelectVote />}
-							{participateInfo.activeStep === 3 && (
+							{participateInfo.activeStep === 2 && (
 								<SelectCandidate />
 							)}
-							{participateInfo.activeStep === 4 && (
+							{participateInfo.activeStep === 3 && (
 								<ReviewAndPay />
 							)}
 						</Paper>

@@ -31,5 +31,6 @@ export const cancelParticipate = (setParticipateInfo) => {
 		appId: "",
 		assetId: null,
 		candidates: [],
+		selectedCandidate: "",
 	});
 };

@@ -13,6 +13,7 @@ export const ParticipateProvider = (props) => {
 		appId: "", // smart contract application id
 		assetId: null, // vote token id
 		candidates: [], // list of candidates
+		selectedCandidate: "", // selected candidate for vote
 	});
 	return (
 		<ParticipateContext.Provider

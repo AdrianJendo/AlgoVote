@@ -38,7 +38,9 @@ export default function VerticalLinearStepper() {
 			(participateInfo.activeStep === 1 &&
 				isMnemonicValid(participateInfo.sk) &&
 				participateInfo.appId &&
-				!isNaN(participateInfo.appId))
+				!isNaN(participateInfo.appId)) ||
+			(participateInfo.activeStep === 2 &&
+				participateInfo.selectedCandidate !== "")
 		) {
 			setReadyToContinue(true);
 		} else {
