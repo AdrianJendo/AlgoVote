@@ -17,7 +17,7 @@ export const createVoteSmartContract = async (req, res) => {
 		);
 		const sender = creatorAccount.addr;
 		const assetId = req.body.assetId;
-		const numCandidates = req.body.numCandidates;
+		const candidates = JSON.parse(req.body.candidates);
 
 		// get node suggested parameters
 		let params = await algodClient.getTransactionParams().do();
@@ -77,6 +77,10 @@ export const createVoteSmartContract = async (req, res) => {
 		args.push(algosdk.encodeUint64(startVotingBlock));
 		args.push(algosdk.encodeUint64(endVotingBlock));
 		args.push(algosdk.encodeUint64(assetId));
+		candidates.map((candidate) => {
+			args.push(new Uint8Array(Buffer.from(candidate)));
+		});
+
 		// const lsig = new algosdk.LogicSigAccount(vote_program, args);
 		// console.log("lsig : " + lsig.address());
 
@@ -89,7 +93,7 @@ export const createVoteSmartContract = async (req, res) => {
 			opt_out_program,
 			0, // local integers
 			1, // local byteslices
-			args.length + numCandidates, // global integers (startVotingBlock, endVotingBlock, assetId, numCandidates)
+			args.length, // global integers (startVotingBlock, endVotingBlock, assetId, candidates)
 			1, // global byteslices (1 for creator address)
 			args
 		);
