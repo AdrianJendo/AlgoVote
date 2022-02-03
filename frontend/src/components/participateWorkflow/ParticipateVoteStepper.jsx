@@ -22,7 +22,7 @@ const steps = [
 	{
 		label: "Review & Pay",
 		description:
-			"Review the details of this transaction and enter your private key to pay the transaction fees.",
+			"Review the details of this transaction and click 'Confirm' to pay the transaction fees.",
 	},
 ];
 

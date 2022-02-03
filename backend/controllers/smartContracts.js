@@ -1,11 +1,12 @@
 import algosdk from "algosdk";
 import path from "path";
 
-import { algodClient, __dirname } from "../server.js";
+import { algodClient, __dirname, BACKEND_PORT } from "../server.js";
 import { printAssetHolding } from "../helpers/ASAs.js";
 import { waitForConfirmation } from "../helpers/misc.js";
 import { readTeal } from "../helpers/smartContracts.js";
 import decodeURIMnemonic from "../helpers/decodeMnemonic.js";
+import axios from "axios";
 
 const SECS_PER_BLOCK = 4.5;
 
@@ -181,72 +182,89 @@ export const optInVoteSmartContract = async (req, res) => {
 
 // voting via atomic transfer
 export const submitVote = async (req, res) => {
-	// get accounts from mnemonic
-	const userAccount = algosdk.mnemonicToSecretKey(req.body.userMnemonic);
-	const sender = userAccount.addr;
-	const appId = req.body.appId;
-	const candidate = req.body.candidate;
-	const assetId = req.body.assetId;
-	const recipient = req.body.receiver;
-	const amount = req.body.amount;
+	try {
+		// get accounts from mnemonic
+		const userAccount = algosdk.mnemonicToSecretKey(
+			decodeURIMnemonic(req.body.userMnemonic)
+		);
+		const sender = userAccount.addr;
+		const appId = req.body.appId;
+		const candidate = req.body.candidate;
 
-	// get node suggested parameters
-	let params = await algodClient.getTransactionParams().do();
-	// comment out the next two lines to use suggested fee
-	params.fee = 1000;
-	params.flatFee = true;
+		const smartContractAttributes = await axios.get(
+			`http://127.0.0.1:${BACKEND_PORT}/smartContract/readVoteSmartContractState`,
+			{ params: { appId } }
+		);
 
-	const args = [];
-	args.push(new Uint8Array(Buffer.from("vote")));
-	args.push(new Uint8Array(Buffer.from(candidate)));
+		const assetId = smartContractAttributes.data.AssetId;
+		const recipient = smartContractAttributes.data.Creator; // recipient of vote token is the creator of the vote token
 
-	// goal app call --app-id {APPID} --app-arg "str:vote" --app-arg "str:candidatea" --from {ACCOUNT}  --out=unsignedtransaction1.tx
-	let txn1 = algosdk.makeApplicationNoOpTxn(sender, params, appId, args);
+		const userBalance = await axios.get(
+			`http://127.0.0.1:${BACKEND_PORT}/asa/checkAssetBalance`,
+			{ params: { addr: sender, assetId } }
+		); // token balance of the user
+		const amount = userBalance.data.amount;
 
-	//goal asset send --from={ACCOUNT} --to={CENTRAL_ACCOUNT} --creator {CENTRAL_ACCOUNT} --assetid {VOTE_TOKEN_ID} --fee=1000 --amount=1 --out=unsignedtransaction2.tx
-	const revocationTarget = undefined;
-	const closeRemainderTo = undefined;
-	//Amount of the asset to transfer
+		// get node suggested parameters
+		let params = await algodClient.getTransactionParams().do();
+		// comment out the next two lines to use suggested fee
+		params.fee = 1000;
+		params.flatFee = true;
 
-	// signing and sending "txn" will send "amount" assets from "sender" to "recipient"
-	let txn2 = algosdk.makeAssetTransferTxnWithSuggestedParams(
-		sender,
-		recipient,
-		closeRemainderTo,
-		revocationTarget,
-		amount,
-		undefined,
-		assetId,
-		params
-	);
+		const args = [];
+		args.push(new Uint8Array(Buffer.from("vote")));
+		args.push(new Uint8Array(Buffer.from(candidate)));
 
-	// Combine transactions
-	let txns = [txn1, txn2];
+		// goal app call --app-id {APPID} --app-arg "str:vote" --app-arg "str:candidatea" --from {ACCOUNT}  --out=unsignedtransaction1.tx
+		let txn1 = algosdk.makeApplicationNoOpTxn(sender, params, appId, args);
 
-	// Group both transactions
-	let txnGroup = algosdk.assignGroupID(txns);
-	// console.log("txnGroup", txnGroup);
+		//goal asset send --from={ACCOUNT} --to={CENTRAL_ACCOUNT} --creator {CENTRAL_ACCOUNT} --assetid {VOTE_TOKEN_ID} --fee=1000 --amount=1 --out=unsignedtransaction2.tx
+		const revocationTarget = undefined;
+		const closeRemainderTo = undefined;
+		//Amount of the asset to transfer
 
-	let signedTxn1 = txn1.signTxn(userAccount.sk);
-	let signedTxn2 = txn2.signTxn(userAccount.sk);
+		// signing and sending "txn" will send "amount" assets from "sender" to "recipient"
+		let txn2 = algosdk.makeAssetTransferTxnWithSuggestedParams(
+			sender,
+			recipient,
+			closeRemainderTo,
+			revocationTarget,
+			amount,
+			undefined,
+			assetId,
+			params
+		);
 
-	// Combine the signed transactions
-	const signed = [];
-	signed.push(signedTxn1);
-	signed.push(signedTxn2);
+		// Combine transactions
+		let txns = [txn1, txn2];
 
-	let txn = await algodClient.sendRawTransaction(signed).do();
-	console.log("Transaction : " + txn.txId);
+		// Group both transactions
+		let txnGroup = algosdk.assignGroupID(txns);
+		// console.log("txnGroup", txnGroup);
 
-	// Wait for transaction to be confirmed
-	await waitForConfirmation(algodClient, txn.txId);
+		let signedTxn1 = txn1.signTxn(userAccount.sk);
+		let signedTxn2 = txn2.signTxn(userAccount.sk);
 
-	const voterAssetHoldings = JSON.parse(
-		await printAssetHolding(algodClient, sender, assetId)
-	);
-	const creatorAssetHoldings = JSON.parse(
-		await printAssetHolding(algodClient, recipient, assetId)
-	);
+		// Combine the signed transactions
+		const signed = [];
+		signed.push(signedTxn1);
+		signed.push(signedTxn2);
+
+		let txn = await algodClient.sendRawTransaction(signed).do();
+		console.log("Transaction : " + txn.txId);
+
+		// Wait for transaction to be confirmed
+		await waitForConfirmation(algodClient, txn.txId);
+
+		const voterAssetHoldings = JSON.parse(
+			await printAssetHolding(algodClient, sender, assetId)
+		);
+		const creatorAssetHoldings = JSON.parse(
+			await printAssetHolding(algodClient, recipient, assetId)
+		);
+	} catch (err) {
+		return res.send(err.message);
+	}
 
 	return res.send({ voterAssetHoldings, creatorAssetHoldings });
 };
