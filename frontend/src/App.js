@@ -5,6 +5,7 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { useState } from "react";
 import { VoteInfoProvider } from "context/VoteInfoContext";
 import { ParticipateProvider } from "context/ParticipateContext";
+import { VoteResultsProvider } from "context/VoteResultsContext";
 import { DateValueProvider } from "context/DateValueContext";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
@@ -19,10 +20,12 @@ function App() {
 			<LocalizationProvider dateAdapter={AdapterDateFns}>
 				<VoteInfoProvider>
 					<ParticipateProvider>
-						<DateValueProvider>
-							<AppBar dark={dark} setDark={setDark} />
-							<Base />
-						</DateValueProvider>
+						<VoteResultsProvider>
+							<DateValueProvider>
+								<AppBar dark={dark} setDark={setDark} />
+								<Base />
+							</DateValueProvider>
+						</VoteResultsProvider>
 					</ParticipateProvider>
 				</VoteInfoProvider>
 			</LocalizationProvider>

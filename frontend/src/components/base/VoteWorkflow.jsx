@@ -3,6 +3,7 @@ import { Button, Paper } from "@mui/material";
 import { styled } from "@mui/system";
 import { VoteInfoContext } from "context/VoteInfoContext";
 import { ParticipateContext } from "context/ParticipateContext";
+import { VoteResultsContext } from "context/VoteResultsContext";
 
 // Create workflow
 import CreateVoteStepper from "components/createWorkflow/CreateVoteStepper";
@@ -52,6 +53,7 @@ const VoteWorkflow = () => {
 	const [voteInfo, setVoteInfo] = useContext(VoteInfoContext);
 	const [participateInfo, setParticipateInfo] =
 		useContext(ParticipateContext);
+	const [voteResults, setVoteResults] = useContext(VoteResultsContext);
 
 	const earliestStartDate = new Date(); // earliest start date is today
 	return (
@@ -166,6 +168,18 @@ const VoteWorkflow = () => {
 						sx={{ margin: "5px" }}
 					>
 						Participate in Vote
+					</Button>
+					<Button
+						variant="contained"
+						onClick={() =>
+							setVoteResults({
+								...voteResults,
+								workflowStarted: true,
+							})
+						}
+						sx={{ margin: "5px" }}
+					>
+						View Vote Results
 					</Button>
 				</ButtonDiv>
 			)}
