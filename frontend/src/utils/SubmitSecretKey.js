@@ -7,8 +7,26 @@ const MIN_VOTER_BALANCE = 100000 + 100000 + 100000 + 50000 + 10000; // micro alg
 const submitSecretKey = async (props) => {
 	const { secretKey, voteInfo, setVoteInfo, setProgressBar, voteName } =
 		props;
+
 	try {
 		setVoteInfo({ ...voteInfo, voteSubmitted: true });
+
+		// get start and end date
+		const startVote = new Date(
+			voteInfo.startDate.getFullYear(),
+			voteInfo.startDate.getMonth(),
+			voteInfo.startDate.getDate(),
+			voteInfo.startTime.getHours(),
+			voteInfo.startTime.getMinutes()
+		);
+
+		const endVote = new Date(
+			voteInfo.endDate.getFullYear(),
+			voteInfo.endDate.getMonth(),
+			voteInfo.endDate.getDate(),
+			voteInfo.endTime.getHours(),
+			voteInfo.endTime.getMinutes()
+		);
 
 		// validate that secret key exists
 		const encryptedMnemonic = encodeURIMnemonic(secretKey);
@@ -72,6 +90,8 @@ const submitSecretKey = async (props) => {
 					candidates: JSON.stringify(
 						Object.keys(voteInfo.candidateData)
 					),
+					startVote: startVote.toString(),
+					endVote: endVote.toString(),
 				}
 			);
 			const appId = smartContractResp.data.appId;
@@ -187,8 +207,8 @@ const submitSecretKey = async (props) => {
 					if (i === 0) {
 						row[0] = appId;
 						row[1] = assetId;
-						row[3] = voteInfo.startTime.toString();
-						row[4] = voteInfo.endTime.toString();
+						row[3] = startVote.toString();
+						row[4] = endVote.toString();
 					}
 
 					if (i < candidates.length) {

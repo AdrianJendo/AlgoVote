@@ -42,11 +42,7 @@ const ReviewAndPay = () => {
 	});
 	rows.push({
 		name: "Estimated transaction fee",
-		value: (
-			<div>
-				<i>0.001</i> Algos
-			</div>
-		),
+		value: <i>0.001 Algos</i>,
 	});
 
 	return (
@@ -73,9 +69,7 @@ const ReviewAndPay = () => {
 									</Typography>
 								</StyledTableCell>
 								<StyledTableCell align="center">
-									<Typography>
-										<i>{row.value}</i>
-									</Typography>
+									<Typography>{row.value}</Typography>
 								</StyledTableCell>
 							</StyledTableRow>
 						))}
@@ -84,7 +78,9 @@ const ReviewAndPay = () => {
 			</div>
 			<Button
 				variant="contained"
-				onClick={() => submitVote(participateInfo, setParticipateInfo)}
+				onClick={async () =>
+					await submitVote(participateInfo, setParticipateInfo)
+				}
 			>
 				Confirm
 			</Button>

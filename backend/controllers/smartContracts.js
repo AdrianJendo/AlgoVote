@@ -40,31 +40,34 @@ export const createVoteSmartContract = async (req, res) => {
 
 		// integer parameter
 		const args = [];
+
+		// date stuff
+		const startVote = new Date(req.body.startVote);
+		const endVote = new Date(req.body.endVote);
+
 		const today = new Date();
 		const startVoteUTC = Date.UTC(
-			today.getUTCFullYear(),
-			today.getUTCMonth(),
-			today.getUTCDate(),
-			today.getUTCHours(),
-			today.getUTCMinutes() + 2,
-			today.getUTCSeconds(),
-			today.getUTCMilliseconds()
+			startVote.getUTCFullYear(),
+			startVote.getUTCMonth(),
+			startVote.getUTCDate(),
+			startVote.getUTCHours(),
+			startVote.getUTCMinutes(),
+			startVote.getUTCSeconds(),
+			startVote.getUTCMilliseconds()
 		);
 		const endVoteUTC = Date.UTC(
-			today.getUTCFullYear(),
-			today.getUTCMonth(),
-			today.getUTCDate(),
-			today.getUTCHours(),
-			today.getUTCMinutes() + 10,
-			today.getUTCSeconds(),
-			today.getUTCMilliseconds()
+			endVote.getUTCFullYear(),
+			endVote.getUTCMonth(),
+			endVote.getUTCDate(),
+			endVote.getUTCHours(),
+			endVote.getUTCMinutes(),
+			endVote.getUTCSeconds(),
+			endVote.getUTCMilliseconds()
 		);
 
 		// We can also try omitting all this code and using startVoteUTC and endVoteUTC directly... then either using 'global LatestTimestamp' or passing in the timestamp at which registration was attempted
-		const startVoteSecs = Math.abs(
-			Math.round((startVoteUTC - today) / 1000)
-		);
-		const endVoteSecs = Math.abs(Math.round((endVoteUTC - today) / 1000));
+		const startVoteSecs = Math.round((startVoteUTC - today) / 1000);
+		const endVoteSecs = Math.round((endVoteUTC - today) / 1000);
 
 		const blockchainStatus = await algodClient.status().do();
 		const blockRound = blockchainStatus["last-round"];
@@ -165,7 +168,7 @@ export const optInVoteSmartContract = async (req, res) => {
 		await waitForConfirmation(algodClient, txId);
 	} catch (err) {
 		console.log(err);
-		return err;
+		return res.send(err);
 	}
 
 	// display results
@@ -216,7 +219,13 @@ export const submitVote = async (req, res) => {
 		args.push(new Uint8Array(Buffer.from(candidate)));
 
 		// goal app call --app-id {APPID} --app-arg "str:vote" --app-arg "str:candidatea" --from {ACCOUNT}  --out=unsignedtransaction1.tx
-		let txn1 = algosdk.makeApplicationNoOpTxn(sender, params, appId, args);
+		let txn1 = algosdk.makeApplicationNoOpTxnFromObject({
+			from: sender,
+			suggestedParams: params,
+			appIndex: appId,
+			appArgs: args,
+			foreignAssets: [assetId],
+		});
 
 		//goal asset send --from={ACCOUNT} --to={CENTRAL_ACCOUNT} --creator {CENTRAL_ACCOUNT} --assetid {VOTE_TOKEN_ID} --fee=1000 --amount=1 --out=unsignedtransaction2.tx
 		const revocationTarget = undefined;
@@ -262,11 +271,12 @@ export const submitVote = async (req, res) => {
 		const creatorAssetHoldings = JSON.parse(
 			await printAssetHolding(algodClient, recipient, assetId)
 		);
-	} catch (err) {
-		return res.send(err.message);
-	}
 
-	return res.send({ voterAssetHoldings, creatorAssetHoldings });
+		return res.send({ voterAssetHoldings, creatorAssetHoldings });
+	} catch (err) {
+		console.log(err);
+		return res.send(err);
+	}
 };
 
 export const deleteVoteSmartContract = async (req, res) => {

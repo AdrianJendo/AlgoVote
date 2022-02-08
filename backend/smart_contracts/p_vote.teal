@@ -91,7 +91,7 @@ txna ApplicationArgs 0
 byte "vote" // check if the first argument to the transaction is "vote"
 ==
 bnz vote
-int 0 // handle case where arguement is either not "register" or not "vote"
+int 0 // handle case where argument is either not "register" or not "vote"
 return
 vote:
 //verify in voting rounds
@@ -116,7 +116,7 @@ bz failed
 // sender
 int 0 // offset 0 for sender
 // not hard-coded assetid
-byte "AssetId"
+byte "AssetId" // OR int 0 // (first index of foregin asset args)
 app_global_get
 // returns frozen an asset balance
 // pop frozen
@@ -162,6 +162,10 @@ pop // pop voted variable from stack
 int 0
 txna ApplicationArgs 1 // load candidate onto top of stack
 app_global_get_ex // read from application A (0) global state key B (candidate)
+bnz increment_existing 
+pop // if current candidate has 0 votes pop last value
+int 0 // add zero (current number of votes of candidate)
+increment_existing:
 int 1
 +
 store 1

@@ -41,7 +41,7 @@ const SelectCandidate = () => {
 						label="Candidates"
 						onChange={handleChange}
 					>
-						{participateInfo.candidates.map((candidate) => (
+						{participateInfo.candidates.sort().map((candidate) => (
 							<MenuItem key={candidate} value={candidate}>
 								{candidate}
 							</MenuItem>
