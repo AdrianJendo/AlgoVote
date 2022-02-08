@@ -2,26 +2,22 @@ import * as React from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
+import { styled } from "@mui/system";
+
+const BoxDiv = styled((props) => <Box {...props} />)(() => ({
+	top: "40%",
+	left: 0,
+	bottom: 0,
+	right: 0,
+	position: "absolute",
+	// display: "flex",
+	alignItems: "center",
+	justifyContent: "center",
+}));
 
 const CircularProgressBar = (props) => {
-	const getText = (val) => {
-		switch (val) {
-			case 0:
-				return "Creating vote token";
-			case 20:
-				return "Creating smart contract";
-			case 40:
-				return "Funding new accounts";
-			case 60:
-				return "Opting in to vote token";
-			case 80:
-				return "Opting in to contract";
-			case 99:
-				return "Exporting Vote Data";
-			default:
-				return "ERR";
-		}
-	};
+	const { value, getText, text } = props;
+
 	return (
 		<Box sx={{ position: "relative", display: "inline-flex" }}>
 			<CircularProgress
@@ -30,34 +26,35 @@ const CircularProgressBar = (props) => {
 				variant="indeterminate"
 				{...props}
 			/>
-			<Box
-				sx={{
-					top: "40%",
-					left: 0,
-					bottom: 0,
-					right: 0,
-					position: "absolute",
-					// display: "flex",
-					alignItems: "center",
-					justifyContent: "center",
-				}}
-			>
-				<Typography
-					variant="body1"
-					component="div"
-					color="text.secondary"
-				>
-					{getText(props.value)}
-				</Typography>
-				<br />
-				<Typography
-					variant="caption"
-					component="div"
-					color="text.secondary"
-				>
-					{`${Math.round(props.value)}%`}
-				</Typography>
-			</Box>
+			{value ? (
+				<BoxDiv>
+					<Typography
+						variant="body1"
+						component="div"
+						color="text.secondary"
+					>
+						{getText(value)}
+					</Typography>
+					<br />
+					<Typography
+						variant="caption"
+						component="div"
+						color="text.secondary"
+					>
+						{`${Math.round(value)}%`}
+					</Typography>
+				</BoxDiv>
+			) : (
+				<BoxDiv>
+					<Typography
+						variant="caption"
+						component="div"
+						color="text.secondary"
+					>
+						{text}
+					</Typography>
+				</BoxDiv>
+			)}
 		</Box>
 	);
 };

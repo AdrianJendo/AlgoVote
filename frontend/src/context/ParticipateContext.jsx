@@ -14,6 +14,8 @@ export const ParticipateProvider = (props) => {
 		assetId: null, // vote token id
 		candidates: [], // list of candidates
 		selectedCandidate: "", // selected candidate for vote
+		voteSubmitted: false, // true when vote/register transaction submitted
+		voteAccepted: false, // true when vote/register transaction accepted
 	});
 	return (
 		<ParticipateContext.Provider

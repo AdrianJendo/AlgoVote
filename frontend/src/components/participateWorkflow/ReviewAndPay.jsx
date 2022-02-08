@@ -1,6 +1,8 @@
 import React, { useContext } from "react";
 import { ParticipateContext } from "context/ParticipateContext";
+import { cancelParticipate } from "utils/CancelVote";
 import submitVote from "utils/participateWorkflow/submitVote";
+import ProgressBar from "components/createWorkflow/ProgressBar";
 
 import {
 	Typography,
@@ -76,14 +78,29 @@ const ReviewAndPay = () => {
 					</TableBody>
 				</Table>
 			</div>
-			<Button
-				variant="contained"
-				onClick={async () =>
-					await submitVote(participateInfo, setParticipateInfo)
-				}
-			>
-				Confirm
-			</Button>
+			{!participateInfo.voteSubmitted && (
+				<Button
+					variant="contained"
+					onClick={async () =>
+						await submitVote(participateInfo, setParticipateInfo)
+					}
+				>
+					Confirm
+				</Button>
+			)}
+			{participateInfo.voteSubmitted && !participateInfo.voteAccepted && (
+				<div style={{ padding: "50px" }}>
+					<ProgressBar text="Sending Vote..." />
+				</div>
+			)}
+			{participateInfo.voteSubmitted && participateInfo.voteAccepted && (
+				<Button
+					variant="contained"
+					onClick={() => cancelParticipate(setParticipateInfo)}
+				>
+					Home
+				</Button>
+			)}
 		</div>
 	);
 };

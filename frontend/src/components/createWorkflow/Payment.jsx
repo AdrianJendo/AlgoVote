@@ -13,6 +13,25 @@ const Payment = () => {
 	const [progressBar, setProgressBar] = useState(null);
 	const [appId, setAppId] = useState(null);
 
+	const getText = (val) => {
+		switch (val) {
+			case 0:
+				return "Creating vote token";
+			case 20:
+				return "Creating smart contract";
+			case 40:
+				return "Funding new accounts";
+			case 60:
+				return "Opting in to vote token";
+			case 80:
+				return "Opting in to contract";
+			case 99:
+				return "Exporting Vote Data";
+			default:
+				return "ERR";
+		}
+	};
+
 	return (
 		<div
 			style={{
@@ -67,7 +86,10 @@ const Payment = () => {
 			{progressBar !== null && (
 				<div style={{ padding: "50px" }}>
 					{progressBar < 100 || appId === null ? (
-						<ProgressBar value={progressBar} />
+						<ProgressBar
+							value={progressBar}
+							getText={(val) => getText(val)}
+						/>
 					) : (
 						<div>
 							<Typography

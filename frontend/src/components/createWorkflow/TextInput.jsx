@@ -14,7 +14,7 @@ export default function CustomizedInputBase({ index }) {
 	const inputRef = React.useRef();
 
 	const addValue = () => {
-		const names = textValue.split(" ").join("").split(","); // handles comma separated names
+		const names = textValue.split(","); // handles comma separated names
 		const participants = voteInfo[index] ? voteInfo[index] : {};
 		for (let i = 0; i < names.length; ++i) {
 			const name =

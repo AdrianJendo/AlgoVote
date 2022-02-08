@@ -32,5 +32,7 @@ export const cancelParticipate = (setParticipateInfo) => {
 		assetId: null,
 		candidates: [],
 		selectedCandidate: "",
+		voteSubmitted: false,
+		voteAccepted: false,
 	});
 };

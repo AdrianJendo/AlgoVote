@@ -40,7 +40,8 @@ export default function VerticalLinearStepper() {
 				participateInfo.appId &&
 				!isNaN(participateInfo.appId)) ||
 			(participateInfo.activeStep === 2 &&
-				participateInfo.selectedCandidate !== "")
+				participateInfo.selectedCandidate !== "") ||
+			(participateInfo.activeStep === 3 && participateInfo.voteAccepted)
 		) {
 			setReadyToContinue(true);
 		} else {
@@ -109,6 +110,8 @@ export default function VerticalLinearStepper() {
 				candidates,
 				activeStep: participateInfo.activeStep + 1,
 			});
+		} else if (participateInfo.activeStep === 3) {
+			cancelParticipate(setParticipateInfo);
 		} else {
 			setParticipateInfo({
 				...participateInfo,
@@ -120,8 +123,7 @@ export default function VerticalLinearStepper() {
 	const handleBack = () => {
 		const activeStep = participateInfo.activeStep;
 		if (activeStep === 0) {
-			//cancelling
-			cancelParticipate(setParticipateInfo);
+			cancelParticipate(setParticipateInfo); //cancelling
 		} else if (activeStep === 1) {
 			setParticipateInfo({
 				...participateInfo,
