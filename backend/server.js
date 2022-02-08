@@ -17,7 +17,7 @@ export const __dirname = path.dirname(__filename);
 
 // Environment variables
 dotenv.config();
-const BACKEND_PORT = process.env.BACKEND_PORT || 5001;
+export const BACKEND_PORT = process.env.BACKEND_PORT || 5001;
 const ALGOD_TOKEN = process.env.ALGOD_TOKEN
 	? {
 			"X-API-Key": process.env.ALGOD_TOKEN,

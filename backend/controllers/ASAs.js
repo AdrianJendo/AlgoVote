@@ -73,49 +73,49 @@ export const checkAssetBalance = async (req, res) => {
 };
 
 export const optInToAsset = async (req, res) => {
-	// Opting in to an Asset:
-	// Opting in to transact with the new asset
-	// Allow accounts that want recieve the new asset
-	// Have to opt in. To do this they send an asset transfer
-	// of the new asset to themseleves
-	// In this example we are setting up the 3rd recovered account to
-	// receive the new asset
-
-	// First update changing transaction parameters
-	// We will account for changing transaction parameters
-	// before every transaction in this example
-	let params = await algodClient.getTransactionParams().do();
-	//comment out the next two lines to use suggested fee
-	params.fee = 1000;
-	params.flatFee = true;
-
-	const senderAccount = algosdk.mnemonicToSecretKey(
-		decodeURIMnemonic(req.body.senderMnemonic)
-	);
-	const assetId = req.body.assetId;
-	let sender = senderAccount.addr;
-	let recipient = sender;
-	// We set revocationTarget to undefined as
-	// This is not a clawback operation
-	let revocationTarget = undefined;
-	// CloseReaminerTo is set to undefined as
-	// we are not closing out an asset
-	let closeRemainderTo = undefined;
-	// We are sending 0 assets
-	const amount = 0;
-
-	// signing and sending "txn" allows sender to begin accepting asset specified by creator and index
-	let opttxn = algosdk.makeAssetTransferTxnWithSuggestedParams(
-		sender,
-		recipient,
-		closeRemainderTo,
-		revocationTarget,
-		amount,
-		undefined,
-		assetId,
-		params
-	);
 	try {
+		// Opting in to an Asset:
+		// Opting in to transact with the new asset
+		// Allow accounts that want recieve the new asset
+		// Have to opt in. To do this they send an asset transfer
+		// of the new asset to themseleves
+		// In this example we are setting up the 3rd recovered account to
+		// receive the new asset
+
+		// First update changing transaction parameters
+		// We will account for changing transaction parameters
+		// before every transaction in this example
+		let params = await algodClient.getTransactionParams().do();
+		//comment out the next two lines to use suggested fee
+		params.fee = 1000;
+		params.flatFee = true;
+
+		const senderAccount = algosdk.mnemonicToSecretKey(
+			decodeURIMnemonic(req.body.senderMnemonic)
+		);
+		const assetId = req.body.assetId;
+		let sender = senderAccount.addr;
+		let recipient = sender;
+		// We set revocationTarget to undefined as
+		// This is not a clawback operation
+		let revocationTarget = undefined;
+		// CloseReaminerTo is set to undefined as
+		// we are not closing out an asset
+		let closeRemainderTo = undefined;
+		// We are sending 0 assets
+		const amount = 0;
+
+		// signing and sending "txn" allows sender to begin accepting asset specified by creator and index
+		let opttxn = algosdk.makeAssetTransferTxnWithSuggestedParams(
+			sender,
+			recipient,
+			closeRemainderTo,
+			revocationTarget,
+			amount,
+			undefined,
+			assetId,
+			params
+		);
 		// Must be signed by the account wishing to opt in to the asset
 		const rawSignedTxn = opttxn.signTxn(senderAccount.sk);
 		let opttx = await algodClient.sendRawTransaction(rawSignedTxn).do();
@@ -136,33 +136,35 @@ export const optInToAsset = async (req, res) => {
 };
 
 export const transferAsset = async (req, res) => {
-	let params = await algodClient.getTransactionParams().do();
-	//comment out the next two lines to use suggested fee
-	params.fee = 1000;
-	params.flatFee = true;
-
-	const senderAccount = algosdk.mnemonicToSecretKey(req.body.senderMnemonic);
-	const assetId = req.body.assetId;
-	const sender = senderAccount.addr;
-	const recipient = req.body.receiver;
-	const revocationTarget = undefined;
-	const closeRemainderTo = undefined;
-	//Amount of the asset to transfer
-	const amount = req.body.amount;
-
-	// signing and sending "txn" will send "amount" assets from "sender" to "recipient"
-	let xtxn = algosdk.makeAssetTransferTxnWithSuggestedParams(
-		sender,
-		recipient,
-		closeRemainderTo,
-		revocationTarget,
-		amount,
-		undefined,
-		assetId,
-		params
-	);
-
 	try {
+		let params = await algodClient.getTransactionParams().do();
+		//comment out the next two lines to use suggested fee
+		params.fee = 1000;
+		params.flatFee = true;
+
+		const senderAccount = algosdk.mnemonicToSecretKey(
+			decodeURIMnemonic(req.body.senderMnemonic)
+		);
+		const assetId = req.body.assetId;
+		const sender = senderAccount.addr;
+		const recipient = req.body.receiver;
+		const revocationTarget = undefined;
+		const closeRemainderTo = undefined;
+		//Amount of the asset to transfer
+		const amount = req.body.amount;
+
+		// signing and sending "txn" will send "amount" assets from "sender" to "recipient"
+		let xtxn = algosdk.makeAssetTransferTxnWithSuggestedParams(
+			sender,
+			recipient,
+			closeRemainderTo,
+			revocationTarget,
+			amount,
+			undefined,
+			assetId,
+			params
+		);
+
 		// Must be signed by the account sending the asset
 		const rawSignedTxn = xtxn.signTxn(senderAccount.sk);
 		let xtx = await algodClient.sendRawTransaction(rawSignedTxn).do();

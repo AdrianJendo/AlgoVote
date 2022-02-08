@@ -109,12 +109,23 @@ export default function VerticalLinearStepper() {
 		}
 	};
 
+	const handleBack = () => {
+		const activeStep = voteInfo.activeStep;
+		if (activeStep === 0) {
+			//cancelling
+			cancelVote(setVoteInfo);
+		} else {
+			setVoteInfo({ ...voteInfo, activeStep: activeStep - 1 });
+		}
+	};
+
 	return (
 		<Stepper
 			steps={steps}
 			stepInfo={voteInfo}
 			setStepInfo={setVoteInfo}
 			handleNext={handleNext}
+			handleBack={handleBack}
 			readyToContinue={readyToContinue}
 			cancelStepper={cancelVote}
 		/>

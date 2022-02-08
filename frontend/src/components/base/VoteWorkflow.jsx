@@ -15,9 +15,8 @@ import Payment from "components/createWorkflow/Payment";
 
 // Paricipate workflow
 import ReviewAndPay from "components/participateWorkflow/ReviewAndPay";
-import SelectVote from "components/participateWorkflow/SelectVote";
 import SelectCandidate from "components/participateWorkflow/SelectCandidate";
-import EnterPublicKey from "components/participateWorkflow/EnterPublicKey";
+import EnterPublicKey from "components/participateWorkflow/EnterVoteInfo";
 import RegisterOrVote from "components/participateWorkflow/RegisterOrVote";
 
 const ButtonDiv = styled("div")({
@@ -129,11 +128,18 @@ const VoteWorkflow = () => {
 								textAlign: "center",
 							}}
 						>
-							{voteInfo.activeStep === 0 && <RegisterOrVote />}
-							{voteInfo.activeStep === 1 && <EnterPublicKey />}
-							{voteInfo.activeStep === 2 && <SelectVote />}
-							{voteInfo.activeStep === 3 && <SelectCandidate />}
-							{voteInfo.activeStep === 4 && <ReviewAndPay />}
+							{participateInfo.activeStep === 0 && (
+								<RegisterOrVote />
+							)}
+							{participateInfo.activeStep === 1 && (
+								<EnterPublicKey />
+							)}
+							{participateInfo.activeStep === 2 && (
+								<SelectCandidate />
+							)}
+							{participateInfo.activeStep === 3 && (
+								<ReviewAndPay />
+							)}
 						</Paper>
 					</PaperDiv>
 				</div>

@@ -6,9 +6,16 @@ export const ParticipateProvider = (props) => {
 	const [participateInfo, setParticipateInfo] = useState({
 		voteStarted: false, // checks if workflow has started
 		activeStep: 0, // current step of workflow
-
-		participantPublicKey: null,
-		voteAssetId: null, // vote token id
+		registerOrVote: null, // either "register" or "vote"
+		voteBegin: null, // vote start block
+		voteEnd: null, // vote end block
+		sk: "", // secret key of participant
+		appId: "", // smart contract application id
+		assetId: null, // vote token id
+		candidates: [], // list of candidates
+		selectedCandidate: "", // selected candidate for vote
+		voteSubmitted: false, // true when vote/register transaction submitted
+		voteAccepted: false, // true when vote/register transaction accepted
 	});
 	return (
 		<ParticipateContext.Provider

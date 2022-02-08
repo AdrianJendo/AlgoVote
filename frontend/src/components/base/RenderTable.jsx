@@ -105,13 +105,10 @@ export default function StickyHeadTable({ stage }) {
 				delete newVoteInfo.candidateData[row.name];
 			}
 			setVoteInfo(newVoteInfo);
-		} else {
-			if (stage === "participants") {
-				newVoteInfo.participantData[row.name]--;
-			} else {
-				newVoteInfo.candidateData[row.name]--;
-			}
+		} else if (stage === "participants") {
+			newVoteInfo.participantData[row.name]--;
 		}
+
 		setVoteInfo(newVoteInfo);
 	};
 

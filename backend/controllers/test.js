@@ -196,6 +196,7 @@ export const votingWorkflow = async (req, res) => {
 
 	// delete smart contract when vote ends
 	try {
+		// we don't want to do this because then the results are not seeable I think
 		// await axios.post(
 		// 	"http://localhost:5001/smartContract/deleteVoteSmartContract",
 		// 	{

@@ -54,24 +54,7 @@ const StepIcon = (props) => {
 };
 
 const WorkflowStepper = (props) => {
-	const {
-		steps,
-		stepInfo,
-		setStepInfo,
-		handleNext,
-		readyToContinue,
-		cancelStepper,
-	} = props;
-
-	const handleBack = () => {
-		const activeStep = stepInfo.activeStep;
-		if (activeStep === 0) {
-			//cancelling
-			cancelStepper(setStepInfo);
-		} else {
-			setStepInfo({ ...stepInfo, activeStep: activeStep - 1 });
-		}
-	};
+	const { steps, stepInfo, handleNext, readyToContinue, handleBack } = props;
 
 	return (
 		<Box sx={{ maxWidth: 300 }}>
@@ -108,7 +91,9 @@ const WorkflowStepper = (props) => {
 									<Button
 										variant="text"
 										onClick={handleBack}
-										disabled={stepInfo.voteCreated}
+										disabled={
+											stepInfo.voteSubmitted === true
+										}
 										sx={{ mt: 1, mr: 1 }}
 									>
 										{index > 0 ? "Back" : "Cancel"}

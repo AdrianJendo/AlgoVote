@@ -15,6 +15,8 @@ export const cancelVote = (setVoteInfo) => {
 		startTime: null,
 		endDate: null,
 		endTime: null,
+		voteSubmitted: false,
+		voteCreated: false,
 	});
 };
 
@@ -22,7 +24,15 @@ export const cancelParticipate = (setParticipateInfo) => {
 	setParticipateInfo({
 		voteStarted: false,
 		activeStep: 0,
-		participantPublicKey: null,
-		voteAssetId: null,
+		registerOrVote: null,
+		voteBegin: null,
+		voteEnd: null,
+		sk: "",
+		appId: "",
+		assetId: null,
+		candidates: [],
+		selectedCandidate: "",
+		voteSubmitted: false,
+		voteAccepted: false,
 	});
 };
