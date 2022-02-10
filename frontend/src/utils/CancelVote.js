@@ -36,3 +36,21 @@ export const cancelParticipate = (setParticipateInfo) => {
 		voteAccepted: false,
 	});
 };
+
+export const cancelVoteResults = (setVoteResults) => {
+	setVoteResults({
+		workflowStarted: false,
+		activeStep: 0,
+		appId: "",
+		creator: null,
+		assetId: null,
+		participants: null,
+		voteBegin: null,
+		voteEnd: null,
+		candidates: null,
+		castedVotes: 0,
+		assetSupply: 0,
+		assetName: "",
+		assetUnit: "",
+	});
+};

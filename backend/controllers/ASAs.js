@@ -186,6 +186,17 @@ export const transferAsset = async (req, res) => {
 	}
 };
 
+export const getAssetInfo = async (req, res) => {
+	try {
+		const assetId = req.query.assetId;
+		const assetInfo = await algodClient.getAssetByID(assetId).do();
+
+		return res.send(assetInfo);
+	} catch (err) {
+		return res.status(404).send(err);
+	}
+};
+
 // export const deleteAsset = asnyc(req, res) => {}
 
 // export const toggleFreeze = async (req, res) => {

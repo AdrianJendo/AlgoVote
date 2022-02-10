@@ -7,7 +7,6 @@ import { VoteResultsContext } from "context/VoteResultsContext";
 
 // Create workflow
 import CreateVoteStepper from "components/createWorkflow/CreateVoteStepper";
-import ParticipateVoteStepper from "components/participateWorkflow/ParticipateVoteStepper";
 import SelectParticipants from "components/createWorkflow/SelectParticipants";
 import SelectCandidates from "components/createWorkflow/SelectCandidates";
 import DatePicker from "components/createWorkflow/DatePicker";
@@ -15,10 +14,16 @@ import ReviewDetails from "components/createWorkflow/ReviewDetails";
 import Payment from "components/createWorkflow/Payment";
 
 // Paricipate workflow
+import ParticipateVoteStepper from "components/participateWorkflow/ParticipateVoteStepper";
 import ReviewAndPay from "components/participateWorkflow/ReviewAndPay";
 import SelectCandidate from "components/participateWorkflow/SelectCandidate";
 import EnterPublicKey from "components/participateWorkflow/EnterVoteInfo";
 import RegisterOrVote from "components/participateWorkflow/RegisterOrVote";
+
+// Review vote workflow
+import VoteResultsStepper from "components/voteResultsWorkflow/VoteResultsStepper";
+import EnterAppId from "components/voteResultsWorkflow/EnterAppId";
+import VoteResults from "components/voteResultsWorkflow/VoteResults";
 
 const ButtonDiv = styled("div")({
 	position: "absolute",
@@ -146,43 +151,66 @@ const VoteWorkflow = () => {
 					</PaperDiv>
 				</div>
 			)}
-			{!voteInfo.voteStarted && !participateInfo.voteStarted && (
-				<ButtonDiv>
-					<Button
-						variant="contained"
-						onClick={() =>
-							setVoteInfo({ ...voteInfo, voteStarted: true })
-						}
-						sx={{ margin: "5px" }}
-					>
-						Create Vote
-					</Button>
-					<Button
-						variant="contained"
-						onClick={() =>
-							setParticipateInfo({
-								...participateInfo,
-								voteStarted: true,
-							})
-						}
-						sx={{ margin: "5px" }}
-					>
-						Participate in Vote
-					</Button>
-					<Button
-						variant="contained"
-						onClick={() =>
-							setVoteResults({
-								...voteResults,
-								workflowStarted: true,
-							})
-						}
-						sx={{ margin: "5px" }}
-					>
-						View Vote Results
-					</Button>
-				</ButtonDiv>
+			{voteResults.workflowStarted && (
+				<div style={{ width: "100%", height: "100%" }}>
+					<StepperDiv>
+						<VoteResultsStepper />
+					</StepperDiv>
+					<PaperDiv>
+						<Paper
+							sx={{
+								position: "relative",
+								height: "100%",
+								width: "80%",
+								left: "20%",
+								textAlign: "center",
+							}}
+						>
+							{voteResults.activeStep === 0 && <EnterAppId />}
+							{voteResults.activeStep === 1 && <VoteResults />}
+						</Paper>
+					</PaperDiv>
+				</div>
 			)}
+			{!voteInfo.voteStarted &&
+				!participateInfo.voteStarted &&
+				!voteResults.workflowStarted && (
+					<ButtonDiv>
+						<Button
+							variant="contained"
+							onClick={() =>
+								setVoteInfo({ ...voteInfo, voteStarted: true })
+							}
+							sx={{ margin: "5px" }}
+						>
+							Create Vote
+						</Button>
+						<Button
+							variant="contained"
+							onClick={() =>
+								setParticipateInfo({
+									...participateInfo,
+									voteStarted: true,
+								})
+							}
+							sx={{ margin: "5px" }}
+						>
+							Participate in Vote
+						</Button>
+						<Button
+							variant="contained"
+							onClick={() =>
+								setVoteResults({
+									...voteResults,
+									workflowStarted: true,
+								})
+							}
+							sx={{ margin: "5px" }}
+						>
+							View Vote Results
+						</Button>
+					</ButtonDiv>
+				)}
 		</StyledBackground>
 	);
 };

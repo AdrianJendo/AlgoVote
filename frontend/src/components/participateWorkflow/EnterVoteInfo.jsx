@@ -25,7 +25,7 @@ const EnterVoteInfo = () => {
 			<div
 				style={{
 					position: "relative",
-					alighItems: "center",
+					alignItems: "center",
 					padding: "20px",
 				}}
 			>

@@ -52,7 +52,7 @@ const Payment = () => {
 			<div
 				style={{
 					position: "relative",
-					alighItems: "center",
+					alignItems: "center",
 					padding: "20px",
 				}}
 			>

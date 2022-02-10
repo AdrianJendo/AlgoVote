@@ -7,12 +7,18 @@ export const VoteResultsProvider = (props) => {
 		workflowStarted: false, // current step of workflow
 		activeStep: 0, // current step of workflow
 
-		appId: null,
+		appId: "",
+		creator: null,
 		assetId: null,
-		participants: null,
+		participants: null, // list of recent participants and who they voted for
+		voteBegin: null,
+		voteEnd: null,
 		candidates: null,
-		startVote: null,
-		endVote: null,
+		castedVotes: 0, // number of casted votes
+
+		assetSupply: 0, // vote token supply
+		assetName: "", // name of asset
+		assetUnit: "", // unit of asset
 	});
 	return (
 		<VoteResultsContext.Provider value={[voteResults, setVoteResults]}>
