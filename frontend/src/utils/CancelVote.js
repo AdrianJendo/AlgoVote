@@ -1,6 +1,5 @@
 export const cancelVote = (setVoteInfo) => {
 	setVoteInfo({
-		voteStarted: false,
 		activeStep: 0,
 		accountFundingType: null,
 		participantUploadMethod: null,
@@ -22,7 +21,6 @@ export const cancelVote = (setVoteInfo) => {
 
 export const cancelParticipate = (setParticipateInfo) => {
 	setParticipateInfo({
-		voteStarted: false,
 		activeStep: 0,
 		registerOrVote: null,
 		voteBegin: null,
@@ -39,7 +37,6 @@ export const cancelParticipate = (setParticipateInfo) => {
 
 export const cancelVoteResults = (setVoteResults) => {
 	setVoteResults({
-		workflowStarted: false,
 		activeStep: 0,
 		voteStatus: null,
 		appId: "",

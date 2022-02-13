@@ -4,7 +4,6 @@ export const ParticipateContext = createContext();
 
 export const ParticipateProvider = (props) => {
 	const [participateInfo, setParticipateInfo] = useState({
-		voteStarted: false, // checks if workflow has started
 		activeStep: 0, // current step of workflow
 		registerOrVote: null, // either "register" or "vote"
 		voteBegin: null, // vote start block

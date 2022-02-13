@@ -4,7 +4,6 @@ export const VoteResultsContext = createContext();
 
 export const VoteResultsProvider = (props) => {
 	const [voteResults, setVoteResults] = useState({
-		workflowStarted: false, // current step of workflow
 		activeStep: 0, // current step of workflow
 
 		voteStatus: null, // register, vote, complete

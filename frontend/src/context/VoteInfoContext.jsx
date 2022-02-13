@@ -4,7 +4,6 @@ export const VoteInfoContext = createContext();
 
 export const VoteInfoProvider = (props) => {
 	const [voteInfo, setVoteInfo] = useState({
-		voteStarted: false, // checks if workflow has started
 		activeStep: 0, // current step of workflow
 
 		accountFundingType: null, // pre-funded or existing account
