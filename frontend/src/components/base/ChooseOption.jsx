@@ -10,14 +10,6 @@ const ButtonDiv = styled("div")({
 	transform: "translate(-50%, 0)",
 });
 
-const StyledBackground = styled("div")(
-	({ theme }) => `
-		height: 100%;
-		background: ${theme.palette.background.paper};
-		overflow-y: hidden;
-		`
-);
-
 const ChooseOption = () => {
 	const navigate = useNavigate();
 
@@ -25,31 +17,29 @@ const ChooseOption = () => {
 		navigate(route);
 	};
 	return (
-		<StyledBackground>
-			<ButtonDiv>
-				<Button
-					variant="contained"
-					onClick={() => changeRoute("/createVote")}
-					sx={{ margin: "5px" }}
-				>
-					Create Vote
-				</Button>
-				<Button
-					variant="contained"
-					onClick={() => changeRoute("/participateVote")}
-					sx={{ margin: "5px" }}
-				>
-					Participate in Vote
-				</Button>
-				<Button
-					variant="contained"
-					onClick={() => changeRoute("/voteResults")}
-					sx={{ margin: "5px" }}
-				>
-					View Vote Results
-				</Button>
-			</ButtonDiv>
-		</StyledBackground>
+		<ButtonDiv>
+			<Button
+				variant="contained"
+				onClick={() => changeRoute("/createVote")}
+				sx={{ margin: "5px" }}
+			>
+				Create Vote
+			</Button>
+			<Button
+				variant="contained"
+				onClick={() => changeRoute("/participateVote")}
+				sx={{ margin: "5px" }}
+			>
+				Participate in Vote
+			</Button>
+			<Button
+				variant="contained"
+				onClick={() => changeRoute("/voteResults")}
+				sx={{ margin: "5px" }}
+			>
+				View Vote Results
+			</Button>
+		</ButtonDiv>
 	);
 };
 

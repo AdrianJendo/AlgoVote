@@ -1,28 +1,14 @@
 import React, { useContext } from "react";
 import { Paper } from "@mui/material";
-import { styled } from "@mui/system";
-import { ParticipateContext } from "context/ParticipateContext";
+import { StepperDiv, PaperDiv } from "utils/Style/WorkflowDivs";
 
 // Paricipate workflow
+import { ParticipateContext } from "context/ParticipateContext";
 import ParticipateVoteStepper from "components/participateWorkflow/ParticipateVoteStepper";
 import ReviewAndPay from "components/participateWorkflow/ReviewAndPay";
 import SelectCandidate from "components/participateWorkflow/SelectCandidate";
 import EnterPublicKey from "components/participateWorkflow/EnterVoteInfo";
 import RegisterOrVote from "components/participateWorkflow/RegisterOrVote";
-
-const StepperDiv = styled("div")({
-	position: "fixed",
-	left: "2%",
-	top: "80px",
-});
-
-const PaperDiv = styled("div")(
-	({ theme }) => `
-		height: 100%;
-		width: 100%;
-		background: ${theme.palette.background.default};
-	`
-);
 
 const ParticipateWorkflow = () => {
 	const participateInfo = useContext(ParticipateContext)[0];

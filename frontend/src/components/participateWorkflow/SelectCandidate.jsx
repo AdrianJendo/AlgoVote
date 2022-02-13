@@ -7,7 +7,7 @@ import {
 	Select,
 } from "@mui/material";
 import { ParticipateContext } from "context/ParticipateContext";
-import { FillDiv, typographySX } from "utils/ParticipantsStyle";
+import { FillDiv, typographySX } from "utils/Style/ParticipantsStyle";
 
 const SelectCandidate = () => {
 	const [participateInfo, setParticipateInfo] =
