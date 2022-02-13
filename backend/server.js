@@ -4,9 +4,10 @@ import bodyParser from "body-parser"; // allows us to take in post request bodie
 
 import smartContractRoutes from "./routes/smartContracts.js";
 import accountsRoutes from "./routes/accounts.js";
-import ASAsRoutes from "./routes/ASAs.js";
+import ASARoutes from "./routes/ASAs.js";
 import testRoutes from "./routes/test.js";
 import submitVoteRoutes from "./routes/submit.js";
+import blockchainRoutes from "./routes/blockchain.js";
 
 import algosdk from "algosdk";
 
@@ -34,10 +35,11 @@ app.use(bodyParser.json());
 
 // Route middleware
 app.use("/algoAccount", accountsRoutes);
-app.use("/asa", ASAsRoutes);
+app.use("/asa", ASARoutes);
 app.use("/smartContract", smartContractRoutes);
 app.use("/test", testRoutes);
 app.use("/submitVote", submitVoteRoutes);
+app.use("/blockchain", blockchainRoutes);
 
 // Algorand
 // create client object

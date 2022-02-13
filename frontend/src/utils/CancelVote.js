@@ -1,6 +1,5 @@
 export const cancelVote = (setVoteInfo) => {
 	setVoteInfo({
-		voteStarted: false,
 		activeStep: 0,
 		accountFundingType: null,
 		participantUploadMethod: null,
@@ -22,7 +21,6 @@ export const cancelVote = (setVoteInfo) => {
 
 export const cancelParticipate = (setParticipateInfo) => {
 	setParticipateInfo({
-		voteStarted: false,
 		activeStep: 0,
 		registerOrVote: null,
 		voteBegin: null,
@@ -34,5 +32,24 @@ export const cancelParticipate = (setParticipateInfo) => {
 		selectedCandidate: "",
 		voteSubmitted: false,
 		voteAccepted: false,
+	});
+};
+
+export const cancelVoteResults = (setVoteResults) => {
+	setVoteResults({
+		activeStep: 0,
+		voteStatus: null,
+		appId: "",
+		creator: null,
+		creatorAssetBalance: null,
+		assetId: null,
+		participants: null,
+		voteBegin: null,
+		voteEnd: null,
+		candidates: null,
+		castedVotes: 0,
+		assetSupply: 0,
+		assetName: "",
+		assetUnit: "",
 	});
 };

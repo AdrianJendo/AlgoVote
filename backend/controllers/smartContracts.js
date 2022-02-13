@@ -8,9 +8,8 @@ import { readTeal } from "../helpers/smartContracts.js";
 import decodeURIMnemonic from "../helpers/decodeMnemonic.js";
 import axios from "axios";
 
-const SECS_PER_BLOCK = 4.5;
+const SECS_PER_BLOCK = process.env.REACT_APP_SECS_PER_BLOCK;
 
-// Read in teal file
 export const createVoteSmartContract = async (req, res) => {
 	try {
 		const creatorAccount = algosdk.mnemonicToSecretKey(
@@ -317,26 +316,29 @@ export const deleteVoteSmartContract = async (req, res) => {
 };
 
 export const readVoteSmartContractState = async (req, res) => {
-	const appId = req.query.appId;
+	try {
+		const appId = req.query.appId;
+		const application = await algodClient.getApplicationByID(appId).do();
+		const globalState = application.params["global-state"];
 
-	const application = await algodClient.getApplicationByID(appId).do();
-	const globalState = application.params["global-state"];
+		const decodedState = {};
 
-	const decodedState = {};
+		console.log("app", application);
+		console.log("State", application.params["global-state"]);
 
-	console.log("app", application);
-	console.log("State", application.params["global-state"]);
+		for (let i = 0; i < globalState.length; i++) {
+			const state = globalState[i];
+			// https://forum.algorand.org/t/how-i-can-convert-value-of-global-state-to-human-readable/3551/2
+			decodedState[Buffer.from(state.key, "base64").toString()] =
+				state.value.type === 1
+					? application.params.creator // only the creator is a byteslice (type 1)
+					: state.value.uint;
+		}
 
-	for (let i = 0; i < globalState.length; i++) {
-		const state = globalState[i];
-		// https://forum.algorand.org/t/how-i-can-convert-value-of-global-state-to-human-readable/3551/2
-		decodedState[Buffer.from(state.key, "base64").toString()] =
-			state.value.type === 1
-				? application.params.creator // only the creator is a byteslice (type 1)
-				: state.value.uint;
+		return res.send(decodedState);
+	} catch (err) {
+		return res.status(404).send(err);
 	}
-
-	return res.send(decodedState);
 };
 
 export const didUserVote = async (req, res) => {

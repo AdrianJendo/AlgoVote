@@ -18,7 +18,6 @@ const submitVote = async (participateInfo, setParticipateInfo) => {
 		voteAccepted: true,
 	});
 
-	console.log(resp.data);
 	return resp.data;
 };
 

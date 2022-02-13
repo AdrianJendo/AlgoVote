@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { ParticipateContext } from "context/ParticipateContext";
 import { cancelParticipate } from "utils/CancelVote";
 import submitVote from "utils/participateWorkflow/submitVote";
-import ProgressBar from "components/createWorkflow/ProgressBar";
+import ProgressBar from "components/base/ProgressBar";
 
 import {
 	Typography,

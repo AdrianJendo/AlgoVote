@@ -1,10 +1,9 @@
 import React, { useContext } from "react";
 import { TextField, Typography } from "@mui/material";
-import { ParticipateContext } from "context/ParticipateContext";
+import { VoteResultsContext } from "context/VoteResultsContext";
 
 const EnterVoteInfo = () => {
-	const [participateInfo, setParticipateInfo] =
-		useContext(ParticipateContext);
+	const [voteResults, setVoteResults] = useContext(VoteResultsContext);
 
 	return (
 		<div
@@ -20,12 +19,10 @@ const EnterVoteInfo = () => {
 				component="div"
 				sx={{ flexGrow: 1, padding: "10px" }}
 			>
-				Enter the application id and your secret key below
+				Enter the application id below
 			</Typography>
 			<div
 				style={{
-					position: "relative",
-					alignItems: "center",
 					padding: "20px",
 				}}
 			>
@@ -33,25 +30,11 @@ const EnterVoteInfo = () => {
 					label="Application Id"
 					placeholder="Enter App Id"
 					sx={{ width: "200px", margin: "20px" }}
-					value={participateInfo.appId}
+					value={voteResults.appId}
 					onChange={(e) =>
-						setParticipateInfo({
-							...participateInfo,
+						setVoteResults({
+							...voteResults,
 							appId: e.target.value,
-						})
-					}
-				/>
-				<TextField
-					label="Secret Key"
-					placeholder="Paste Secret Key"
-					multiline
-					rows={4}
-					sx={{ width: "400px", margin: "20px" }}
-					value={participateInfo.sk}
-					onChange={(e) =>
-						setParticipateInfo({
-							...participateInfo,
-							sk: e.target.value,
 						})
 					}
 				/>

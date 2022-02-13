@@ -1,10 +1,12 @@
 import React, { useState, useContext } from "react";
-import { Button, Typography, TextField } from "@mui/material";
+import { Button, Typography, TextField, Link } from "@mui/material";
 import { VoteInfoContext } from "context/VoteInfoContext";
-import ProgressBar from "components/createWorkflow/ProgressBar";
+import ProgressBar from "components/base/ProgressBar";
 import { cancelVote } from "utils/CancelVote";
 import submitSecretKey from "utils/SubmitSecretKey";
 import isMnemonicValid from "utils/IsMnemonicValid";
+
+const BASE_URL = "https://testnet.algoexplorer.io";
 
 const Payment = () => {
 	const [voteInfo, setVoteInfo] = useContext(VoteInfoContext);
@@ -52,7 +54,7 @@ const Payment = () => {
 			<div
 				style={{
 					position: "relative",
-					alighItems: "center",
+					alignItems: "center",
 					padding: "20px",
 				}}
 			>
@@ -88,7 +90,7 @@ const Payment = () => {
 					{progressBar < 100 || appId === null ? (
 						<ProgressBar
 							value={progressBar}
-							getText={(val) => getText(val)}
+							valueText={getText(progressBar)}
 						/>
 					) : (
 						<div>
@@ -97,7 +99,13 @@ const Payment = () => {
 								variant="h5"
 							>
 								Vote with application id{" "}
-								<i style={{ color: "green" }}>{appId}</i>{" "}
+								<Link
+									href={`${BASE_URL}/application/${appId}`}
+									target="_blank"
+									underline="hover"
+								>
+									{appId}
+								</Link>{" "}
 								successfully created. Return to home
 							</Typography>
 							<Button

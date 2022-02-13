@@ -53,7 +53,7 @@ const SelectParticipants = () => {
 				...voteInfo,
 				accountFundingType: null,
 			});
-		} else if (voteInfo.voteStarted) {
+		} else if (voteInfo.activeStep === 0) {
 			cancelVote(setVoteInfo);
 		}
 	};
