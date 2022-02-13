@@ -95,18 +95,16 @@ const submitSecretKey = async (props) => {
 				}
 			);
 			const appId = smartContractResp.data.appId;
+			const participantAddresses = Object.keys(voteInfo.participantData);
+			const candidates = Object.keys(voteInfo.candidateData);
+			let participantAccounts;
 
-			const wb = XLSX.utils.book_new(); // for data export
 			if (voteInfo.accountFundingType === "newAccounts") {
 				const fundAccountPromises = [];
 				const optInTokenPromises = [];
 				const sendTokenPromises = [];
 				const optInContractPromises = [];
-				const participantAddresses = Object.keys(
-					voteInfo.participantData
-				);
-				const participantAccounts = voteInfo.privatePublicKeyPairs;
-				const candidates = Object.keys(voteInfo.candidateData);
+				participantAccounts = voteInfo.privatePublicKeyPairs;
 				// fund new account with minimum balance
 				setProgressBar(40);
 				for (const accountAddr of participantAddresses) {
@@ -178,54 +176,70 @@ const submitSecretKey = async (props) => {
 					}
 				}
 				await Promise.all(optInContractPromises);
+			} else {
+				// Create smart contract to handle registering and sending vote token from creator !!!!!
+				// need to store the list of participants in global storage (public keys)
+				// need to be able to send vote tokens from creator
+				// participants interact with the smart contract to opt into vote token & vote contract (atomically grouped)
+				// and then creator sends them a vote token upon success
+				//
+				//
+				// if we can do the above ^, we don't need to change the logic for counting the number of registered voters
+				// because the creator will send a vote token for each successful registrant
+			}
 
-				// export to excel
-				setProgressBar(99);
-				const ws_name = "Vote Data";
+			// export to excel
+			setProgressBar(99);
+			const wb = XLSX.utils.book_new();
+			const ws_name = "Vote Data";
 
-				/* make worksheet */
-				const ws_data = [
-					[
-						"Application ID",
-						"Token ID",
-						"Candidates",
-						"Vote Start",
-						"Vote End",
-						"Participant Address",
-						"Secret Key",
-					],
-				];
+			/* make worksheet */
+			// columns
+			const ws_data = [
+				[
+					"Application ID",
+					"Token ID",
+					"Candidates",
+					"Vote Start",
+					"Vote End",
+					"Participant Address",
+				],
+			];
 
-				for (
-					let i = 0;
-					i <
-					Math.max(participantAddresses.length, candidates.length);
-					++i
-				) {
-					const row = ["", "", "", "", ""];
+			if (participantAccounts) {
+				ws_data.push("Secret Key");
+			}
 
-					if (i === 0) {
-						row[0] = appId;
-						row[1] = assetId;
-						row[3] = startVote.toString();
-						row[4] = endVote.toString();
-					}
+			for (
+				let i = 0;
+				i < Math.max(participantAddresses.length, candidates.length);
+				++i
+			) {
+				const row = ["", "", "", "", ""];
 
-					if (i < candidates.length) {
-						row[2] = candidates[i];
-					}
+				if (i === 0) {
+					row[0] = appId;
+					row[1] = assetId;
+					row[3] = startVote.toString();
+					row[4] = endVote.toString();
+				}
 
-					if (i < participantAddresses.length) {
-						row[5] = participantAddresses[i];
+				if (i < candidates.length) {
+					row[2] = candidates[i];
+				}
+
+				if (i < participantAddresses.length) {
+					row[5] = participantAddresses[i];
+					if (participantAccounts) {
 						row[6] = participantAccounts[participantAddresses[i]];
 					}
-
-					ws_data.push(row);
 				}
-				var ws = XLSX.utils.aoa_to_sheet(ws_data);
-				/* Add the worksheet to the workbook */
-				XLSX.utils.book_append_sheet(wb, ws, ws_name);
+
+				ws_data.push(row);
 			}
+			var ws = XLSX.utils.aoa_to_sheet(ws_data);
+			/* Add the worksheet to the workbook */
+			XLSX.utils.book_append_sheet(wb, ws, ws_name);
 
 			setTimeout(() => {
 				XLSX.writeFile(wb, "VoteData.xlsx");

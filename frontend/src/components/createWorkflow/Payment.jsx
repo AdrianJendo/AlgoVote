@@ -3,7 +3,7 @@ import { Button, Typography, TextField, Link } from "@mui/material";
 import { VoteInfoContext } from "context/VoteInfoContext";
 import ProgressBar from "components/base/ProgressBar";
 import { cancelVote } from "utils/CancelVote";
-import submitSecretKey from "utils/SubmitSecretKey";
+import submitSecretKey from "utils/createWorkflow/SubmitSecretKey";
 import isMnemonicValid from "utils/IsMnemonicValid";
 
 const BASE_URL = "https://testnet.algoexplorer.io";

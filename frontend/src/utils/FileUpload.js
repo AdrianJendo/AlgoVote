@@ -1,5 +1,5 @@
 import * as XLSX from "xlsx";
-import shouldAddPerson from "utils/ShouldAddPerson";
+import shouldAddPerson from "utils/createWorkflow/ShouldAddPerson";
 
 // Handle .txt and .csv files
 export const txtUploadHandler = (e, voteInfo, setVoteInfo, dataType) => {
