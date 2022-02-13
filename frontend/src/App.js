@@ -1,4 +1,7 @@
-import Base from "components/base/Base";
+import ChooseOption from "components/base/ChooseOption";
+import CreateWorkflow from "components/createWorkflow/CreateWorkflow";
+import ParticipateWorkflow from "components/participateWorkflow/ParticipateWorkflow";
+import VoteResultsWorkflow from "components/voteResultsWorkflow/VoteResultsWorkflow";
 import AppBar from "components/base/AppBar";
 import { lightTheme, darkTheme } from "theme/Themes";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
@@ -9,27 +12,74 @@ import { VoteResultsProvider } from "context/VoteResultsContext";
 import { DateValueProvider } from "context/DateValueContext";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
+// Temp
+import { styled } from "@mui/system";
+
+const Dashboard = styled("div")(
+	({ theme }) => `
+		background-color: ${theme.palette.background.default};
+		width: 100%;
+		height: calc(100vh - 64px);
+	`
+);
+
+const StyledBackground = styled("div")(
+	({ theme }) => `
+		height: 100%;
+		background: ${theme.palette.background.paper};
+		overflow-y: hidden;
+	`
+);
 
 function App() {
 	const [dark, setDark] = useState(true);
 
 	return (
-		<ThemeProvider
-			theme={dark ? createTheme(darkTheme) : createTheme(lightTheme)}
-		>
-			<LocalizationProvider dateAdapter={AdapterDateFns}>
-				<VoteInfoProvider>
-					<ParticipateProvider>
-						<VoteResultsProvider>
-							<DateValueProvider>
-								<AppBar dark={dark} setDark={setDark} />
-								<Base />
-							</DateValueProvider>
-						</VoteResultsProvider>
-					</ParticipateProvider>
-				</VoteInfoProvider>
-			</LocalizationProvider>
-		</ThemeProvider>
+		<Router>
+			<ThemeProvider
+				theme={dark ? createTheme(darkTheme) : createTheme(lightTheme)}
+			>
+				<LocalizationProvider dateAdapter={AdapterDateFns}>
+					<VoteInfoProvider>
+						<ParticipateProvider>
+							<VoteResultsProvider>
+								<DateValueProvider>
+									<AppBar dark={dark} setDark={setDark} />
+									<Dashboard>
+										<StyledBackground>
+											<Routes>
+												<Route
+													path="/"
+													element={<ChooseOption />}
+												></Route>
+												<Route
+													path="/createVote"
+													element={<CreateWorkflow />}
+												></Route>
+												<Route
+													path="/participateVote"
+													element={
+														<ParticipateWorkflow />
+													}
+												></Route>
+												<Route
+													path="/voteResults"
+													element={
+														<VoteResultsWorkflow />
+													}
+												></Route>
+											</Routes>
+										</StyledBackground>
+									</Dashboard>
+								</DateValueProvider>
+							</VoteResultsProvider>
+						</ParticipateProvider>
+					</VoteInfoProvider>
+				</LocalizationProvider>
+			</ThemeProvider>
+		</Router>
 	);
 }
 
