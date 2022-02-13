@@ -1,21 +1,27 @@
+import { useState } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { lightTheme, darkTheme } from "theme/Themes";
+
+// Mui
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import AdapterDateFns from "@mui/lab/AdapterDateFns";
+import LocalizationProvider from "@mui/lab/LocalizationProvider";
+import { styled } from "@mui/system";
+
+// Context
+import { VoteInfoProvider } from "context/VoteInfoContext";
+import { ParticipateProvider } from "context/ParticipateContext";
+import { VoteResultsProvider } from "context/VoteResultsContext";
+import { DateValueProvider } from "context/DateValueContext";
+
+// Components
 import ChooseOption from "components/base/ChooseOption";
 import CreateWorkflow from "components/createWorkflow/CreateWorkflow";
 import ParticipateWorkflow from "components/participateWorkflow/ParticipateWorkflow";
 import VoteResultsWorkflow from "components/voteResultsWorkflow/VoteResultsWorkflow";
 import AppBar from "components/base/AppBar";
-import { lightTheme, darkTheme } from "theme/Themes";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
-import { useState } from "react";
-import { VoteInfoProvider } from "context/VoteInfoContext";
-import { ParticipateProvider } from "context/ParticipateContext";
-import { VoteResultsProvider } from "context/VoteResultsContext";
-import { DateValueProvider } from "context/DateValueContext";
-import AdapterDateFns from "@mui/lab/AdapterDateFns";
-import LocalizationProvider from "@mui/lab/LocalizationProvider";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-
-// Temp
-import { styled } from "@mui/system";
+import Tutorial from "components/tutorial/Tutorial";
+import About from "components/about/About";
 
 const Dashboard = styled("div")(
 	({ theme }) => `
@@ -53,23 +59,31 @@ function App() {
 												<Route
 													path="/"
 													element={<ChooseOption />}
-												></Route>
+												/>
 												<Route
 													path="/createVote"
 													element={<CreateWorkflow />}
-												></Route>
+												/>
 												<Route
 													path="/participateVote"
 													element={
 														<ParticipateWorkflow />
 													}
-												></Route>
+												/>
 												<Route
 													path="/voteResults"
 													element={
 														<VoteResultsWorkflow />
 													}
-												></Route>
+												/>
+												<Route
+													path="/tutorial"
+													element={<Tutorial />}
+												/>
+												<Route
+													path="/about"
+													element={<About />}
+												/>
 											</Routes>
 										</StyledBackground>
 									</Dashboard>

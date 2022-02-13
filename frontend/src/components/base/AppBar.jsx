@@ -9,11 +9,19 @@ import {
 } from "@mui/material";
 import HowToVoteIcon from "@mui/icons-material/HowToVote";
 import MUISwitch from "components/base/MuiSwitch";
+import { useNavigate } from "react-router-dom";
 
 const TopAppBar = ({ dark, setDark }) => {
+	const navigate = useNavigate();
+
 	const toggleSwitch = () => {
 		setDark(!dark);
 	};
+
+	const changeRoute = (route) => {
+		navigate(route);
+	};
+
 	return (
 		<Box sx={{ flexGrow: 1 }}>
 			<AppBar position="static" style={{ height: "64px" }}>
@@ -23,6 +31,7 @@ const TopAppBar = ({ dark, setDark }) => {
 						edge="start"
 						color="inherit"
 						aria-label="menu"
+						onClick={() => changeRoute("/")}
 						sx={{ mr: 2 }}
 					>
 						<HowToVoteIcon />
@@ -30,15 +39,27 @@ const TopAppBar = ({ dark, setDark }) => {
 					<Typography
 						variant="h6"
 						component="div"
-						sx={{ flexGrow: 1 }}
+						sx={{ flexGrow: 1, cursor: "pointer" }}
+						onClick={() => changeRoute("/")}
 					>
 						Algo Vote
 					</Typography>
-					<Button color="inherit">Home</Button>
-					<Button color="inherit">Tutorial</Button>
-					<Button color="inherit">About</Button>
+					<Button color="inherit" onClick={() => changeRoute("/")}>
+						Home
+					</Button>
+					<Button
+						color="inherit"
+						onClick={() => changeRoute("/tutorial")}
+					>
+						Tutorial
+					</Button>
+					<Button
+						color="inherit"
+						onClick={() => changeRoute("/about")}
+					>
+						About
+					</Button>
 					<MUISwitch defaultChecked toggleSwitch={toggleSwitch} />
-					<Button color="inherit">My Votes</Button>
 				</Toolbar>
 			</AppBar>
 		</Box>
