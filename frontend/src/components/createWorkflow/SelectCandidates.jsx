@@ -12,7 +12,7 @@ import {
 	TableSubDiv,
 	ManualUploadDiv,
 	ManualUploadSubDiv,
-} from "utils/ParticipantsStyle";
+} from "utils/Style/ParticipantsStyle";
 import CustomizedInputBase from "components/createWorkflow/TextInput";
 import HelpIcon from "@mui/icons-material/Help";
 import HelperTooltip from "components/createWorkflow/HelperTooltip";
