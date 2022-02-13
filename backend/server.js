@@ -7,6 +7,7 @@ import accountsRoutes from "./routes/accounts.js";
 import ASARoutes from "./routes/ASAs.js";
 import testRoutes from "./routes/test.js";
 import submitVoteRoutes from "./routes/submit.js";
+import blockchainRoutes from "./routes/blockchain.js";
 
 import algosdk from "algosdk";
 
@@ -38,6 +39,7 @@ app.use("/asa", ASARoutes);
 app.use("/smartContract", smartContractRoutes);
 app.use("/test", testRoutes);
 app.use("/submitVote", submitVoteRoutes);
+app.use("/blockchain", blockchainRoutes);
 
 // Algorand
 // create client object

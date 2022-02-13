@@ -16,7 +16,7 @@ const BoxDiv = styled((props) => <Box {...props} />)(() => ({
 }));
 
 const CircularProgressBar = (props) => {
-	const { value, getText, text } = props;
+	const { value, valueText, text } = props;
 
 	return (
 		<Box sx={{ position: "relative", display: "inline-flex" }}>
@@ -24,16 +24,15 @@ const CircularProgressBar = (props) => {
 				size={200}
 				thickness={2}
 				variant="indeterminate"
-				{...props}
 			/>
-			{value ? (
+			{value !== null ? (
 				<BoxDiv>
 					<Typography
 						variant="body1"
 						component="div"
 						color="text.secondary"
 					>
-						{getText(value)}
+						{valueText}
 					</Typography>
 					<br />
 					<Typography

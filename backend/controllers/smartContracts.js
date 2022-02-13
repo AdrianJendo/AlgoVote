@@ -8,9 +8,8 @@ import { readTeal } from "../helpers/smartContracts.js";
 import decodeURIMnemonic from "../helpers/decodeMnemonic.js";
 import axios from "axios";
 
-const SECS_PER_BLOCK = 4.5;
+const SECS_PER_BLOCK = process.env.REACT_APP_SECS_PER_BLOCK;
 
-// Read in teal file
 export const createVoteSmartContract = async (req, res) => {
 	try {
 		const creatorAccount = algosdk.mnemonicToSecretKey(

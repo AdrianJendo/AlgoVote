@@ -1,14 +1,15 @@
-import { Typography, Box } from "@mui/material";
+import { Typography, Box, Link } from "@mui/material";
 
 const VoteResultsBox = (props) => {
-	const { caption, data } = props;
+	const { caption, data, url } = props;
 	return (
 		<Box
 			sx={{
 				backgroundColor: "background.default",
-				width: 300,
+				width: caption === "Creator" ? 700 : 300,
 				height: 100,
 				borderRadius: 2,
+				margin: "auto",
 			}}
 		>
 			<Typography
@@ -21,14 +22,29 @@ const VoteResultsBox = (props) => {
 			>
 				{caption}
 			</Typography>
-			<Typography
-				sx={{
-					position: "relative",
-					top: "40%",
-				}}
-			>
-				{data}
-			</Typography>
+			{url ? (
+				<Link
+					sx={{
+						position: "relative",
+						top: "40%",
+						color: "#55ade8",
+					}}
+					href={url}
+					target="_blank"
+					underline="hover"
+				>
+					{data}
+				</Link>
+			) : (
+				<Typography
+					sx={{
+						position: "relative",
+						top: "40%",
+					}}
+				>
+					{data}
+				</Typography>
+			)}
 		</Box>
 	);
 };

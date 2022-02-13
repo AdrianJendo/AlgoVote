@@ -9,13 +9,13 @@ export const VoteResultsProvider = (props) => {
 
 		appId: "",
 		creator: null,
-		assetId: null,
 		participants: null, // list of recent participants and who they voted for
 		voteBegin: null,
 		voteEnd: null,
 		candidates: null,
 		castedVotes: 0, // number of casted votes
 
+		assetId: null,
 		assetSupply: 0, // vote token supply
 		assetName: "", // name of asset
 		assetUnit: "", // unit of asset

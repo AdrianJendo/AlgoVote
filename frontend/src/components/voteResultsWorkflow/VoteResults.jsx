@@ -1,88 +1,133 @@
 import React, { useContext } from "react";
 import { Typography, Grid } from "@mui/material";
 import { VoteResultsContext } from "context/VoteResultsContext";
-// import { styled } from "@mui/material/styles";
+import { styled } from "@mui/material/styles";
 import VoteResultsBox from "components/voteResultsWorkflow/VoteResultsBox";
 
-// const Item = styled(Paper)(({ theme }) => ({
-// 	...theme.typography.body2,
-// 	padding: theme.spacing(1),
-// 	textAlign: "center",
-// 	color: theme.palette.text.secondary,
-// }));
+const BASE_URL = "https://testnet.algoexplorer.io";
 
 function FormRow(props) {
 	const { data } = props;
 	return (
 		<React.Fragment>
 			{data.map((item, index) => (
-				<Grid item xs={4} key={index}>
-					<VoteResultsBox caption={item.caption} data={item.data} />
+				<Grid
+					item
+					xs={item.caption === "Creator" ? 12 : 4}
+					key={index}
+					sx={{ marginBottom: "30px" }}
+				>
+					<VoteResultsBox
+						caption={item.caption}
+						data={item.data}
+						url={item.url}
+					/>
 				</Grid>
 			))}
 		</React.Fragment>
 	);
 }
 
+const StyledGrid = styled(Grid)(({ theme }) => ({
+	padding: theme.spacing(2),
+	display: "flex",
+	justifyContent: "center",
+}));
+
 const EnterVoteInfo = () => {
-	const [voteResults, setVoteResults] = useContext(VoteResultsContext);
+	const voteResults = useContext(VoteResultsContext)[0];
 
 	const generalInfo = [];
-	generalInfo.push({ caption: "Nan", data: "Non" });
-	generalInfo.push({ caption: "Nan", data: "Non" });
-	generalInfo.push({ caption: "Nan", data: "Non" });
+	generalInfo.push({
+		caption: "AppId",
+		data: voteResults.appId,
+		url: `${BASE_URL}/application/${voteResults.appId}`,
+	});
+	generalInfo.push({
+		caption: "Votes Casted",
+		data: voteResults.castedVotes,
+	});
+	generalInfo.push({
+		caption: "Vote Percentage",
+		data: `${(voteResults.castedVotes / voteResults.assetSupply) * 100}%`,
+	});
 
-	const data = [];
-	data.push({ caption: "Token Name", data: voteResults.assetName });
-	data.push({ caption: "Circulating Supply", data: voteResults.assetSupply });
-	data.push({ caption: "Token Unit", data: voteResults.assetUnit });
+	const candidatesInfo = [];
+	for (const candidate of Object.keys(voteResults.candidates)) {
+		candidatesInfo.push({
+			caption: candidate,
+			data: voteResults.candidates[candidate],
+		});
+	}
+
+	const tokenInfo = [];
+	tokenInfo.push({
+		caption: "Asset Id",
+		data: voteResults.assetId,
+		url: `${BASE_URL}/asset/${voteResults.assetId}`,
+	});
+	tokenInfo.push({
+		caption: "Circulating Supply",
+		data: voteResults.assetSupply,
+	});
+	tokenInfo.push({
+		caption: "Name & Unit",
+		data: `${voteResults.assetName} (${voteResults.assetUnit})`,
+	});
+
+	const dateInfo = [];
+	dateInfo.push({ caption: "Vote Start", data: voteResults.voteBegin });
+	dateInfo.push({ caption: "Vote End", data: voteResults.voteEnd });
+
+	console.log("vote stuff", voteResults);
 
 	return (
 		<div
 			style={{
 				position: "relative",
 				height: "100%",
-				width: "80%",
-				left: "10%",
+				width: "100%",
+				overflow: "auto",
 			}}
 		>
 			<Typography
 				variant="h6"
 				component="div"
-				sx={{ flexGrow: 1, padding: "10px" }}
+				sx={{ flexGrow: 1, padding: "20px" }}
 			>
 				Vote Information
 			</Typography>
 			<Typography>General Info:</Typography>
-			<Grid container>
-				{/* vote token info (name, supply, ticker) */}
+			<StyledGrid container>
 				<FormRow data={generalInfo} />
-			</Grid>
+			</StyledGrid>
+			<StyledGrid container>
+				<FormRow
+					data={[
+						{
+							caption: "Creator",
+							data: voteResults.creator,
+							url: `${BASE_URL}/address/${voteResults.creator}`,
+						},
+					]}
+				/>
+			</StyledGrid>
+			<Typography>Candidate Info:</Typography>
+			<StyledGrid container>
+				<FormRow data={candidatesInfo} />
+			</StyledGrid>
 			{/* creator, assetId, numVotes, vote %, */}
 			<Typography>Vote token info:</Typography> {/* candidates list */}
-			<Grid container>
+			<StyledGrid container>
 				{/* vote token info (name, supply, ticker) */}
-				<FormRow data={data} />
-			</Grid>
-			<Typography>Recent votes:</Typography>
-			{/* recent votes and who they voted for */}
-			<Grid container>
-				{/* vote token info (name, supply, ticker) */}
-				<FormRow data={data} />
-
-				{/* <Grid container item spacing={3}>
-					<FormRow />
-				</Grid>
-				<Grid container item spacing={3}>
-					<FormRow />
-				</Grid> */}
-			</Grid>
+				<FormRow data={tokenInfo} />
+			</StyledGrid>
 			<Typography>Start and end dates:</Typography>
 			{/* start and end dates */}
-			<Grid container>
+			<StyledGrid container>
 				{/* vote token info (name, supply, ticker) */}
-				<FormRow data={data} />
-			</Grid>
+				<FormRow data={dateInfo} />
+			</StyledGrid>
 		</div>
 	);
 };

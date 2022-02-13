@@ -44,7 +44,17 @@ export default function VerticalLinearStepper() {
 					params: { assetId: voteData.AssetId },
 				});
 				const assetData = assetResp.data;
-				const candidates = [];
+				const candidates = {};
+				let castedVotes = 0;
+
+				const voteBegin = await axios.get(
+					"/api/blockchain/blockTimestamp",
+					{ params: { blockRound: voteData.VoteBegin } }
+				);
+
+				const localVoteBegin = new Date(voteBegin.data);
+				const localVoteEnd = `Block round is ${voteData.VoteEnd}`;
+
 				for (const key of Object.keys(voteData)) {
 					if (
 						![
@@ -54,17 +64,20 @@ export default function VerticalLinearStepper() {
 							"VoteEnd",
 						].includes(key)
 					) {
-						candidates.push({ [key]: voteData[key] });
+						candidates[key] = voteData[key];
+						castedVotes += voteData[key];
 					}
 				}
+
 				setVoteResults({
 					...voteResults,
 					activeStep: voteResults.activeStep + 1,
 					creator: voteData.Creator,
 					assetId: voteData.AssetId,
-					voteBegin: voteData.VoteBegin,
-					voteEnd: voteData.VoteEnd,
+					voteBegin: localVoteBegin.toString(),
+					voteEnd: localVoteEnd,
 					candidates,
+					castedVotes,
 					assetSupply: assetData.params.total,
 					assetName: assetData.params.name,
 					assetUnit: assetData.params["unit-name"],
