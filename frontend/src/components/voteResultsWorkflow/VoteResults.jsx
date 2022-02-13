@@ -13,7 +13,13 @@ function FormRow(props) {
 			{data.map((item, index) => (
 				<Grid
 					item
-					xs={item.caption === "Creator" ? 12 : 4}
+					xs={
+						item.caption === "Creator"
+							? 12
+							: data.length >= 4
+							? 3
+							: 4
+					}
 					key={index}
 					sx={{ marginBottom: "30px" }}
 				>
@@ -38,29 +44,70 @@ const EnterVoteInfo = () => {
 	const voteResults = useContext(VoteResultsContext)[0];
 
 	const generalInfo = [];
+	const candidatesInfo = [];
+	const tokenInfo = [];
+	const dateInfo = [];
+
+	if (voteResults.voteStatus === "register") {
+		generalInfo.push({
+			caption: "Stage",
+			data: "Register",
+		});
+	} else if (voteResults.voteStatus === "vote") {
+		generalInfo.push({
+			caption: "Stage",
+			data: "Voting",
+		});
+	} else if (voteResults.voteStatus === "complete") {
+		generalInfo.push({
+			caption: "Stage",
+			data: "Vote Ended",
+		});
+	}
+
 	generalInfo.push({
 		caption: "AppId",
 		data: voteResults.appId,
 		url: `${BASE_URL}/application/${voteResults.appId}`,
 	});
-	generalInfo.push({
-		caption: "Votes Casted",
-		data: voteResults.castedVotes,
-	});
-	generalInfo.push({
-		caption: "Vote Percentage",
-		data: `${(voteResults.castedVotes / voteResults.assetSupply) * 100}%`,
-	});
 
-	const candidatesInfo = [];
-	for (const candidate of Object.keys(voteResults.candidates)) {
-		candidatesInfo.push({
-			caption: candidate,
-			data: voteResults.candidates[candidate],
+	if (voteResults.voteStatus === "register") {
+		const registeredVoters =
+			voteResults.assetSupply - voteResults.creatorAssetBalance;
+		generalInfo.push({
+			caption: "Registered Voters",
+			data: registeredVoters,
 		});
+		generalInfo.push({
+			caption: "Registered Percentage",
+			data: `${(registeredVoters / voteResults.assetSupply) * 100}%`,
+		});
+
+		for (const candidate of Object.keys(voteResults.candidates)) {
+			candidatesInfo.push({
+				caption: "",
+				data: candidate,
+			});
+		}
+	} else {
+		generalInfo.push({
+			caption: "Votes Casted",
+			data: voteResults.castedVotes,
+		});
+		generalInfo.push({
+			caption: "Vote Percentage",
+			data: `${
+				(voteResults.castedVotes / voteResults.assetSupply) * 100
+			}%`,
+		});
+		for (const candidate of Object.keys(voteResults.candidates)) {
+			candidatesInfo.push({
+				caption: candidate,
+				data: voteResults.candidates[candidate],
+			});
+		}
 	}
 
-	const tokenInfo = [];
 	tokenInfo.push({
 		caption: "Asset Id",
 		data: voteResults.assetId,
@@ -75,11 +122,8 @@ const EnterVoteInfo = () => {
 		data: `${voteResults.assetName} (${voteResults.assetUnit})`,
 	});
 
-	const dateInfo = [];
 	dateInfo.push({ caption: "Vote Start", data: voteResults.voteBegin });
 	dateInfo.push({ caption: "Vote End", data: voteResults.voteEnd });
-
-	console.log("vote stuff", voteResults);
 
 	return (
 		<div
@@ -112,17 +156,17 @@ const EnterVoteInfo = () => {
 					]}
 				/>
 			</StyledGrid>
-			<Typography>Candidate Info:</Typography>
+			<Typography>Candidates:</Typography>
 			<StyledGrid container>
 				<FormRow data={candidatesInfo} />
 			</StyledGrid>
 			{/* creator, assetId, numVotes, vote %, */}
-			<Typography>Vote token info:</Typography> {/* candidates list */}
+			<Typography>Vote Token:</Typography> {/* candidates list */}
 			<StyledGrid container>
 				{/* vote token info (name, supply, ticker) */}
 				<FormRow data={tokenInfo} />
 			</StyledGrid>
-			<Typography>Start and end dates:</Typography>
+			<Typography>Date Info:</Typography>
 			{/* start and end dates */}
 			<StyledGrid container>
 				{/* vote token info (name, supply, ticker) */}

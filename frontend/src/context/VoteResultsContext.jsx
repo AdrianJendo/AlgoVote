@@ -7,8 +7,10 @@ export const VoteResultsProvider = (props) => {
 		workflowStarted: false, // current step of workflow
 		activeStep: 0, // current step of workflow
 
+		voteStatus: null, // register, vote, complete
 		appId: "",
 		creator: null,
+		creatorAssetBalance: null, // number of vote tokens held by creator
 		participants: null, // list of recent participants and who they voted for
 		voteBegin: null,
 		voteEnd: null,

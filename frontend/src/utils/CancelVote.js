@@ -41,8 +41,10 @@ export const cancelVoteResults = (setVoteResults) => {
 	setVoteResults({
 		workflowStarted: false,
 		activeStep: 0,
+		voteStatus: null,
 		appId: "",
 		creator: null,
+		creatorAssetBalance: null,
 		assetId: null,
 		participants: null,
 		voteBegin: null,

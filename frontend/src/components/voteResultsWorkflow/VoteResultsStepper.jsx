@@ -46,13 +46,42 @@ export default function VerticalLinearStepper() {
 				const assetData = assetResp.data;
 				const candidates = {};
 				let castedVotes = 0;
+				let voteStatus = "register";
 
-				const voteBegin = await axios.get(
-					"/api/blockchain/blockTimestamp",
-					{ params: { blockRound: voteData.VoteBegin } }
+				const curBlock = await axios.get(
+					"/api/blockchain/blockchainStatus"
 				);
 
-				const localVoteBegin = new Date(voteBegin.data);
+				const lastRound = curBlock.data["last-round"];
+
+				if (lastRound > voteData.VoteEnd) {
+					voteStatus = "complete";
+				} else if (lastRound > voteData.VoteBegin) {
+					voteStatus = "vote";
+				}
+
+				const creatorAssetBalance = await axios.get(
+					"/api/asa/checkAssetBalance",
+					{
+						params: {
+							addr: voteData.Creator,
+							assetId: voteData.AssetId,
+						},
+					}
+				);
+
+				let localVoteBegin;
+				if (voteStatus !== "register") {
+					const voteBegin = await axios.get(
+						"/api/blockchain/blockTimestamp",
+						{ params: { blockRound: voteData.VoteBegin } }
+					);
+
+					localVoteBegin = new Date(voteBegin.data);
+				} else {
+					localVoteBegin = `Block round is ${voteData.VoteBegin}`;
+				}
+
 				const localVoteEnd = `Block round is ${voteData.VoteEnd}`;
 
 				for (const key of Object.keys(voteData)) {
@@ -73,6 +102,8 @@ export default function VerticalLinearStepper() {
 					...voteResults,
 					activeStep: voteResults.activeStep + 1,
 					creator: voteData.Creator,
+					creatorAssetBalance: creatorAssetBalance.data.amount,
+					voteStatus,
 					assetId: voteData.AssetId,
 					voteBegin: localVoteBegin.toString(),
 					voteEnd: localVoteEnd,
@@ -83,7 +114,7 @@ export default function VerticalLinearStepper() {
 					assetUnit: assetData.params["unit-name"],
 				});
 			} catch (err) {
-				alert(err.message);
+				alert("Invalid App Id");
 			}
 		} else {
 			cancelVoteResults(setVoteResults);
