@@ -29,8 +29,15 @@ const ParticipateWorkflow = () => {
 				>
 					{participateInfo.activeStep === 0 && <RegisterOrVote />}
 					{participateInfo.activeStep === 1 && <EnterPublicKey />}
-					{participateInfo.activeStep === 2 && <SelectCandidate />}
-					{participateInfo.activeStep === 3 && <ReviewAndPay />}
+					{participateInfo.activeStep === 2 &&
+						participateInfo.RegisterOrVote === "vote" && (
+							<SelectCandidate />
+						)}
+					{(participateInfo.activeStep === 3 ||
+						(participateInfo.activeStep === 2 &&
+							participateInfo.registerOrVote === "register")) && (
+						<ReviewAndPay />
+					)}
 				</Paper>
 			</PaperDiv>
 		</div>

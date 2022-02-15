@@ -31,7 +31,7 @@ export const cancelParticipate = (setParticipateInfo) => {
 		candidates: [],
 		selectedCandidate: "",
 		voteSubmitted: false,
-		voteAccepted: false,
+		txId: null,
 	});
 };
 

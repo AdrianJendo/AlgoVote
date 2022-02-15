@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { ParticipateContext } from "context/ParticipateContext";
 import { cancelParticipate } from "utils/CancelVote";
 import submitVote from "utils/participateWorkflow/submitVote";
+import submitRegister from "utils/participateWorkflow/submitRegister";
 import ProgressBar from "components/base/ProgressBar";
 
 import {
@@ -11,8 +12,11 @@ import {
 	TableBody,
 	TableRow,
 	styled,
+	Link,
 } from "@mui/material";
 import TableCell, { tableCellClasses } from "@mui/material/TableCell";
+
+const BASE_URL = "https://testnet.algoexplorer.io";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
 	[`&.${tableCellClasses.body}`]: {
@@ -34,10 +38,12 @@ const ReviewAndPay = () => {
 		useContext(ParticipateContext);
 
 	const rows = [];
-	rows.push({
-		name: "Selected Candidate",
-		value: <i>{participateInfo.selectedCandidate}</i>,
-	});
+	if (participateInfo.registerOrVote === "vote") {
+		rows.push({
+			name: "Selected Candidate",
+			value: <i>{participateInfo.selectedCandidate}</i>,
+		});
+	}
 	rows.push({
 		name: "Application Id",
 		value: <i>{participateInfo.appId}</i>,
@@ -82,18 +88,42 @@ const ReviewAndPay = () => {
 				<Button
 					variant="contained"
 					onClick={async () =>
-						await submitVote(participateInfo, setParticipateInfo)
+						participateInfo.registerOrVote === "vote"
+							? await submitVote(
+									participateInfo,
+									setParticipateInfo
+							  )
+							: await submitRegister(
+									participateInfo,
+									setParticipateInfo
+							  )
 					}
 				>
 					Confirm
 				</Button>
 			)}
-			{participateInfo.voteSubmitted && !participateInfo.voteAccepted && (
-				<div style={{ padding: "50px" }}>
-					<ProgressBar text="Sending Vote..." />
+			{participateInfo.txId && (
+				<div style={{ marginBottom: "30px" }}>
+					<Typography sx={{ fontSize: "18px" }} variant="text">
+						Transaction{" "}
+						<Link
+							href={`${BASE_URL}/tx/${participateInfo.txId}`}
+							target="_blank"
+							underline="hover"
+						>
+							{participateInfo.txId}
+						</Link>{" "}
+						successfully submitted
+					</Typography>
 				</div>
 			)}
-			{participateInfo.voteSubmitted && participateInfo.voteAccepted && (
+
+			{participateInfo.voteSubmitted && !participateInfo.txId && (
+				<div style={{ padding: "50px" }}>
+					<ProgressBar text="Sending Transaction..." value={null} />
+				</div>
+			)}
+			{participateInfo.voteSubmitted && participateInfo.txId && (
 				<Button
 					variant="contained"
 					onClick={() => cancelParticipate(setParticipateInfo)}

@@ -270,7 +270,11 @@ export const submitVote = async (req, res) => {
 			await printAssetHolding(algodClient, recipient, assetId)
 		);
 
-		return res.send({ voterAssetHoldings, creatorAssetHoldings });
+		return res.send({
+			voterAssetHoldings,
+			creatorAssetHoldings,
+			txId: txn.txId,
+		});
 	} catch (err) {
 		console.log(err);
 		return res.send(err);
@@ -382,8 +386,7 @@ export const didUserVote = async (req, res) => {
 export const registerForVote = async (req, res) => {
 	try {
 		const userAccount = algosdk.mnemonicToSecretKey(
-			// decodeURIMnemonic(req.body.userMnemonic)
-			req.body.userMnemonic
+			decodeURIMnemonic(req.body.userMnemonic)
 		);
 		const appId = req.body.appId;
 		const sender = userAccount.addr;
@@ -446,7 +449,7 @@ export const registerForVote = async (req, res) => {
 		// Wait for transaction to be confirmed
 		await waitForConfirmation(algodClient, txn.txId);
 
-		return res.send({ txn });
+		return res.send({ txId: txn.txId });
 	} catch (err) {
 		console.log(err);
 		return res.send(err);
