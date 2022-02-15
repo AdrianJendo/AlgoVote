@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import SettingsBackupRestoreIcon from "@mui/icons-material/SettingsBackupRestore";
 import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
+import PlusOneIcon from "@mui/icons-material/PlusOne";
 
 const rowsPerPage = 50;
 
@@ -26,12 +27,13 @@ export default function StickyHeadTable({ stage }) {
 			? [
 					{ id: "name", label: "Account Address", minWidth: 170 },
 					{ id: "numVotes", label: "Number of Votes", minWidth: 170 },
-					{ id: "cancel", label: "", width: 50, align: "right" },
+					{ id: "add", label: "", align: "right" },
+					{ id: "cancel", label: "", align: "right" },
 			  ]
 			: [
 					{ id: "id", label: "ID", minWidth: 170 },
 					{ id: "name", label: "Name", minWidth: 170 },
-					{ id: "cancel", label: "", width: 50, align: "right" },
+					{ id: "cancel", label: "", align: "right" },
 			  ];
 
 	if (voteInfo.activeStep === 4) {
@@ -59,12 +61,24 @@ export default function StickyHeadTable({ stage }) {
 			rows.push({
 				name,
 				numVotes,
+				add:
+					voteInfo.activeStep === 4 ? (
+						""
+					) : (
+						<IconButton
+							onClick={() =>
+								updatePerson({ numVotes, name }, false)
+							}
+						>
+							<PlusOneIcon />
+						</IconButton>
+					),
 				cancel:
 					voteInfo.activeStep === 4 ? (
 						""
 					) : (
 						<IconButton
-							onClick={() => decrementPerson({ numVotes, name })}
+							onClick={() => updatePerson({ numVotes, name })}
 						>
 							<PersonRemoveIcon />
 						</IconButton>
@@ -82,9 +96,7 @@ export default function StickyHeadTable({ stage }) {
 						""
 					) : (
 						<IconButton
-							onClick={() =>
-								decrementPerson({ numVotes: 1, name })
-							}
+							onClick={() => updatePerson({ numVotes: 1, name })}
 						>
 							<PersonRemoveIcon />
 						</IconButton>
@@ -94,8 +106,8 @@ export default function StickyHeadTable({ stage }) {
 		}
 	}
 
-	const decrementPerson = (row) => {
-		const newNumVotes = row.numVotes - 1;
+	const updatePerson = (row, decrement = true) => {
+		const newNumVotes = decrement ? row.numVotes - 1 : row.numVotes + 1;
 		const newVoteInfo = Object.assign({}, voteInfo);
 		if (newNumVotes === 0) {
 			const newVoteInfo = Object.assign({}, voteInfo);
@@ -106,7 +118,11 @@ export default function StickyHeadTable({ stage }) {
 			}
 			setVoteInfo(newVoteInfo);
 		} else if (stage === "participants") {
-			newVoteInfo.participantData[row.name]--;
+			if (decrement) {
+				newVoteInfo.participantData[row.name]--;
+			} else {
+				newVoteInfo.participantData[row.name]++;
+			}
 		}
 
 		setVoteInfo(newVoteInfo);
