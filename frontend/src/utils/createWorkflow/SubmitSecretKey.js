@@ -135,11 +135,6 @@ const submitSecretKey = async (props) => {
 				}
 				await Promise.all(optInTokenPromises);
 
-				// TEMP ----------------------------------------------------------------------------------------------------------------------------------------
-				// Remove this and then later we only send out the vote tokens when the vote starts to whoever has registered for it. Actually for newAccounts we can probably keep this here
-				// but will need to update the logic for accounts that already exist
-				// There is also a known bug when mixing newAccounts with prefunded accounts that needs to be fixed at some point
-
 				// send out vote tokens from creator
 				for (const receiver of participantAddresses) {
 					const amount = voteInfo.participantData[receiver];
@@ -155,8 +150,6 @@ const submitSecretKey = async (props) => {
 					);
 				}
 				await Promise.all(optInTokenPromises);
-
-				// -----------------------------------------------------------------------------------------------------------------------------------------------
 
 				// opt in to voting contract
 				setProgressBar(80);
