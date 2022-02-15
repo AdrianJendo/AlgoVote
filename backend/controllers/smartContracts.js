@@ -97,7 +97,7 @@ export const createVoteSmartContract = async (req, res) => {
 			0, // local integers
 			1, // local byteslices
 			args.length, // global integers (startVotingBlock, endVotingBlock, assetId, candidates)
-			1, // global byteslices (1 for creator address)
+			0, // global byteslices
 			args
 		);
 		let txId = txn.txID().toString();
@@ -215,6 +215,7 @@ export const submitVote = async (req, res) => {
 		const args = [];
 		args.push(new Uint8Array(Buffer.from("vote")));
 		args.push(new Uint8Array(Buffer.from(candidate)));
+		args.push(algosdk.encodeUint64(amount));
 
 		// goal app call --app-id {APPID} --app-arg "str:vote" --app-arg "str:candidatea" --from {ACCOUNT}  --out=unsignedtransaction1.tx
 		let txn1 = algosdk.makeApplicationNoOpTxnFromObject({
@@ -333,10 +334,10 @@ export const readVoteSmartContractState = async (req, res) => {
 			const state = globalState[i];
 			// https://forum.algorand.org/t/how-i-can-convert-value-of-global-state-to-human-readable/3551/2
 			decodedState[Buffer.from(state.key, "base64").toString()] =
-				state.value.type === 1
-					? application.params.creator // only the creator is a byteslice (type 1)
-					: state.value.uint;
+				state.value.uint; // all global states are uint
 		}
+
+		decodedState["Creator"] = application.params.creator;
 
 		return res.send(decodedState);
 	} catch (err) {

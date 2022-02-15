@@ -36,8 +36,6 @@ const submitSecretKey = async (props) => {
 		});
 
 		if (resp.data.addr) {
-			// success
-
 			// MIN BALANCE CALCULATION
 			// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 			// const creatorAddr = resp.data.addr;
@@ -101,7 +99,6 @@ const submitSecretKey = async (props) => {
 
 			if (voteInfo.accountFundingType === "newAccounts") {
 				const fundAccountPromises = [];
-				const optInTokenPromises = [];
 				const sendTokenPromises = [];
 				const optInContractPromises = [];
 				participantAccounts = voteInfo.privatePublicKeyPairs;
@@ -119,23 +116,24 @@ const submitSecretKey = async (props) => {
 				}
 				await Promise.all(fundAccountPromises);
 
-				// opt in to receive vote token
+				// opt in to vote token and voting contract (atomically grouped)
 				setProgressBar(60);
 				for (const accountAddr of participantAddresses) {
 					const accountMnemonic = participantAccounts[accountAddr];
 					if (accountMnemonic) {
-						optInTokenPromises.push(
-							axios.post("/api/asa/optInToAsset", {
-								senderMnemonic:
+						optInContractPromises.push(
+							axios.post("/api/smartContract/registerForVote", {
+								userMnemonic:
 									encodeURIMnemonic(accountMnemonic),
-								assetId,
+								appId,
 							})
 						);
 					}
 				}
-				await Promise.all(optInTokenPromises);
+				await Promise.all(optInContractPromises);
 
 				// send out vote tokens from creator
+				setProgressBar(80);
 				for (const receiver of participantAddresses) {
 					const amount = voteInfo.participantData[receiver];
 					const senderMnemonic = encryptedMnemonic;
@@ -149,26 +147,7 @@ const submitSecretKey = async (props) => {
 						})
 					);
 				}
-				await Promise.all(optInTokenPromises);
-
-				// opt in to voting contract
-				setProgressBar(80);
-				for (const accountAddr of participantAddresses) {
-					const accountMnemonic = participantAccounts[accountAddr];
-					if (accountMnemonic) {
-						optInContractPromises.push(
-							axios.post(
-								"/api/smartContract/optInVoteSmartContract",
-								{
-									userMnemonic:
-										encodeURIMnemonic(accountMnemonic),
-									appId,
-								}
-							)
-						);
-					}
-				}
-				await Promise.all(optInContractPromises);
+				await Promise.all(sendTokenPromises);
 			} else {
 				// Create smart contract to handle registering and sending vote token from creator !!!!!
 				// need to store the list of participants in global storage (public keys)
@@ -200,7 +179,7 @@ const submitSecretKey = async (props) => {
 			];
 
 			if (participantAccounts) {
-				ws_data.push("Secret Key");
+				ws_data[0].push("Secret Key");
 			}
 
 			for (
