@@ -24,9 +24,9 @@ const Payment = () => {
 			case 40:
 				return "Funding new accounts";
 			case 60:
-				return "Opting in to vote token";
+				return "Opting in";
 			case 80:
-				return "Opting in to contract";
+				return "Sending vote tokens";
 			case 99:
 				return "Exporting Vote Data";
 			default:

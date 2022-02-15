@@ -99,7 +99,7 @@ export default function VerticalLinearStepper() {
 						);
 						return;
 					}
-				} else if (key !== "Creator") {
+				} else if (!["Creator", "VoteBegin", "VoteEnd"].includes(key)) {
 					candidates.push(key);
 				}
 			}

@@ -30,7 +30,7 @@ const ParticipateWorkflow = () => {
 					{participateInfo.activeStep === 0 && <RegisterOrVote />}
 					{participateInfo.activeStep === 1 && <EnterPublicKey />}
 					{participateInfo.activeStep === 2 &&
-						participateInfo.RegisterOrVote === "vote" && (
+						participateInfo.registerOrVote === "vote" && (
 							<SelectCandidate />
 						)}
 					{(participateInfo.activeStep === 3 ||

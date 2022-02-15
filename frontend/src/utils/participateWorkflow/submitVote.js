@@ -12,6 +12,7 @@ const submitVote = async (participateInfo, setParticipateInfo) => {
 		appId,
 		candidate,
 	});
+
 	setParticipateInfo({
 		...participateInfo,
 		voteSubmitted: true,
