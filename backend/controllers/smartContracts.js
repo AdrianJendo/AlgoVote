@@ -149,7 +149,6 @@ export const optInVoteSmartContract = async (req, res) => {
 
 	const args = [];
 	args.push(new Uint8Array(Buffer.from("register")));
-	// args.push(new Uint8Array(...Buffer.from("register")));
 
 	// create unsigned transaction
 	const txn = algosdk.makeApplicationOptInTxn(sender, params, appId, args);
@@ -378,4 +377,162 @@ export const didUserVote = async (req, res) => {
 		voted: "Did not participate in application",
 		status: false,
 	});
+};
+
+// export const createRegisterSmartContract = async (req, res) => {
+// 	try {
+// 		// const appId = req.body.appId;
+// 		const participantAddresses = JSON.parse(req.body.participants);
+// 		const creatorAccount = algosdk.mnemonicToSecretKey(
+// 			// decodeURIMnemonic(req.body.creatorMnemonic)
+// 			req.body.creatorMnemonic
+// 		);
+
+// 		console.log("SWEATY");
+
+// 		// get node suggested parameters
+// 		let params = await algodClient.getTransactionParams().do();
+// 		// comment out the next two lines to use suggested fee
+// 		params.fee = 1000;
+// 		params.flatFee = true;
+
+// 		// declare onComplete as NoOp
+// 		const onComplete = algosdk.OnApplicationComplete.NoOpOC;
+
+// 		const clear_state_contract = path.join(
+// 			__dirname,
+// 			"smart_contracts/p_vote_opt_out.teal"
+// 		);
+
+// 		const register_contract = path.join(
+// 			__dirname,
+// 			"smart_contracts/vote_register.teal"
+// 		);
+
+// 		const register_progam = await readTeal(algodClient, register_contract);
+// 		const clear_state_program = await readTeal(
+// 			algodClient,
+// 			clear_state_contract
+// 		);
+
+// 		const args = [];
+// 		participantAddresses.map((p) => {
+// 			args.push(new Uint8Array(Buffer.from(p)));
+// 		});
+
+// 		const lsig = new algosdk.LogicSigAccount(register_progam, args);
+// 		console.log("lsig : " + lsig.address());
+
+// 		// create unsigned transaction
+// 		let txn = algosdk.makeApplicationCreateTxn(
+// 			creatorAccount.addr,
+// 			params,
+// 			onComplete,
+// 			register_progam,
+// 			clear_state_program,
+// 			0, // local integers
+// 			0, // local byteslices
+// 			participantAddresses.length, // global integers (0 if participant not registered, 1 if registered)
+// 			0, // global byteslices
+// 			args
+// 		);
+// 		let txId = txn.txID().toString();
+
+// 		// Sign the transaction
+// 		let signedTxn = txn.signTxn(creatorAccount.sk);
+
+// 		// Submit the transaction
+// 		await algodClient.sendRawTransaction(signedTxn).do();
+
+// 		// Wait for confirmation
+// 		await waitForConfirmation(algodClient, txId);
+
+// 		// display results
+// 		let transactionResponse = await algodClient
+// 			.pendingTransactionInformation(txId)
+// 			.do();
+
+// 		// console.log("txn response", transactionResponse);
+// 		const appId = transactionResponse["application-index"];
+// 		console.log("Created new app-id: ", appId);
+
+// 		return res.send({ appId, lsig });
+// 	} catch (err) {
+// 		console.log(err);
+// 		return res.send(err);
+// 	}
+// };
+
+export const registerForVote = async (req, res) => {
+	try {
+		const userAccount = algosdk.mnemonicToSecretKey(
+			// decodeURIMnemonic(req.body.userMnemonic)
+			req.body.userMnemonic
+		);
+		const appId = req.body.appId;
+		const sender = userAccount.addr;
+
+		const smartContractAttributes = await axios.get(
+			`http://127.0.0.1:${BACKEND_PORT}/smartContract/readVoteSmartContractState`,
+			{ params: { appId } }
+		);
+
+		const assetId = smartContractAttributes.data.AssetId;
+
+		let params = await algodClient.getTransactionParams().do();
+		//comment out the next two lines to use suggested fee
+		params.fee = 1000;
+		params.flatFee = true;
+
+		// opt in to receive asset
+		// signing and sending "txn" allows sender to begin accepting asset specified by creator and index
+		const asaTxn = algosdk.makeAssetTransferTxnWithSuggestedParams(
+			sender,
+			sender,
+			undefined,
+			undefined,
+			0,
+			undefined,
+			assetId,
+			params
+		);
+
+		// opt in to vote smart contract
+		const args = [];
+		args.push(new Uint8Array(Buffer.from("register")));
+
+		// create unsigned transaction
+		const smartContractTxn = algosdk.makeApplicationOptInTxn(
+			sender,
+			params,
+			appId,
+			args
+		);
+
+		// Combine transactions
+		const txns = [asaTxn, smartContractTxn];
+
+		// Group both transactions
+		const txnGroup = algosdk.assignGroupID(txns);
+		// console.log("txnGroup", txnGroup);
+
+		const signedTxn1 = asaTxn.signTxn(userAccount.sk);
+		const signedTxn2 = smartContractTxn.signTxn(userAccount.sk);
+
+		// Combine the signed transactions
+		const signed = [];
+		signed.push(signedTxn1);
+		signed.push(signedTxn2);
+
+		let txn = await algodClient.sendRawTransaction(signed).do();
+		console.log("Transaction : " + txn.txId);
+
+		// Wait for transaction to be confirmed
+		await waitForConfirmation(algodClient, txn.txId);
+
+		return res.send({ txn });
+	} catch (err) {
+		console.log(err);
+		return res.send(err);
+	}
 };
