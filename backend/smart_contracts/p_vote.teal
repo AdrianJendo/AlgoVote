@@ -5,15 +5,15 @@ int 0
 txn ApplicationID // check if the ApplicationID exists (if doesn't exist it equals zero)
 ==
 bz not_creation // branch to target if ApplicationID is zero (bz -> branch if zero)
-byte "Creator"
-txn Sender // Sender address stored as "Creator" variable
-app_global_put // write previous valued to global storage (it's like a dictionary where "Creator" is the key, and Sender is the value)
+
 // > 3 args must be used on creation
 txn NumAppArgs
 int 3
 >
 bz failed // check if number of app args is more than 3 and branch if less than or equal to 3
-//set timestamps
+
+// setting global variables
+// set timestamps
 byte "VoteBegin"
 txna ApplicationArgs 0 // access the first argument in the transaction
 btoi // converts big endian bytes to uint64
@@ -26,7 +26,6 @@ byte "AssetId"
 txna ApplicationArgs 2 // put the 3rd argument into global storage as "AssetID"
 btoi
 app_global_put
-
 // loop from index 3 -> args.length-1
 // init loop var
 int 3 // start at 4th argument (index 3)
@@ -40,60 +39,48 @@ int 1 // increment counter by 1
 // check upper bound
 dup // < operator pops off stack so duplicate the value for next iteration
 txn NumAppArgs // loop over all candidates
-// int 1
-// -
 <
 bnz loop
+b success
 
-int 1
-return // Returns the value on the top of the stack when the program terminates, for successful creation of smart contract, return 1
 not_creation: // branch for any call that is not contract creation
-// check if this is deletion ---
-int DeleteApplication
+// check NoOp
 txn OnCompletion
+int NoOp
 ==
-bz not_deletion // branch if not equal
-byte "Creator"
-app_global_get // Get the "Creator" byte from global storage
-txn Sender
-== // Check if the "Creator" is equal to the sender of the current transaction
-bz failed // Fail if "Creator" is not sender
-int 1
-return // Return 1 to complete app deletion
-not_deletion:
-//---
-// check if this is update ---
-int UpdateApplication
+bnz handle_noop
+
+// check if optin (register)
 txn OnCompletion
+int OptIn
 ==
-bz not_update
-byte "Creator"
-app_global_get
-txn Sender
-==
-bz failed
-int 1
-return
-not_update:
-//---
-// check for closeout
+bnz handle_optin
+
+// check if closeout
+txn OnCompletion
 int CloseOut
-txn OnCompletion
-== // branch if equal (not zero) -- bnz -> branch if not zero
-bnz close_out
-// register
-txna ApplicationArgs 0
-byte "register" // check if the first argument to the transaction is "register"
 ==
-bnz register
-//vote
+bnz handle_closeout
+
+// check if update
+txn OnCompletion
+int UpdateApplication
+==
+bnz handle_updateapp
+
+// check deletion
+txn OnCompletion
+int DeleteApplication
+==
+bnz handle_deleteapp
+
+
+// Handle NoOp (vote)
+handle_noop:
 txna ApplicationArgs 0
 byte "vote" // check if the first argument to the transaction is "vote"
 ==
-bnz vote
-int 0 // handle case where argument is either not "register" or not "vote"
-return
-vote:
+bz failed
 //verify in voting rounds
 global Round
 byte "VoteBegin"
@@ -106,22 +93,19 @@ app_global_get // and check that current Round is before voteEnd
 &&
 bz failed // if one of the above conditions is false, branch to failed
 // Check that the account has opted in
-// account offset (0 == sender, 
-// 1 == txn.accounts[0], 2 == txn.accounts[1], etc..)
-int 0 // offset of 0 corresponds to sender
-txn ApplicationID // B -> AppId
+// account offset (0 == sender, 1 == txn.accounts[0], 2 == txn.accounts[1], etc..)
+int 0 // offset of 0 corresponds to sender [A]
+txn ApplicationID // AppId [B]
 app_opted_in // check if account A (0 -> sender) opted in to application B (specified by AppId)
 bz failed
 // check if they have the vote token
 // sender
 int 0 // offset 0 for sender
 // not hard-coded assetid
-byte "AssetId" // OR int 0 // (first index of foregin asset args)
+byte "AssetId" // OR int 0 (first index of foregin asset args)
 app_global_get
-// returns frozen an asset balance
-// pop frozen
-asset_holding_get AssetBalance
-pop
+asset_holding_get AssetBalance // get assetBalance
+pop // i guess we pop to save stack space for things we don't need?
 // does voter have at least 1 vote token
 int 1
 >=
@@ -137,8 +121,7 @@ int 4
 ==
 bz failed
 // creator receiving the vote token
-byte "Creator"
-app_global_get
+global CreatorAddress
 gtxn 1 AssetReceiver
 ==
 bz failed
@@ -154,19 +137,21 @@ int 0 // sender
 txn ApplicationID
 byte "voted"
 app_local_get_ex // put voted variable to top of stack
-// if voted skip incrementing count
-bnz voted
-pop // pop voted variable from stack
+// if voted skip incrementing count and return success
+bnz success
+pop
 // voting for candidate
 // read existing vote candidate in global state and increment vote
 int 0
 txna ApplicationArgs 1 // load candidate onto top of stack
 app_global_get_ex // read from application A (0) global state key B (candidate)
 bnz increment_existing 
-pop // if current candidate has 0 votes pop last value
+pop
 int 0 // add zero (current number of votes of candidate)
+
 increment_existing:
-int 1
+txna ApplicationArgs 2 // load number of votes onto top of stack
+btoi
 +
 store 1
 txna ApplicationArgs 1
@@ -177,31 +162,44 @@ int 0 // sender
 byte "voted"
 txna ApplicationArgs 1
 app_local_put // put the voters candidate in local storage
-int 1
-return
-voted:
-pop
-int 1
-return
-register:
+b success
+
+// Handle OptIn (register)
+handle_optin:
+txna ApplicationArgs 0
+byte "register" // check if the first argument to the transaction is "register"
+==
+bz failed
 global Round
 byte "VoteBegin"
 app_global_get
 <=
-int OptIn
-txn OnCompletion
-==
-&&
 bz failed
-int 1
-return
-//call if this is a closeout op
-close_out:
-int 1
-return
+b success
+
+// Handle CloseOut
+handle_closeout:
+b success // might need to change this?
+
+handle_updateapp:
+global CreatorAddress
+txn Sender
+==
+bz failed
+b success
+
+handle_deleteapp:
+global CreatorAddress
+txn Sender
+== // Check if the "Creator" is equal to the sender of the current transaction
+bz failed // Fail if "Creator" is not sender
+b success
+
+
 failed:
 int 0
 return
-finished:
+
+success:
 int 1
-return
+return // Returns the value on the top of the stack when the program terminates, for successful creation of smart contract, return 1
