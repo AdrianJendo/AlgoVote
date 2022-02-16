@@ -50,15 +50,20 @@ export default function VerticalLinearStepper() {
 				let castedVotes = 0;
 				let voteStatus = "register";
 
-				const curBlock = await axios.get(
-					"/api/blockchain/blockchainStatus"
-				);
+				const today = new Date();
+				const curTimeUTC =
+					Date.UTC(
+						today.getUTCFullYear(),
+						today.getUTCMonth(),
+						today.getUTCDate(),
+						today.getUTCHours(),
+						today.getUTCMinutes(),
+						today.getUTCSeconds()
+					) / 1000;
 
-				const lastRound = curBlock.data["last-round"];
-
-				if (lastRound > voteData.VoteEnd) {
+				if (curTimeUTC > voteData.VoteEnd) {
 					voteStatus = "complete";
-				} else if (lastRound > voteData.VoteBegin) {
+				} else if (curTimeUTC > voteData.VoteBegin) {
 					voteStatus = "vote";
 				}
 
@@ -72,19 +77,8 @@ export default function VerticalLinearStepper() {
 					}
 				);
 
-				let localVoteBegin;
-				if (voteStatus !== "register") {
-					const voteBegin = await axios.get(
-						"/api/blockchain/blockTimestamp",
-						{ params: { blockRound: voteData.VoteBegin } }
-					);
-
-					localVoteBegin = new Date(voteBegin.data);
-				} else {
-					localVoteBegin = `Block round is ${voteData.VoteBegin}`;
-				}
-
-				const localVoteEnd = `Block round is ${voteData.VoteEnd}`;
+				const voteBegin = new Date(voteData.VoteBegin * 1000);
+				const voteEnd = new Date(voteData.VoteEnd * 1000);
 
 				for (const key of Object.keys(voteData)) {
 					if (
@@ -107,8 +101,8 @@ export default function VerticalLinearStepper() {
 					creatorAssetBalance: creatorAssetBalance.data.amount,
 					voteStatus,
 					assetId: voteData.AssetId,
-					voteBegin: localVoteBegin.toString(),
-					voteEnd: localVoteEnd,
+					voteBegin: voteBegin.toString(),
+					voteEnd: voteEnd.toString(),
 					candidates,
 					castedVotes,
 					assetSupply: assetData.params.total,

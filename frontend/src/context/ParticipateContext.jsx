@@ -6,8 +6,8 @@ export const ParticipateProvider = (props) => {
 	const [participateInfo, setParticipateInfo] = useState({
 		activeStep: 0, // current step of workflow
 		registerOrVote: null, // either "register" or "vote"
-		voteBegin: null, // vote start block
-		voteEnd: null, // vote end block
+		voteBegin: null, // vote start UTC time
+		voteEnd: null, // vote end UTC time
 		sk: "", // secret key of participant
 		appId: "", // smart contract application id
 		assetId: null, // vote token id

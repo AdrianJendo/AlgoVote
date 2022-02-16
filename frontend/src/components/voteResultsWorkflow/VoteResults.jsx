@@ -97,7 +97,9 @@ const EnterVoteInfo = () => {
 		generalInfo.push({
 			caption: "Vote Percentage",
 			data: `${
-				(voteResults.castedVotes / voteResults.assetSupply) * 100
+				Math.round(
+					(voteResults.castedVotes / voteResults.assetSupply) * 10000
+				) / 100
 			}%`,
 		});
 		for (const candidate of Object.keys(voteResults.candidates)) {

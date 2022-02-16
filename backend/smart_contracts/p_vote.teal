@@ -13,7 +13,7 @@ int 3
 bz failed // check if number of app args is more than 3 and branch if less than or equal to 3
 
 // setting global variables
-// set timestamps
+// set timestamps (UTC time)
 byte "VoteBegin"
 txna ApplicationArgs 0 // access the first argument in the transaction
 btoi // converts big endian bytes to uint64
@@ -81,14 +81,14 @@ txna ApplicationArgs 0
 byte "vote" // check if the first argument to the transaction is "vote"
 ==
 bz failed
-//verify in voting rounds
-global Round
+//verify in voting timestamps
+global LatestTimestamp
 byte "VoteBegin"
-app_global_get // check that current Round is after votebegin
+app_global_get // check that timestamp of last block is after votebegin
 >=
-global Round
+global LatestTimestamp
 byte "VoteEnd"
-app_global_get // and check that current Round is before voteEnd
+app_global_get // and check that timestamp of last block is before voteEnd
 <=
 &&
 bz failed // if one of the above conditions is false, branch to failed
@@ -170,7 +170,7 @@ txna ApplicationArgs 0
 byte "register" // check if the first argument to the transaction is "register"
 ==
 bz failed
-global Round
+global LatestTimestamp
 byte "VoteBegin"
 app_global_get
 <=
@@ -179,13 +179,13 @@ b success
 
 // Handle CloseOut
 handle_closeout:
-b success // might need to change this?
+b failed // don't let anyone clear local state
 
 handle_updateapp:
 global CreatorAddress
 txn Sender
-==
-bz failed
+== // Check if the "Creator" is equal to the sender of the current transaction
+bz failed // Fail if "Creator" is not sender
 b success
 
 handle_deleteapp:
@@ -194,7 +194,6 @@ txn Sender
 == // Check if the "Creator" is equal to the sender of the current transaction
 bz failed // Fail if "Creator" is not sender
 b success
-
 
 failed:
 int 0
