@@ -1,8 +1,11 @@
 import algosdk from "algosdk";
+import path from "path";
 import { algodClient, __dirname } from "../server.js";
 import { pollingDelay } from "../helpers/misc.js";
 import axios from "axios";
 import CryptoJS from "crypto-js";
+import { readTeal } from "../helpers/smartContracts.js";
+import { waitForConfirmation } from "../helpers/misc.js";
 
 const NUM_VOTERS = 90;
 const CANDIDATES = ["Billy", "Jean", "Christian", "Dior"];
@@ -222,5 +225,92 @@ export const votingWorkflow = async (req, res) => {
 		assetId,
 		appId,
 		voters,
+	});
+};
+
+export const timestampTest = async (req, res) => {
+	const creatorAccount = algosdk.mnemonicToSecretKey(
+		req.body.creatorMnemonic
+	);
+	const sender = creatorAccount.addr;
+
+	const timestampUTC = 1644980700; // GMT Wed Feb 16 2022 03:05:00 GMT+0000
+
+	const timestamp = path.join(__dirname, "smart_contracts/timestamp.teal");
+	const opt_out = path.join(__dirname, "smart_contracts/p_vote_opt_out.teal");
+
+	const timestamp_program = await readTeal(algodClient, timestamp);
+	const opt_out_program = await readTeal(algodClient, opt_out);
+
+	// integer parameter
+	const args = [];
+
+	args.push(algosdk.encodeUint64(timestampUTC));
+
+	// get node suggested parameters
+	let params = await algodClient.getTransactionParams().do();
+	// comment out the next two lines to use suggested fee
+	params.fee = 1000;
+	params.flatFee = true;
+
+	// declare onComplete as NoOp
+	const onComplete = algosdk.OnApplicationComplete.NoOpOC;
+
+	// create unsigned transaction
+	let txn = algosdk.makeApplicationCreateTxn(
+		sender,
+		params,
+		onComplete,
+		timestamp_program,
+		opt_out_program,
+		0, // local integers
+		0, // local byteslices
+		1, // global integers
+		0, // global byteslices
+		args
+	);
+	let txId = txn.txID().toString();
+
+	// Sign the transaction
+	let signedTxn = txn.signTxn(creatorAccount.sk);
+	console.log("Signed transaction with txID: %s", txId);
+
+	// Submit the transaction
+	await algodClient.sendRawTransaction(signedTxn).do();
+
+	// Wait for confirmation
+	await waitForConfirmation(algodClient, txId);
+
+	// display results
+	let transactionResponse = await algodClient
+		.pendingTransactionInformation(txId)
+		.do();
+
+	// console.log("txn response", transactionResponse);
+	const appId = transactionResponse["application-index"];
+	console.log("Created new app-id: ", appId);
+
+	setTimeout(async () => {
+		try {
+			// goal app call --app-id {APPID} --app-arg "str:vote" --app-arg "str:candidatea" --from {ACCOUNT}  --out=unsignedtransaction1.tx
+			let txn = algosdk.makeApplicationNoOpTxnFromObject({
+				from: sender,
+				suggestedParams: params,
+				appIndex: appId,
+			});
+
+			let signedTxn = txn.signTxn(creatorAccount.sk);
+
+			let sentTxn = await algodClient.sendRawTransaction(signedTxn).do();
+			console.log("Transaction : " + sentTxn.txId);
+
+			// Wait for transaction to be confirmed
+			await waitForConfirmation(algodClient, sentTxn.txId);
+		} catch (err) {
+			console.log(err);
+		}
+	}, 15000);
+	return res.send({
+		appId,
 	});
 };
