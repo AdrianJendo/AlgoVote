@@ -175,6 +175,7 @@ const submitSecretKey = async (props) => {
 					"Vote Start",
 					"Vote End",
 					"Participant Address",
+					"Number of Votes",
 				],
 			];
 
@@ -202,8 +203,9 @@ const submitSecretKey = async (props) => {
 
 				if (i < participantAddresses.length) {
 					row[5] = participantAddresses[i];
+					row[6] = voteInfo.participantData[participantAddresses[i]];
 					if (participantAccounts) {
-						row[6] = participantAccounts[participantAddresses[i]];
+						row[7] = participantAccounts[participantAddresses[i]];
 					}
 				}
 
