@@ -4,7 +4,6 @@ import { cancelParticipate } from "utils/CancelVote";
 import submitVote from "utils/participateWorkflow/submitVote";
 import submitRegister from "utils/participateWorkflow/submitRegister";
 import ProgressBar from "components/base/ProgressBar";
-
 import {
 	Typography,
 	Button,
@@ -15,6 +14,7 @@ import {
 	Link,
 } from "@mui/material";
 import TableCell, { tableCellClasses } from "@mui/material/TableCell";
+import { useNavigate } from "react-router-dom";
 
 const BASE_URL = "https://testnet.algoexplorer.io";
 
@@ -36,6 +36,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 const ReviewAndPay = () => {
 	const [participateInfo, setParticipateInfo] =
 		useContext(ParticipateContext);
+	const navigate = useNavigate();
 
 	const rows = [];
 	if (participateInfo.registerOrVote === "vote") {
@@ -126,7 +127,9 @@ const ReviewAndPay = () => {
 			{participateInfo.voteSubmitted && participateInfo.txId && (
 				<Button
 					variant="contained"
-					onClick={() => cancelParticipate(setParticipateInfo)}
+					onClick={() =>
+						cancelParticipate(setParticipateInfo, navigate)
+					}
 				>
 					Home
 				</Button>

@@ -5,11 +5,13 @@ import Stepper from "components/base/Stepper";
 import isMnemonicValid from "utils/IsMnemonicValid";
 import encodeURIMnemonic from "utils/EncodeMnemonic";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function VerticalLinearStepper() {
 	const [participateInfo, setParticipateInfo] =
 		React.useContext(ParticipateContext);
 	const [readyToContinue, setReadyToContinue] = React.useState(false);
+	const navigate = useNavigate();
 
 	const steps = [
 		{
@@ -117,7 +119,7 @@ export default function VerticalLinearStepper() {
 			(participateInfo.activeStep === 2 &&
 				participateInfo.registerOrVote === "register")
 		) {
-			cancelParticipate(setParticipateInfo);
+			cancelParticipate(setParticipateInfo, navigate);
 		} else {
 			setParticipateInfo({
 				...participateInfo,
@@ -129,7 +131,7 @@ export default function VerticalLinearStepper() {
 	const handleBack = () => {
 		const activeStep = participateInfo.activeStep;
 		if (activeStep === 0) {
-			cancelParticipate(setParticipateInfo); //cancelling
+			cancelParticipate(setParticipateInfo, navigate); //cancelling
 		} else if (activeStep === 1) {
 			setParticipateInfo({
 				...participateInfo,
@@ -152,7 +154,6 @@ export default function VerticalLinearStepper() {
 			handleNext={handleNext}
 			handleBack={handleBack}
 			readyToContinue={readyToContinue}
-			cancelStepper={cancelParticipate}
 		/>
 	);
 }

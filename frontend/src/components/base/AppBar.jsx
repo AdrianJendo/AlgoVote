@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
 	AppBar,
 	Box,
@@ -9,17 +9,30 @@ import {
 } from "@mui/material";
 import HowToVoteIcon from "@mui/icons-material/HowToVote";
 import MUISwitch from "components/base/MuiSwitch";
+import { VoteInfoContext } from "context/VoteInfoContext";
+import { ParticipateContext } from "context/ParticipateContext";
+import { VoteResultsContext } from "context/VoteResultsContext";
+import changeRoute from "utils/changeRoute";
 import { useNavigate } from "react-router-dom";
 
 const TopAppBar = ({ dark, setDark }) => {
+	const setVoteInfo = useContext(VoteInfoContext)[1];
+	const setParticipateInfo = useContext(ParticipateContext)[1];
+	const setVoteResults = useContext(VoteResultsContext)[1];
 	const navigate = useNavigate();
 
 	const toggleSwitch = () => {
 		setDark(!dark);
 	};
 
-	const changeRoute = (route) => {
-		navigate(route);
+	const nav = (route) => {
+		changeRoute(
+			navigate,
+			route,
+			setVoteInfo,
+			setParticipateInfo,
+			setVoteResults
+		);
 	};
 
 	return (
@@ -31,7 +44,7 @@ const TopAppBar = ({ dark, setDark }) => {
 						edge="start"
 						color="inherit"
 						aria-label="menu"
-						onClick={() => changeRoute("/")}
+						onClick={() => nav("/")}
 						sx={{ mr: 2 }}
 					>
 						<HowToVoteIcon />
@@ -40,23 +53,17 @@ const TopAppBar = ({ dark, setDark }) => {
 						variant="h6"
 						component="div"
 						sx={{ flexGrow: 1, cursor: "pointer" }}
-						onClick={() => changeRoute("/")}
+						onClick={() => nav("/")}
 					>
 						Algo Vote
 					</Typography>
-					<Button color="inherit" onClick={() => changeRoute("/")}>
+					<Button color="inherit" onClick={() => nav("/")}>
 						Home
 					</Button>
-					<Button
-						color="inherit"
-						onClick={() => changeRoute("/tutorial")}
-					>
+					<Button color="inherit" onClick={() => nav("/tutorial")}>
 						Tutorial
 					</Button>
-					<Button
-						color="inherit"
-						onClick={() => changeRoute("/about")}
-					>
+					<Button color="inherit" onClick={() => nav("/about")}>
 						About
 					</Button>
 					<MUISwitch defaultChecked toggleSwitch={toggleSwitch} />

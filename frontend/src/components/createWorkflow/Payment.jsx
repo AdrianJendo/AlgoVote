@@ -5,6 +5,7 @@ import ProgressBar from "components/base/ProgressBar";
 import { cancelVote } from "utils/CancelVote";
 import submitSecretKey from "utils/createWorkflow/SubmitSecretKey";
 import isMnemonicValid from "utils/IsMnemonicValid";
+import { useNavigate } from "react-router-dom";
 
 const BASE_URL = "https://testnet.algoexplorer.io";
 
@@ -14,6 +15,7 @@ const Payment = () => {
 	const [secretKey, setSecretKey] = useState("");
 	const [progressBar, setProgressBar] = useState(null);
 	const [appId, setAppId] = useState(null);
+	const navigate = useNavigate();
 
 	const getText = (val) => {
 		switch (val) {
@@ -110,7 +112,9 @@ const Payment = () => {
 							</Typography>
 							<Button
 								variant="contained"
-								onClick={() => cancelVote(setVoteInfo)}
+								onClick={() =>
+									cancelVote(setVoteInfo, navigate)
+								}
 							>
 								Return to Home
 							</Button>

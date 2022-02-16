@@ -17,6 +17,7 @@ import {
 import CustomizedInputBase from "components/createWorkflow/TextInput";
 import HelpIcon from "@mui/icons-material/Help";
 import HelperTooltip from "components/createWorkflow/HelperTooltip";
+import { useNavigate } from "react-router-dom";
 
 // const emails1 = require("images/emails1.png");
 // const emails2 = require("images/emails2.png");
@@ -29,6 +30,7 @@ const preFundedAccounts = require("images/preFundedAccounts.png");
 
 const SelectParticipants = () => {
 	const [voteInfo, setVoteInfo] = useContext(VoteInfoContext);
+	const navigate = useNavigate();
 
 	const goBack = () => {
 		if (voteInfo.participantData) {
@@ -54,7 +56,7 @@ const SelectParticipants = () => {
 				accountFundingType: null,
 			});
 		} else if (voteInfo.activeStep === 0) {
-			cancelVote(setVoteInfo);
+			cancelVote(setVoteInfo, navigate);
 		}
 	};
 

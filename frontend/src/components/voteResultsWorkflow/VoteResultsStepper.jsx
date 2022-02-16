@@ -3,6 +3,7 @@ import { VoteResultsContext } from "context/VoteResultsContext";
 import { cancelVoteResults } from "utils/CancelVote";
 import Stepper from "components/base/Stepper";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const steps = [
 	{
@@ -18,6 +19,7 @@ const steps = [
 export default function VerticalLinearStepper() {
 	const [voteResults, setVoteResults] = React.useContext(VoteResultsContext);
 	const [readyToContinue, setReadyToContinue] = React.useState(false);
+	const navigate = useNavigate();
 
 	React.useEffect(() => {
 		if (
@@ -117,14 +119,14 @@ export default function VerticalLinearStepper() {
 				alert("Invalid App Id");
 			}
 		} else {
-			cancelVoteResults(setVoteResults);
+			cancelVoteResults(setVoteResults, navigate);
 		}
 	};
 
 	const handleBack = () => {
 		const activeStep = voteResults.activeStep;
 		if (activeStep === 0) {
-			cancelVoteResults(setVoteResults); //cancelling
+			cancelVoteResults(setVoteResults, navigate);
 		} else {
 			setVoteResults({
 				...voteResults,
@@ -141,7 +143,6 @@ export default function VerticalLinearStepper() {
 			handleNext={handleNext}
 			handleBack={handleBack}
 			readyToContinue={readyToContinue}
-			cancelStepper={cancelVoteResults}
 		/>
 	);
 }
