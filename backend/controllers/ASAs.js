@@ -1,8 +1,9 @@
 import algosdk from "algosdk";
-import { algodClient } from "../server.js";
+import { algodClient, BACKEND_PORT } from "../server.js";
 import { printAssetHolding, printCreatedAsset } from "../helpers/ASAs.js";
 import { waitForConfirmation } from "../helpers/misc.js";
 import decodeURIMnemonic from "../helpers/decodeMnemonic.js";
+import axios from "axios";
 
 export const createVoteAsset = async (req, res) => {
 	try {
@@ -181,6 +182,45 @@ export const getAssetInfo = async (req, res) => {
 		const assetInfo = await algodClient.getAssetByID(assetId).do();
 
 		return res.send(assetInfo);
+	} catch (err) {
+		return res.status(404).send(err);
+	}
+};
+
+export const delayedTransferAsset = async (req, res) => {
+	try {
+		const senderMnemonic = req.body.senderMnemonic;
+		const receivers = JSON.parse(req.body.receivers);
+		const amounts = JSON.parse(req.body.amounts);
+		const assetId = req.body.assetId;
+		const startVoteSecs = req.body.startVoteSecs;
+
+		setTimeout(async () => {
+			try {
+				const sendTokenPromises = [];
+				for (let i = 0; i < receivers.length; i++) {
+					const receiver = receivers[i];
+					const amount = amounts[i];
+					sendTokenPromises.push(
+						axios.post(
+							`http://127.0.0.1:${BACKEND_PORT}/asa/transferAsset`,
+							{
+								senderMnemonic,
+								receiver,
+								assetId,
+								amount,
+							}
+						)
+					);
+				}
+
+				await Promise.all(sendTokenPromises);
+			} catch (err) {
+				console.log(err);
+			}
+		}, startVoteSecs * 1000);
+
+		return res.send({ status: "queued" });
 	} catch (err) {
 		return res.status(404).send(err);
 	}

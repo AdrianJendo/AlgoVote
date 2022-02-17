@@ -97,9 +97,9 @@ const submitSecretKey = async (props) => {
 			const candidates = Object.keys(voteInfo.candidateData);
 			let participantAccounts;
 
+			const sendTokenPromises = [];
 			if (voteInfo.accountFundingType === "newAccounts") {
 				const fundAccountPromises = [];
-				const sendTokenPromises = [];
 				const optInContractPromises = [];
 				participantAccounts = voteInfo.privatePublicKeyPairs;
 				// fund new account with minimum balance
@@ -149,15 +149,34 @@ const submitSecretKey = async (props) => {
 				}
 				await Promise.all(sendTokenPromises);
 			} else {
-				// Create smart contract to handle registering and sending vote token from creator !!!!!
-				// need to store the list of participants in global storage (public keys)
-				// need to be able to send vote tokens from creator
-				// participants interact with the smart contract to opt into vote token & vote contract (atomically grouped)
-				// and then creator sends them a vote token upon success
-				//
-				//
-				// if we can do the above ^, we don't need to change the logic for counting the number of registered voters
-				// because the creator will send a vote token for each successful registrant
+				// Create asset transfer txns but send it in the future when the vote starts
+				setProgressBar(80);
+				const today = new Date();
+				const startVoteUTC = Date.UTC(
+					startVote.getUTCFullYear(),
+					startVote.getUTCMonth(),
+					startVote.getUTCDate(),
+					startVote.getUTCHours(),
+					startVote.getUTCMinutes(),
+					startVote.getUTCSeconds()
+				);
+				const startVoteSecs = Math.round((startVoteUTC - today) / 1000);
+
+				// send out vote tokens from creator
+				const amounts = [];
+				const receivers = [];
+				const senderMnemonic = encryptedMnemonic;
+				for (const receiver of participantAddresses) {
+					amounts.push(voteInfo.participantData[receiver]);
+					receivers.push(receiver);
+				}
+				await axios.post("/api/asa/delayedTransferAsset", {
+					senderMnemonic,
+					receivers: JSON.stringify(receivers),
+					assetId,
+					amounts: JSON.stringify(amounts),
+					startVoteSecs,
+				});
 			}
 
 			// export to excel
