@@ -105,7 +105,7 @@ const submitSecretKey = async (props) => {
 				participantAccounts = voteInfo.privatePublicKeyPairs;
 				// fund new account with minimum balance
 				setProgressBar(40);
-				for (const accountAddr of participantAddresses) {
+				participantAddresses.forEach((accountAddr) => {
 					fundAccountPromises.push(
 						axios.post("/api/algoAccount/sendAlgo", {
 							senderMnemonic: encryptedMnemonic,
@@ -114,12 +114,12 @@ const submitSecretKey = async (props) => {
 							message: "",
 						})
 					);
-				}
+				});
 				await Promise.all(fundAccountPromises);
 
 				// opt in to vote token and voting contract (atomically grouped)
 				setProgressBar(60);
-				for (const accountAddr of participantAddresses) {
+				participantAddresses.forEach((accountAddr) => {
 					const accountMnemonic = participantAccounts[accountAddr];
 					if (accountMnemonic) {
 						optInContractPromises.push(
@@ -130,12 +130,12 @@ const submitSecretKey = async (props) => {
 							})
 						);
 					}
-				}
+				});
 				await Promise.all(optInContractPromises);
 
 				// send out vote tokens from creator
 				setProgressBar(80);
-				for (const receiver of participantAddresses) {
+				participantAddresses.forEach((receiver) => {
 					const amount = voteInfo.participantData[receiver];
 					const senderMnemonic = encryptedMnemonic;
 
@@ -147,7 +147,7 @@ const submitSecretKey = async (props) => {
 							amount,
 						})
 					);
-				}
+				});
 				await Promise.all(sendTokenPromises);
 			} else {
 				// Create asset transfer txns but send it in the future when the vote starts
@@ -167,10 +167,10 @@ const submitSecretKey = async (props) => {
 				const amounts = [];
 				const receivers = [];
 				const senderMnemonic = encryptedMnemonic;
-				for (const receiver of participantAddresses) {
+				participantAddresses.forEach((receiver) => {
 					amounts.push(voteInfo.participantData[receiver]);
 					receivers.push(receiver);
-				}
+				});
 				await axios.post("/api/asa/delayedTransferAsset", {
 					senderMnemonic,
 					receivers: JSON.stringify(receivers),

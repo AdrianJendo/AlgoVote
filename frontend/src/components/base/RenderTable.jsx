@@ -87,7 +87,7 @@ export default function StickyHeadTable({ stage }) {
 		}
 	} else if (stage === "candidates" && voteInfo.candidateData) {
 		let id = 1;
-		for (const name of Object.keys(voteInfo.candidateData)) {
+		Object.keys(voteInfo.candidateData).forEach((name) => {
 			rows.push({
 				id,
 				name,
@@ -103,7 +103,7 @@ export default function StickyHeadTable({ stage }) {
 					),
 			});
 			id++;
-		}
+		});
 	}
 
 	const updatePerson = (row, decrement = true) => {

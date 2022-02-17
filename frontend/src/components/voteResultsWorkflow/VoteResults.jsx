@@ -82,12 +82,12 @@ const EnterVoteInfo = () => {
 			data: `${(registeredVoters / voteResults.numVoters) * 100}%`,
 		});
 
-		for (const candidate of Object.keys(voteResults.candidates)) {
+		Object.keys(voteResults.candidates).forEach((candidate) => {
 			candidatesInfo.push({
 				caption: "",
 				data: candidate,
 			});
-		}
+		});
 	} else {
 		generalInfo.push({
 			caption: "Votes Casted",
@@ -101,12 +101,12 @@ const EnterVoteInfo = () => {
 				) / 100
 			}%`,
 		});
-		for (const candidate of Object.keys(voteResults.candidates)) {
+		Object.keys(voteResults.candidates).forEach((candidate) => {
 			candidatesInfo.push({
 				caption: candidate,
 				data: voteResults.candidates[candidate],
 			});
-		}
+		});
 	}
 
 	tokenInfo.push({

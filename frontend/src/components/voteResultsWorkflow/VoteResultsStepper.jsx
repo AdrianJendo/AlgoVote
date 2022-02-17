@@ -78,7 +78,7 @@ export default function VerticalLinearStepper() {
 				const voteBegin = new Date(voteData.VoteBegin * 1000);
 				const voteEnd = new Date(voteData.VoteEnd * 1000);
 
-				for (const key of Object.keys(voteData)) {
+				Object.keys(voteData).forEach((key) => {
 					if (
 						![
 							"Creator",
@@ -91,7 +91,7 @@ export default function VerticalLinearStepper() {
 						candidates[key] = voteData[key];
 						castedVotes += voteData[key];
 					}
-				}
+				});
 
 				setVoteResults({
 					...voteResults,
