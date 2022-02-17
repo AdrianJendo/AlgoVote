@@ -72,8 +72,7 @@ const EnterVoteInfo = () => {
 	});
 
 	if (voteResults.voteStatus === "register") {
-		const registeredVoters =
-			voteResults.assetSupply - voteResults.creatorAssetBalance;
+		const registeredVoters = voteResults.numRegistered;
 		generalInfo.push({
 			caption: "Registered Voters",
 			data: registeredVoters,

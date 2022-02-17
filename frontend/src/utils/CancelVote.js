@@ -53,7 +53,7 @@ export const cancelVoteResults = (setVoteResults, navigate = null) => {
 		voteStatus: null,
 		appId: "",
 		creator: null,
-		creatorAssetBalance: null,
+		numRegistered: null,
 		assetId: null,
 		participants: null,
 		voteBegin: null,

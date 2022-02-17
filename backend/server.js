@@ -25,6 +25,7 @@ const ALGOD_TOKEN = process.env.ALGOD_TOKEN
 	  }
 	: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 const ALGOD_SERVER = process.env.ALGOD_SERVER || "http://localhost";
+const INDEXER_SERVER = process.env.INDEXER_SERVER || "http://localhost";
 const ALGOD_PORT = process.env.ALGOD_PORT;
 
 // Express
@@ -44,6 +45,11 @@ app.use("/blockchain", blockchainRoutes);
 // Algorand
 // create client object
 let algodClient = new algosdk.Algodv2(ALGOD_TOKEN, ALGOD_SERVER, ALGOD_PORT);
+let indexerClient = new algosdk.Indexer(
+	ALGOD_TOKEN,
+	INDEXER_SERVER,
+	ALGOD_PORT
+);
 
 app.get("/", (req, res) => {
 	res.send(`Listening on BACKEND_PORT ${BACKEND_PORT}!`);
@@ -53,4 +59,4 @@ app.listen(BACKEND_PORT, () => {
 	console.log(`Server started on BACKEND_PORT ${BACKEND_PORT}`);
 });
 
-export { algodClient };
+export { algodClient, indexerClient };

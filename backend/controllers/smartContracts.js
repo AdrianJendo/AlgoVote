@@ -310,17 +310,12 @@ export const readVoteSmartContractState = async (req, res) => {
 		const globalState = application.params["global-state"];
 
 		const decodedState = {};
-
-		console.log("app", application);
-		console.log("State", application.params["global-state"]);
-
 		for (let i = 0; i < globalState.length; i++) {
 			const state = globalState[i];
 			// https://forum.algorand.org/t/how-i-can-convert-value-of-global-state-to-human-readable/3551/2
 			decodedState[Buffer.from(state.key, "base64").toString()] =
 				state.value.uint; // all global states are uint
 		}
-
 		decodedState["Creator"] = application.params.creator;
 
 		return res.send(decodedState);

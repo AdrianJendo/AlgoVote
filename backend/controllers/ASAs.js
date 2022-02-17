@@ -1,5 +1,5 @@
 import algosdk from "algosdk";
-import { algodClient, BACKEND_PORT } from "../server.js";
+import { algodClient, indexerClient, BACKEND_PORT } from "../server.js";
 import { printAssetHolding, printCreatedAsset } from "../helpers/ASAs.js";
 import { waitForConfirmation } from "../helpers/misc.js";
 import decodeURIMnemonic from "../helpers/decodeMnemonic.js";
@@ -179,9 +179,11 @@ export const transferAsset = async (req, res) => {
 export const getAssetInfo = async (req, res) => {
 	try {
 		const assetId = req.query.assetId;
-		const assetInfo = await algodClient.getAssetByID(assetId).do();
-
-		return res.send(assetInfo);
+		const assetData = await algodClient.getAssetByID(assetId).do();
+		const assetBalances = await indexerClient
+			.lookupAssetBalances(assetId)
+			.do();
+		return res.send({ assetData, assetBalances: assetBalances.balances });
 	} catch (err) {
 		return res.status(404).send(err);
 	}

@@ -45,7 +45,15 @@ export default function VerticalLinearStepper() {
 				const assetResp = await axios.get("/api/asa/getAssetInfo", {
 					params: { assetId: voteData.AssetId },
 				});
-				const assetData = assetResp.data;
+				const assetData = assetResp.data.assetData;
+				const assetBalances = assetResp.data.assetBalances;
+				const creator = voteData.Creator;
+				let numRegistered = 0;
+				assetBalances.forEach((assetBalance) => {
+					if (assetBalance.address !== creator) {
+						numRegistered++;
+					}
+				});
 				const candidates = {};
 				let castedVotes = 0;
 				let voteStatus = "register";
@@ -67,16 +75,6 @@ export default function VerticalLinearStepper() {
 					voteStatus = "vote";
 				}
 
-				const creatorAssetBalance = await axios.get(
-					"/api/asa/checkAssetBalance",
-					{
-						params: {
-							addr: voteData.Creator,
-							assetId: voteData.AssetId,
-						},
-					}
-				);
-
 				const voteBegin = new Date(voteData.VoteBegin * 1000);
 				const voteEnd = new Date(voteData.VoteEnd * 1000);
 
@@ -97,8 +95,8 @@ export default function VerticalLinearStepper() {
 				setVoteResults({
 					...voteResults,
 					activeStep: voteResults.activeStep + 1,
-					creator: voteData.Creator,
-					creatorAssetBalance: creatorAssetBalance.data.amount,
+					creator,
+					numRegistered,
 					voteStatus,
 					assetId: voteData.AssetId,
 					voteBegin: voteBegin.toString(),
