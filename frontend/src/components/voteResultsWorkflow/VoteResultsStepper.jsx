@@ -85,6 +85,7 @@ export default function VerticalLinearStepper() {
 							"AssetId",
 							"VoteBegin",
 							"VoteEnd",
+							"NumVoters",
 						].includes(key)
 					) {
 						candidates[key] = voteData[key];
@@ -97,6 +98,7 @@ export default function VerticalLinearStepper() {
 					activeStep: voteResults.activeStep + 1,
 					creator,
 					numRegistered,
+					numVoters: voteData.NumVoters,
 					voteStatus,
 					assetId: voteData.AssetId,
 					voteBegin: voteBegin.toString(),

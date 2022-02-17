@@ -6,11 +6,11 @@ txn ApplicationID // check if the ApplicationID exists (if doesn't exist it equa
 ==
 bz not_creation // branch to target if ApplicationID is zero (bz -> branch if zero)
 
-// > 3 args must be used on creation
+// > 4 args must be used on creation
 txn NumAppArgs
-int 3
+int 4
 >
-bz failed // check if number of app args is more than 3 and branch if less than or equal to 3
+bz failed // check if number of app args is more than 4 and branch if less than or equal to 4
 
 // setting global variables
 // set timestamps (UTC time)
@@ -26,9 +26,13 @@ byte "AssetId"
 txna ApplicationArgs 2 // put the 3rd argument into global storage as "AssetID"
 btoi
 app_global_put
-// loop from index 3 -> args.length-1
+byte "NumVoters"
+txna ApplicationArgs 3
+btoi
+app_global_put
+// loop from index 4 -> args.length-1
 // init loop var
-int 3 // start at 4th argument (index 3)
+int 4 // start at 5th argument (index 4)
 loop:
 dup // txnas pops top of stack so duplicate the value
 txnas ApplicationArgs // get the candidate using top of stack value

@@ -16,6 +16,7 @@ export const createVoteSmartContract = async (req, res) => {
 		const sender = creatorAccount.addr;
 		const assetId = req.body.assetId;
 		const candidates = JSON.parse(req.body.candidates);
+		const numVoters = req.body.numVoters;
 
 		// get node suggested parameters
 		let params = await algodClient.getTransactionParams().do();
@@ -64,6 +65,7 @@ export const createVoteSmartContract = async (req, res) => {
 		args.push(algosdk.encodeUint64(startVoteUTC));
 		args.push(algosdk.encodeUint64(endVoteUTC));
 		args.push(algosdk.encodeUint64(assetId));
+		args.push(algosdk.encodeUint64(numVoters));
 		candidates.map((candidate) => {
 			args.push(new Uint8Array(Buffer.from(candidate)));
 		});
@@ -80,7 +82,7 @@ export const createVoteSmartContract = async (req, res) => {
 			opt_out_program,
 			0, // local integers
 			1, // local byteslices
-			args.length, // global integers (startVoteUTC, endVoteUTC, assetId, candidates)
+			args.length, // global integers (startVoteUTC, endVoteUTC, assetId, candidates, numVoters)
 			0, // global byteslices
 			args
 		);

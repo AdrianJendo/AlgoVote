@@ -79,7 +79,7 @@ const EnterVoteInfo = () => {
 		});
 		generalInfo.push({
 			caption: "Registered Percentage",
-			data: `${(registeredVoters / voteResults.assetSupply) * 100}%`,
+			data: `${(registeredVoters / voteResults.numVoters) * 100}%`,
 		});
 
 		for (const candidate of Object.keys(voteResults.candidates)) {

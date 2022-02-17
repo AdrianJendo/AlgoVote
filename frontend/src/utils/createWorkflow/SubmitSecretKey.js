@@ -77,6 +77,7 @@ const submitSecretKey = async (props) => {
 				assetName: voteName === "" ? `Algo Vote Token` : voteName,
 			});
 			const assetId = tokenResp.data.assetId;
+			const participantAddresses = Object.keys(voteInfo.participantData);
 
 			// Create smart contract
 			setProgressBar(20);
@@ -90,10 +91,10 @@ const submitSecretKey = async (props) => {
 					),
 					startVote: startVote.toString(),
 					endVote: endVote.toString(),
+					numVoters: participantAddresses.length,
 				}
 			);
 			const appId = smartContractResp.data.appId;
-			const participantAddresses = Object.keys(voteInfo.participantData);
 			const candidates = Object.keys(voteInfo.candidateData);
 			let participantAccounts;
 
