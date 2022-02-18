@@ -201,7 +201,6 @@ export const submitVote = async (req, res) => {
 		const args = [];
 		args.push(new Uint8Array(Buffer.from("vote")));
 		args.push(new Uint8Array(Buffer.from(candidate)));
-		args.push(algosdk.encodeUint64(amount));
 
 		// goal app call --app-id {APPID} --app-arg "str:vote" --app-arg "str:candidatea" --from {ACCOUNT}  --out=unsignedtransaction1.tx
 		let txn1 = algosdk.makeApplicationNoOpTxnFromObject({
