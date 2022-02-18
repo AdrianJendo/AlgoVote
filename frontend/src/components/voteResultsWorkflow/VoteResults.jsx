@@ -3,8 +3,7 @@ import { Typography, Grid } from "@mui/material";
 import { VoteResultsContext } from "context/VoteResultsContext";
 import { styled } from "@mui/material/styles";
 import VoteResultsBox from "components/voteResultsWorkflow/VoteResultsBox";
-
-const BASE_URL = "https://testnet.algoexplorer.io";
+import { BASE_URL } from "constants";
 
 function FormRow(props) {
 	const { data } = props;

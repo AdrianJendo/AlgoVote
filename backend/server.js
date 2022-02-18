@@ -16,6 +16,8 @@ import { fileURLToPath } from "url";
 export const __filename = fileURLToPath(import.meta.url);
 export const __dirname = path.dirname(__filename);
 
+import { ALGOD_SERVER, INDEXER_SERVER, ALGOD_PORT } from "./contants.js";
+
 // Environment variables
 dotenv.config();
 export const BACKEND_PORT = process.env.BACKEND_PORT || 5001;
@@ -24,9 +26,6 @@ const ALGOD_TOKEN = process.env.ALGOD_TOKEN
 			"X-API-Key": process.env.ALGOD_TOKEN,
 	  }
 	: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-const ALGOD_SERVER = process.env.ALGOD_SERVER || "http://localhost";
-const INDEXER_SERVER = process.env.INDEXER_SERVER || "http://localhost";
-const ALGOD_PORT = process.env.ALGOD_PORT;
 
 // Express
 const app = express();

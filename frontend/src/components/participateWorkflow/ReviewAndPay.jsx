@@ -15,8 +15,7 @@ import {
 } from "@mui/material";
 import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import { useNavigate } from "react-router-dom";
-
-const BASE_URL = "https://testnet.algoexplorer.io";
+import { BASE_URL } from "constants";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
 	[`&.${tableCellClasses.body}`]: {

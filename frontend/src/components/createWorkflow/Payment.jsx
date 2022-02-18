@@ -6,8 +6,7 @@ import { cancelVote } from "utils/CancelVote";
 import submitSecretKey from "utils/createWorkflow/SubmitSecretKey";
 import isMnemonicValid from "utils/IsMnemonicValid";
 import { useNavigate } from "react-router-dom";
-
-const BASE_URL = "https://testnet.algoexplorer.io";
+import { BASE_URL } from "constants";
 
 const Payment = () => {
 	const [voteInfo, setVoteInfo] = useContext(VoteInfoContext);
