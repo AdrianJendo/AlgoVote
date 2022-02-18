@@ -63,7 +63,7 @@ const submitSecretKey = async (props) => {
 			// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 			// Create vote token
-			setProgressBar(0);
+			setProgressBar(1);
 			// Get Supply
 			let numVoteTokens = 0;
 			Object.values(voteInfo.participantData).map((numVotes) => {
@@ -176,7 +176,7 @@ const submitSecretKey = async (props) => {
 					receivers: JSON.stringify(receivers),
 					assetId,
 					amounts: JSON.stringify(amounts),
-					startVoteSecs,
+					secsToTxn: startVoteSecs,
 				});
 			}
 

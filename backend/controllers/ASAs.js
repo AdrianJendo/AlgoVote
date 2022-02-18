@@ -195,7 +195,7 @@ export const delayedTransferAsset = async (req, res) => {
 		const receivers = JSON.parse(req.body.receivers);
 		const amounts = JSON.parse(req.body.amounts);
 		const assetId = req.body.assetId;
-		const startVoteSecs = req.body.startVoteSecs;
+		const secsToTxn = req.body.secsToTxn;
 
 		setTimeout(async () => {
 			try {
@@ -220,7 +220,7 @@ export const delayedTransferAsset = async (req, res) => {
 			} catch (err) {
 				console.log(err);
 			}
-		}, startVoteSecs * 1000);
+		}, secsToTxn * 1000);
 
 		return res.send({ status: "queued" });
 	} catch (err) {
