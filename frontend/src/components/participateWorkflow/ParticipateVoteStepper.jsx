@@ -101,7 +101,11 @@ export default function VerticalLinearStepper() {
 						);
 						return;
 					}
-				} else if (!["Creator", "VoteBegin", "VoteEnd"].includes(key)) {
+				} else if (
+					!["Creator", "VoteBegin", "VoteEnd", "NumVoters"].includes(
+						key
+					)
+				) {
 					candidates.push(key);
 				}
 			}
@@ -131,7 +135,7 @@ export default function VerticalLinearStepper() {
 	const handleBack = () => {
 		const activeStep = participateInfo.activeStep;
 		if (activeStep === 0) {
-			cancelParticipate(setParticipateInfo, navigate); //cancelling
+			cancelParticipate(setParticipateInfo, navigate);
 		} else if (activeStep === 1) {
 			setParticipateInfo({
 				...participateInfo,
