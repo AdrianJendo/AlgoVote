@@ -3,10 +3,10 @@ import { Button, Typography, TextField, Link } from "@mui/material";
 import { VoteInfoContext } from "context/VoteInfoContext";
 import ProgressBar from "components/base/ProgressBar";
 import { cancelVote } from "utils/CancelVote";
-import submitSecretKey from "utils/SubmitSecretKey";
+import submitSecretKey from "utils/createWorkflow/SubmitSecretKey";
 import isMnemonicValid from "utils/IsMnemonicValid";
-
-const BASE_URL = "https://testnet.algoexplorer.io";
+import { useNavigate } from "react-router-dom";
+import { BASE_URL } from "constants";
 
 const Payment = () => {
 	const [voteInfo, setVoteInfo] = useContext(VoteInfoContext);
@@ -14,19 +14,20 @@ const Payment = () => {
 	const [secretKey, setSecretKey] = useState("");
 	const [progressBar, setProgressBar] = useState(null);
 	const [appId, setAppId] = useState(null);
+	const navigate = useNavigate();
 
 	const getText = (val) => {
 		switch (val) {
-			case 0:
+			case 1:
 				return "Creating vote token";
 			case 20:
 				return "Creating smart contract";
 			case 40:
 				return "Funding new accounts";
 			case 60:
-				return "Opting in to vote token";
+				return "Opting in";
 			case 80:
-				return "Opting in to contract";
+				return "Sending vote tokens";
 			case 99:
 				return "Exporting Vote Data";
 			default:
@@ -110,7 +111,9 @@ const Payment = () => {
 							</Typography>
 							<Button
 								variant="contained"
-								onClick={() => cancelVote(setVoteInfo)}
+								onClick={() =>
+									cancelVote(setVoteInfo, navigate)
+								}
 							>
 								Return to Home
 							</Button>

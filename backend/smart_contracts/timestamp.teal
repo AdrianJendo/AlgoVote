@@ -1,0 +1,85 @@
+#pragma version 5
+// check if the app is being created
+// if so save creator
+int 0
+txn ApplicationID // check if the ApplicationID exists (if doesn't exist it equals zero)
+==
+bz not_creation // branch to target if ApplicationID is zero (bz -> branch if zero)
+
+// setting global variables
+// set timestamps (UTC time)
+byte "timestamp"
+txna ApplicationArgs 0 // access the first argument in the transaction
+btoi // converts big endian bytes to uint64
+app_global_put // put the first application argument into global storage with "VoteBegin" key
+b success
+
+not_creation: // branch for any call that is not contract creation
+// check NoOp
+txn OnCompletion
+int NoOp
+==
+bnz handle_noop
+
+// check if optin (register)
+txn OnCompletion
+int OptIn
+==
+bnz handle_optin
+
+// check if closeout
+txn OnCompletion
+int CloseOut
+==
+bnz handle_closeout
+
+// check if update
+txn OnCompletion
+int UpdateApplication
+==
+bnz handle_updateapp
+
+// check deletion
+txn OnCompletion
+int DeleteApplication
+==
+bnz handle_deleteapp
+
+// Handle NoOp (vote)
+handle_noop:
+global LatestTimestamp
+byte "timestamp"
+app_global_get // check that timestamp of last block is after votebegin
+>=
+bnz success
+b failed
+
+// Handle OptIn (register)
+handle_optin:
+b success
+
+// Handle CloseOut
+handle_closeout:
+b success
+
+handle_updateapp:
+global CreatorAddress
+txn Sender
+==
+bz failed
+b success
+
+handle_deleteapp:
+global CreatorAddress
+txn Sender
+== // Check if the "Creator" is equal to the sender of the current transaction
+bz failed // Fail if "Creator" is not sender
+b success
+
+failed:
+int 0
+return
+
+success:
+int 1
+return // Returns the value on the top of the stack when the program terminates, for successful creation of smart contract, return 1

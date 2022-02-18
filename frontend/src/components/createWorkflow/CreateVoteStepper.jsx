@@ -5,6 +5,7 @@ import { DateValueContext } from "context/DateValueContext";
 import { MINUTES_DELAY, DELAY } from "utils/Constants";
 import isSameDate from "utils/IsSameDate";
 import Stepper from "components/base/Stepper";
+import { useNavigate } from "react-router-dom";
 
 const steps = [
 	{
@@ -39,6 +40,7 @@ export default function VerticalLinearStepper() {
 	const [voteInfo, setVoteInfo] = React.useContext(VoteInfoContext);
 	const dateValue = React.useContext(DateValueContext)[0];
 	const [readyToContinue, setReadyToContinue] = React.useState(false);
+	const navigate = useNavigate();
 
 	React.useEffect(() => {
 		if (
@@ -100,7 +102,7 @@ export default function VerticalLinearStepper() {
 				});
 			}
 		} else if (voteInfo.activeStep === 5) {
-			cancelVote(setVoteInfo);
+			cancelVote(setVoteInfo, navigate);
 		} else {
 			setVoteInfo({
 				...voteInfo,
@@ -112,8 +114,7 @@ export default function VerticalLinearStepper() {
 	const handleBack = () => {
 		const activeStep = voteInfo.activeStep;
 		if (activeStep === 0) {
-			//cancelling
-			cancelVote(setVoteInfo);
+			cancelVote(setVoteInfo, navigate);
 		} else {
 			setVoteInfo({ ...voteInfo, activeStep: activeStep - 1 });
 		}
@@ -127,7 +128,6 @@ export default function VerticalLinearStepper() {
 			handleNext={handleNext}
 			handleBack={handleBack}
 			readyToContinue={readyToContinue}
-			cancelStepper={cancelVote}
 		/>
 	);
 }

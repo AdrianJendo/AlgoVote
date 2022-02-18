@@ -9,7 +9,7 @@ export const VoteResultsProvider = (props) => {
 		voteStatus: null, // register, vote, complete
 		appId: "",
 		creator: null,
-		creatorAssetBalance: null, // number of vote tokens held by creator
+		numRegistered: null, // number of registered voters
 		participants: null, // list of recent participants and who they voted for
 		voteBegin: null,
 		voteEnd: null,

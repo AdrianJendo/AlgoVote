@@ -3,6 +3,7 @@ import { VoteResultsContext } from "context/VoteResultsContext";
 import { cancelVoteResults } from "utils/CancelVote";
 import Stepper from "components/base/Stepper";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const steps = [
 	{
@@ -18,6 +19,7 @@ const steps = [
 export default function VerticalLinearStepper() {
 	const [voteResults, setVoteResults] = React.useContext(VoteResultsContext);
 	const [readyToContinue, setReadyToContinue] = React.useState(false);
+	const navigate = useNavigate();
 
 	React.useEffect(() => {
 		if (
@@ -43,70 +45,64 @@ export default function VerticalLinearStepper() {
 				const assetResp = await axios.get("/api/asa/getAssetInfo", {
 					params: { assetId: voteData.AssetId },
 				});
-				const assetData = assetResp.data;
+				const assetData = assetResp.data.assetData;
+				const assetBalances = assetResp.data.assetBalances;
+				const creator = voteData.Creator;
+				let numRegistered = 0;
+				assetBalances.forEach((assetBalance) => {
+					if (assetBalance.address !== creator) {
+						numRegistered++;
+					}
+				});
 				const candidates = {};
 				let castedVotes = 0;
 				let voteStatus = "register";
 
-				const curBlock = await axios.get(
-					"/api/blockchain/blockchainStatus"
-				);
+				const today = new Date();
+				const curTimeUTC =
+					Date.UTC(
+						today.getUTCFullYear(),
+						today.getUTCMonth(),
+						today.getUTCDate(),
+						today.getUTCHours(),
+						today.getUTCMinutes(),
+						today.getUTCSeconds()
+					) / 1000;
 
-				const lastRound = curBlock.data["last-round"];
-
-				if (lastRound > voteData.VoteEnd) {
+				if (curTimeUTC > voteData.VoteEnd) {
 					voteStatus = "complete";
-				} else if (lastRound > voteData.VoteBegin) {
+				} else if (curTimeUTC > voteData.VoteBegin) {
 					voteStatus = "vote";
 				}
 
-				const creatorAssetBalance = await axios.get(
-					"/api/asa/checkAssetBalance",
-					{
-						params: {
-							addr: voteData.Creator,
-							assetId: voteData.AssetId,
-						},
-					}
-				);
+				const voteBegin = new Date(voteData.VoteBegin * 1000);
+				const voteEnd = new Date(voteData.VoteEnd * 1000);
 
-				let localVoteBegin;
-				if (voteStatus !== "register") {
-					const voteBegin = await axios.get(
-						"/api/blockchain/blockTimestamp",
-						{ params: { blockRound: voteData.VoteBegin } }
-					);
-
-					localVoteBegin = new Date(voteBegin.data);
-				} else {
-					localVoteBegin = `Block round is ${voteData.VoteBegin}`;
-				}
-
-				const localVoteEnd = `Block round is ${voteData.VoteEnd}`;
-
-				for (const key of Object.keys(voteData)) {
+				Object.keys(voteData).forEach((key) => {
 					if (
 						![
 							"Creator",
 							"AssetId",
 							"VoteBegin",
 							"VoteEnd",
+							"NumVoters",
 						].includes(key)
 					) {
 						candidates[key] = voteData[key];
 						castedVotes += voteData[key];
 					}
-				}
+				});
 
 				setVoteResults({
 					...voteResults,
 					activeStep: voteResults.activeStep + 1,
-					creator: voteData.Creator,
-					creatorAssetBalance: creatorAssetBalance.data.amount,
+					creator,
+					numRegistered,
+					numVoters: voteData.NumVoters,
 					voteStatus,
 					assetId: voteData.AssetId,
-					voteBegin: localVoteBegin.toString(),
-					voteEnd: localVoteEnd,
+					voteBegin: voteBegin.toString(),
+					voteEnd: voteEnd.toString(),
 					candidates,
 					castedVotes,
 					assetSupply: assetData.params.total,
@@ -117,14 +113,14 @@ export default function VerticalLinearStepper() {
 				alert("Invalid App Id");
 			}
 		} else {
-			cancelVoteResults(setVoteResults);
+			cancelVoteResults(setVoteResults, navigate);
 		}
 	};
 
 	const handleBack = () => {
 		const activeStep = voteResults.activeStep;
 		if (activeStep === 0) {
-			cancelVoteResults(setVoteResults); //cancelling
+			cancelVoteResults(setVoteResults, navigate);
 		} else {
 			setVoteResults({
 				...voteResults,
@@ -141,7 +137,6 @@ export default function VerticalLinearStepper() {
 			handleNext={handleNext}
 			handleBack={handleBack}
 			readyToContinue={readyToContinue}
-			cancelStepper={cancelVoteResults}
 		/>
 	);
 }

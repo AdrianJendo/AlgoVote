@@ -1,8 +1,9 @@
 import algosdk from "algosdk";
-import { algodClient } from "../server.js";
+import { algodClient, indexerClient, BACKEND_PORT } from "../server.js";
 import { printAssetHolding, printCreatedAsset } from "../helpers/ASAs.js";
 import { waitForConfirmation } from "../helpers/misc.js";
 import decodeURIMnemonic from "../helpers/decodeMnemonic.js";
+import axios from "axios";
 
 export const createVoteAsset = async (req, res) => {
 	try {
@@ -74,17 +75,6 @@ export const checkAssetBalance = async (req, res) => {
 
 export const optInToAsset = async (req, res) => {
 	try {
-		// Opting in to an Asset:
-		// Opting in to transact with the new asset
-		// Allow accounts that want recieve the new asset
-		// Have to opt in. To do this they send an asset transfer
-		// of the new asset to themseleves
-		// In this example we are setting up the 3rd recovered account to
-		// receive the new asset
-
-		// First update changing transaction parameters
-		// We will account for changing transaction parameters
-		// before every transaction in this example
 		let params = await algodClient.getTransactionParams().do();
 		//comment out the next two lines to use suggested fee
 		params.fee = 1000;
@@ -189,115 +179,51 @@ export const transferAsset = async (req, res) => {
 export const getAssetInfo = async (req, res) => {
 	try {
 		const assetId = req.query.assetId;
-		const assetInfo = await algodClient.getAssetByID(assetId).do();
-
-		return res.send(assetInfo);
+		const assetData = await algodClient.getAssetByID(assetId).do();
+		const assetBalances = await indexerClient
+			.lookupAssetBalances(assetId)
+			.do();
+		return res.send({ assetData, assetBalances: assetBalances.balances });
 	} catch (err) {
 		return res.status(404).send(err);
 	}
 };
 
-// export const deleteAsset = asnyc(req, res) => {}
+export const delayedTransferAsset = async (req, res) => {
+	try {
+		const senderMnemonic = req.body.senderMnemonic;
+		const receivers = JSON.parse(req.body.receivers);
+		const amounts = JSON.parse(req.body.amounts);
+		const assetId = req.body.assetId;
+		const secsToTxn = req.body.secsToTxn;
 
-// export const toggleFreeze = async (req, res) => {
-// 	// The asset was created and configured to allow freezing an account
-// 	// If the freeze address is set "", it will no longer be possible to do this.
-// 	// In this example we will now freeze account3 from transacting with the
-// 	// The newly created asset.
-// 	// The freeze transaction is sent from the freeze acount
-// 	// Which in this example is account2
+		setTimeout(async () => {
+			try {
+				const sendTokenPromises = [];
+				for (let i = 0; i < receivers.length; i++) {
+					const receiver = receivers[i];
+					const amount = amounts[i];
+					sendTokenPromises.push(
+						axios.post(
+							`http://127.0.0.1:${BACKEND_PORT}/asa/transferAsset`,
+							{
+								senderMnemonic,
+								receiver,
+								assetId,
+								amount,
+							}
+						)
+					);
+				}
 
-// 	// First update changing transaction parameters
-// 	// We will account for changing transaction parameters
-// 	// before every transaction in this example
-// 	// await getChangingParms(algodclient);
-// 	let params = await algodClient.getTransactionParams().do();
-// 	//comment out the next two lines to use suggested fee
-// 	params.fee = 1000;
-// 	params.flatFee = true;
+				await Promise.all(sendTokenPromises);
+			} catch (err) {
+				console.log(err);
+			}
+		}, secsToTxn * 1000);
 
-// 	const freezeAccount = algosdk.mnemonicToSecretKey(req.body.freezeAccount);
-// 	const assetId = req.body.assetId;
-// 	const from = freezeAccount.addr;
-// 	const freezeTarget = req.body.freezeTarget;
-// 	const freezeState = req.body.freezeState;
-
-// 	// The freeze transaction needs to be signed by the freeze account
-// 	let ftxn = algosdk.makeAssetFreezeTxnWithSuggestedParams(
-// 		from,
-// 		undefined,
-// 		assetId,
-// 		freezeTarget,
-// 		freezeState,
-// 		params
-// 	);
-
-// 	// Must be signed by the freeze account
-// 	const rawSignedTxn = ftxn.signTxn(freezeAccount.sk);
-// 	let ftx = await algodClient.sendRawTransaction(rawSignedTxn).do();
-// 	console.log("Transaction : " + ftx.txId);
-// 	// wait for transaction to be confirmed
-// 	await waitForConfirmation(algodClient, ftx.txId, 4);
-
-// 	// You should now see the asset is frozen listed in the account information
-// 	console.log("Account 3 = " + freezeTarget);
-// 	return res.send(
-// 		await printAssetHolding(algodClient, freezeTarget, assetId)
-// 	);
-// };
-
-// export const revokeToken = async (req, res) => {
-// 	// Revoke an Asset:
-// 	// The asset was also created with the ability for it to be revoked by
-// 	// the clawbackaddress. If the asset was created or configured by the manager
-// 	// to not allow this by setting the clawbackaddress to "" then this would
-// 	// not be possible.
-// 	// We will now clawback the 10 assets in account3. account2
-// 	// is the clawbackaccount and must sign the transaction
-// 	// The sender will be be the clawback adress.
-// 	// the recipient will also be be the creator in this case
-// 	// that is account3
-// 	// First update changing transaction parameters
-// 	// We will account for changing transaction parameters
-// 	// before every transaction in this example
-// 	let params = await algodClient.getTransactionParams().do();
-// 	//comment out the next two lines to use suggested fee
-// 	params.fee = 1000;
-// 	params.flatFee = true;
-
-// 	const clawbackAccount = algosdk.mnemonicToSecretKey(
-// 		req.body.clawbackAccount
-// 	);
-// 	const assetId = req.body.assetId;
-// 	const sender = clawbackAccount.addr;
-// 	const recipient = clawbackAccount.addr; // This address is where the clawed-back funds will be located
-// 	const revocationTarget = req.body.clawbackTarget;
-// 	const closeRemainderTo = undefined;
-// 	const amount = 1;
-// 	// signing and sending "txn" will send "amount" assets from "revocationTarget" to "recipient",
-// 	// if and only if sender == clawback manager for this asset
-
-// 	let rtxn = algosdk.makeAssetTransferTxnWithSuggestedParams(
-// 		sender,
-// 		recipient,
-// 		closeRemainderTo,
-// 		revocationTarget,
-// 		amount,
-// 		undefined,
-// 		assetId,
-// 		params
-// 	);
-// 	// Must be signed by the account that is the clawback address
-// 	const rawSignedTxn = rtxn.signTxn(clawbackAccount.sk);
-// 	let rtx = await algodClient.sendRawTransaction(rawSignedTxn).do();
-// 	console.log("Transaction : " + rtx.txId);
-// 	// wait for transaction to be confirmed
-// 	await waitForConfirmation(algodClient, rtx.txId, 4);
-
-// 	// You should now see 0 assets listed in the account information
-// 	// for the third account
-// 	console.log("Account 3 = " + revocationTarget);
-// 	return res.send(
-// 		await printAssetHolding(algodClient, revocationTarget, assetId)
-// 	);
-// };
+		return res.send({ status: "queued" });
+	} catch (err) {
+		return res.status(404).send(err);
+	}
+};

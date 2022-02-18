@@ -25,7 +25,7 @@ const CircularProgressBar = (props) => {
 				thickness={2}
 				variant="indeterminate"
 			/>
-			{value !== null ? (
+			{value ? (
 				<BoxDiv>
 					<Typography
 						variant="body1"

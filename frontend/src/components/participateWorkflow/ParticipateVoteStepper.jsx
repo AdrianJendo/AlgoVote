@@ -5,31 +5,38 @@ import Stepper from "components/base/Stepper";
 import isMnemonicValid from "utils/IsMnemonicValid";
 import encodeURIMnemonic from "utils/EncodeMnemonic";
 import axios from "axios";
-
-const steps = [
-	{
-		label: "Register or vote",
-		description: "Are you registering or voting?",
-	},
-	{
-		label: "Enter vote information",
-		description: "Enter the application id and sk to your voting account",
-	},
-	{
-		label: "Choose your candidate",
-		description: "Select the candidate you would like to vote for.",
-	},
-	{
-		label: "Review & Pay",
-		description:
-			"Review the details of this transaction and click 'Confirm' to pay the transaction fees.",
-	},
-];
+import { useNavigate } from "react-router-dom";
 
 export default function VerticalLinearStepper() {
 	const [participateInfo, setParticipateInfo] =
 		React.useContext(ParticipateContext);
 	const [readyToContinue, setReadyToContinue] = React.useState(false);
+	const navigate = useNavigate();
+
+	const steps = [
+		{
+			label: "Register or vote",
+			description: "Are you registering or voting?",
+		},
+		{
+			label: "Enter vote information",
+			description:
+				"Enter the application id and sk to your voting account",
+		},
+	];
+
+	if (participateInfo.registerOrVote === "vote") {
+		steps.push({
+			label: "Choose your candidate",
+			description: "Select the candidate you would like to vote for.",
+		});
+	}
+
+	steps.push({
+		label: "Review & Pay",
+		description:
+			"Review the details of this transaction and click 'Confirm' to pay the transaction fees.",
+	});
 
 	React.useEffect(() => {
 		if (
@@ -41,7 +48,7 @@ export default function VerticalLinearStepper() {
 				!isNaN(participateInfo.appId)) ||
 			(participateInfo.activeStep === 2 &&
 				participateInfo.selectedCandidate !== "") ||
-			(participateInfo.activeStep === 3 && participateInfo.voteAccepted)
+			participateInfo.txId
 		) {
 			setReadyToContinue(true);
 		} else {
@@ -56,24 +63,26 @@ export default function VerticalLinearStepper() {
 				{ params: { appId: participateInfo.appId } }
 			);
 
+			const userAccount = await axios.get(
+				"/api/algoAccount/getPublicKey",
+				{
+					params: {
+						mnemonic: encodeURIMnemonic(participateInfo.sk),
+					},
+				}
+			);
+			const addr = userAccount.data.addr;
+
 			const candidates = [];
-			let assetId;
-			let voteBegin;
-			let voteEnd;
+			const assetId = state.data.AssetId;
+			const voteBegin = state.data.VoteBegin;
+			const voteEnd = state.data.VoteEnd;
 
 			for (const key of Object.keys(state.data)) {
-				if (key === "AssetId") {
-					assetId = state.data[key];
-
-					const userAccount = await axios.get(
-						"/api/algoAccount/getPublicKey",
-						{
-							params: {
-								mnemonic: encodeURIMnemonic(participateInfo.sk),
-							},
-						}
-					);
-					const addr = userAccount.data.addr;
+				if (
+					key === "AssetId" &&
+					participateInfo.registerOrVote === "vote"
+				) {
 					const assetBalance = await axios.get(
 						"/api/asa/checkAssetBalance",
 						{
@@ -83,7 +92,6 @@ export default function VerticalLinearStepper() {
 							},
 						}
 					);
-
 					if (!assetBalance.data) {
 						alert("You do not hold the vote token for this vote.");
 						return;
@@ -93,11 +101,11 @@ export default function VerticalLinearStepper() {
 						);
 						return;
 					}
-				} else if (key === "VoteBegin") {
-					voteBegin = state.data[key];
-				} else if (key === "VoteEnd") {
-					voteEnd = state.data[key];
-				} else if (key !== "Creator") {
+				} else if (
+					!["Creator", "VoteBegin", "VoteEnd", "NumVoters"].includes(
+						key
+					)
+				) {
 					candidates.push(key);
 				}
 			}
@@ -110,8 +118,12 @@ export default function VerticalLinearStepper() {
 				candidates,
 				activeStep: participateInfo.activeStep + 1,
 			});
-		} else if (participateInfo.activeStep === 3) {
-			cancelParticipate(setParticipateInfo);
+		} else if (
+			participateInfo.activeStep === 3 ||
+			(participateInfo.activeStep === 2 &&
+				participateInfo.registerOrVote === "register")
+		) {
+			cancelParticipate(setParticipateInfo, navigate);
 		} else {
 			setParticipateInfo({
 				...participateInfo,
@@ -123,7 +135,7 @@ export default function VerticalLinearStepper() {
 	const handleBack = () => {
 		const activeStep = participateInfo.activeStep;
 		if (activeStep === 0) {
-			cancelParticipate(setParticipateInfo); //cancelling
+			cancelParticipate(setParticipateInfo, navigate);
 		} else if (activeStep === 1) {
 			setParticipateInfo({
 				...participateInfo,
@@ -146,7 +158,6 @@ export default function VerticalLinearStepper() {
 			handleNext={handleNext}
 			handleBack={handleBack}
 			readyToContinue={readyToContinue}
-			cancelStepper={cancelParticipate}
 		/>
 	);
 }

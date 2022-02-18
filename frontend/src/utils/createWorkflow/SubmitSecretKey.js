@@ -36,8 +36,6 @@ const submitSecretKey = async (props) => {
 		});
 
 		if (resp.data.addr) {
-			// success
-
 			// MIN BALANCE CALCULATION
 			// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 			// const creatorAddr = resp.data.addr;
@@ -65,7 +63,7 @@ const submitSecretKey = async (props) => {
 			// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 			// Create vote token
-			setProgressBar(0);
+			setProgressBar(1);
 			// Get Supply
 			let numVoteTokens = 0;
 			Object.values(voteInfo.participantData).map((numVotes) => {
@@ -79,6 +77,7 @@ const submitSecretKey = async (props) => {
 				assetName: voteName === "" ? `Algo Vote Token` : voteName,
 			});
 			const assetId = tokenResp.data.assetId;
+			const participantAddresses = Object.keys(voteInfo.participantData);
 
 			// Create smart contract
 			setProgressBar(20);
@@ -92,24 +91,21 @@ const submitSecretKey = async (props) => {
 					),
 					startVote: startVote.toString(),
 					endVote: endVote.toString(),
+					numVoters: participantAddresses.length,
 				}
 			);
 			const appId = smartContractResp.data.appId;
+			const candidates = Object.keys(voteInfo.candidateData);
+			let participantAccounts;
 
-			const wb = XLSX.utils.book_new(); // for data export
+			const sendTokenPromises = [];
 			if (voteInfo.accountFundingType === "newAccounts") {
 				const fundAccountPromises = [];
-				const optInTokenPromises = [];
-				const sendTokenPromises = [];
 				const optInContractPromises = [];
-				const participantAddresses = Object.keys(
-					voteInfo.participantData
-				);
-				const participantAccounts = voteInfo.privatePublicKeyPairs;
-				const candidates = Object.keys(voteInfo.candidateData);
+				participantAccounts = voteInfo.privatePublicKeyPairs;
 				// fund new account with minimum balance
 				setProgressBar(40);
-				for (const accountAddr of participantAddresses) {
+				participantAddresses.forEach((accountAddr) => {
 					fundAccountPromises.push(
 						axios.post("/api/algoAccount/sendAlgo", {
 							senderMnemonic: encryptedMnemonic,
@@ -118,32 +114,28 @@ const submitSecretKey = async (props) => {
 							message: "",
 						})
 					);
-				}
+				});
 				await Promise.all(fundAccountPromises);
 
-				// opt in to receive vote token
+				// opt in to vote token and voting contract (atomically grouped)
 				setProgressBar(60);
-				for (const accountAddr of participantAddresses) {
+				participantAddresses.forEach((accountAddr) => {
 					const accountMnemonic = participantAccounts[accountAddr];
 					if (accountMnemonic) {
-						optInTokenPromises.push(
-							axios.post("/api/asa/optInToAsset", {
-								senderMnemonic:
+						optInContractPromises.push(
+							axios.post("/api/smartContract/registerForVote", {
+								userMnemonic:
 									encodeURIMnemonic(accountMnemonic),
-								assetId,
+								appId,
 							})
 						);
 					}
-				}
-				await Promise.all(optInTokenPromises);
-
-				// TEMP ----------------------------------------------------------------------------------------------------------------------------------------
-				// Remove this and then later we only send out the vote tokens when the vote starts to whoever has registered for it. Actually for newAccounts we can probably keep this here
-				// but will need to update the logic for accounts that already exist
-				// There is also a known bug when mixing newAccounts with prefunded accounts that needs to be fixed at some point
+				});
+				await Promise.all(optInContractPromises);
 
 				// send out vote tokens from creator
-				for (const receiver of participantAddresses) {
+				setProgressBar(80);
+				participantAddresses.forEach((receiver) => {
 					const amount = voteInfo.participantData[receiver];
 					const senderMnemonic = encryptedMnemonic;
 
@@ -155,77 +147,93 @@ const submitSecretKey = async (props) => {
 							amount,
 						})
 					);
-				}
-				await Promise.all(optInTokenPromises);
-
-				// -----------------------------------------------------------------------------------------------------------------------------------------------
-
-				// opt in to voting contract
+				});
+				await Promise.all(sendTokenPromises);
+			} else {
+				// Create asset transfer txns but send it in the future when the vote starts
 				setProgressBar(80);
-				for (const accountAddr of participantAddresses) {
-					const accountMnemonic = participantAccounts[accountAddr];
-					if (accountMnemonic) {
-						optInContractPromises.push(
-							axios.post(
-								"/api/smartContract/optInVoteSmartContract",
-								{
-									userMnemonic:
-										encodeURIMnemonic(accountMnemonic),
-									appId,
-								}
-							)
-						);
-					}
-				}
-				await Promise.all(optInContractPromises);
+				const today = new Date();
+				const startVoteUTC = Date.UTC(
+					startVote.getUTCFullYear(),
+					startVote.getUTCMonth(),
+					startVote.getUTCDate(),
+					startVote.getUTCHours(),
+					startVote.getUTCMinutes(),
+					startVote.getUTCSeconds()
+				);
+				const startVoteSecs = Math.round((startVoteUTC - today) / 1000);
 
-				// export to excel
-				setProgressBar(99);
-				const ws_name = "Vote Data";
-
-				/* make worksheet */
-				const ws_data = [
-					[
-						"Application ID",
-						"Token ID",
-						"Candidates",
-						"Vote Start",
-						"Vote End",
-						"Participant Address",
-						"Secret Key",
-					],
-				];
-
-				for (
-					let i = 0;
-					i <
-					Math.max(participantAddresses.length, candidates.length);
-					++i
-				) {
-					const row = ["", "", "", "", ""];
-
-					if (i === 0) {
-						row[0] = appId;
-						row[1] = assetId;
-						row[3] = startVote.toString();
-						row[4] = endVote.toString();
-					}
-
-					if (i < candidates.length) {
-						row[2] = candidates[i];
-					}
-
-					if (i < participantAddresses.length) {
-						row[5] = participantAddresses[i];
-						row[6] = participantAccounts[participantAddresses[i]];
-					}
-
-					ws_data.push(row);
-				}
-				var ws = XLSX.utils.aoa_to_sheet(ws_data);
-				/* Add the worksheet to the workbook */
-				XLSX.utils.book_append_sheet(wb, ws, ws_name);
+				// send out vote tokens from creator
+				const amounts = [];
+				const receivers = [];
+				const senderMnemonic = encryptedMnemonic;
+				participantAddresses.forEach((receiver) => {
+					amounts.push(voteInfo.participantData[receiver]);
+					receivers.push(receiver);
+				});
+				await axios.post("/api/asa/delayedTransferAsset", {
+					senderMnemonic,
+					receivers: JSON.stringify(receivers),
+					assetId,
+					amounts: JSON.stringify(amounts),
+					secsToTxn: startVoteSecs,
+				});
 			}
+
+			// export to excel
+			setProgressBar(99);
+			const wb = XLSX.utils.book_new();
+			const ws_name = "Vote Data";
+
+			/* make worksheet */
+			// columns
+			const ws_data = [
+				[
+					"Application ID",
+					"Token ID",
+					"Candidates",
+					"Vote Start",
+					"Vote End",
+					"Participant Address",
+					"Number of Votes",
+				],
+			];
+
+			if (participantAccounts) {
+				ws_data[0].push("Secret Key");
+			}
+
+			for (
+				let i = 0;
+				i < Math.max(participantAddresses.length, candidates.length);
+				++i
+			) {
+				const row = ["", "", "", "", ""];
+
+				if (i === 0) {
+					row[0] = appId;
+					row[1] = assetId;
+					row[3] = startVote.toString();
+					row[4] = endVote.toString();
+				}
+
+				if (i < candidates.length) {
+					row[2] = candidates[i];
+				}
+
+				if (i < participantAddresses.length) {
+					row[5] = participantAddresses[i];
+					row[6] = voteInfo.participantData[participantAddresses[i]];
+					if (participantAccounts) {
+						row[7] = participantAccounts[participantAddresses[i]];
+					}
+				}
+
+				ws_data.push(row);
+			}
+			var ws = XLSX.utils.aoa_to_sheet(ws_data);
+			/* Add the worksheet to the workbook */
+			XLSX.utils.book_append_sheet(wb, ws, ws_name);
 
 			setTimeout(() => {
 				XLSX.writeFile(wb, "VoteData.xlsx");

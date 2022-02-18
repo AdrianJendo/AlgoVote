@@ -5,7 +5,7 @@ import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import DirectionsIcon from "@mui/icons-material/Directions";
 import { VoteInfoContext } from "context/VoteInfoContext";
-import shouldAddPerson from "utils/ShouldAddPerson";
+import shouldAddPerson from "utils/createWorkflow/ShouldAddPerson";
 
 export default function CustomizedInputBase({ index }) {
 	const [textValue, setTextValue] = React.useState("");

@@ -8,8 +8,6 @@ import { readTeal } from "../helpers/smartContracts.js";
 import decodeURIMnemonic from "../helpers/decodeMnemonic.js";
 import axios from "axios";
 
-const SECS_PER_BLOCK = process.env.REACT_APP_SECS_PER_BLOCK;
-
 export const createVoteSmartContract = async (req, res) => {
 	try {
 		const creatorAccount = algosdk.mnemonicToSecretKey(
@@ -18,6 +16,7 @@ export const createVoteSmartContract = async (req, res) => {
 		const sender = creatorAccount.addr;
 		const assetId = req.body.assetId;
 		const candidates = JSON.parse(req.body.candidates);
+		const numVoters = req.body.numVoters;
 
 		// get node suggested parameters
 		let params = await algodClient.getTransactionParams().do();
@@ -28,11 +27,11 @@ export const createVoteSmartContract = async (req, res) => {
 		// declare onComplete as NoOp
 		const onComplete = algosdk.OnApplicationComplete.NoOpOC;
 
+		const vote = path.join(__dirname, "smart_contracts/p_vote.teal");
 		const vote_opt_out = path.join(
 			__dirname,
 			"smart_contracts/p_vote_opt_out.teal"
 		);
-		const vote = path.join(__dirname, "smart_contracts/p_vote.teal");
 
 		const vote_program = await readTeal(algodClient, vote);
 		const opt_out_program = await readTeal(algodClient, vote_opt_out);
@@ -44,42 +43,29 @@ export const createVoteSmartContract = async (req, res) => {
 		const startVote = new Date(req.body.startVote);
 		const endVote = new Date(req.body.endVote);
 
-		const today = new Date();
-		const startVoteUTC = Date.UTC(
-			startVote.getUTCFullYear(),
-			startVote.getUTCMonth(),
-			startVote.getUTCDate(),
-			startVote.getUTCHours(),
-			startVote.getUTCMinutes(),
-			startVote.getUTCSeconds(),
-			startVote.getUTCMilliseconds()
-		);
-		const endVoteUTC = Date.UTC(
-			endVote.getUTCFullYear(),
-			endVote.getUTCMonth(),
-			endVote.getUTCDate(),
-			endVote.getUTCHours(),
-			endVote.getUTCMinutes(),
-			endVote.getUTCSeconds(),
-			endVote.getUTCMilliseconds()
-		);
+		const startVoteUTC =
+			Date.UTC(
+				startVote.getUTCFullYear(),
+				startVote.getUTCMonth(),
+				startVote.getUTCDate(),
+				startVote.getUTCHours(),
+				startVote.getUTCMinutes(),
+				startVote.getUTCSeconds()
+			) / 1000;
+		const endVoteUTC =
+			Date.UTC(
+				endVote.getUTCFullYear(),
+				endVote.getUTCMonth(),
+				endVote.getUTCDate(),
+				endVote.getUTCHours(),
+				endVote.getUTCMinutes(),
+				endVote.getUTCSeconds()
+			) / 1000;
 
-		// We can also try omitting all this code and using startVoteUTC and endVoteUTC directly... then either using 'global LatestTimestamp' or passing in the timestamp at which registration was attempted
-		const startVoteSecs = Math.round((startVoteUTC - today) / 1000);
-		const endVoteSecs = Math.round((endVoteUTC - today) / 1000);
-
-		const blockchainStatus = await algodClient.status().do();
-		const blockRound = blockchainStatus["last-round"];
-		const startVotingBlock = Math.ceil(
-			blockRound + startVoteSecs / SECS_PER_BLOCK
-		);
-		const endVotingBlock = Math.ceil(
-			blockRound + endVoteSecs / SECS_PER_BLOCK
-		);
-
-		args.push(algosdk.encodeUint64(startVotingBlock));
-		args.push(algosdk.encodeUint64(endVotingBlock));
+		args.push(algosdk.encodeUint64(startVoteUTC));
+		args.push(algosdk.encodeUint64(endVoteUTC));
 		args.push(algosdk.encodeUint64(assetId));
+		args.push(algosdk.encodeUint64(numVoters));
 		candidates.map((candidate) => {
 			args.push(new Uint8Array(Buffer.from(candidate)));
 		});
@@ -96,8 +82,8 @@ export const createVoteSmartContract = async (req, res) => {
 			opt_out_program,
 			0, // local integers
 			1, // local byteslices
-			args.length, // global integers (startVotingBlock, endVotingBlock, assetId, candidates)
-			1, // global byteslices (1 for creator address)
+			args.length, // global integers (startVoteUTC, endVoteUTC, assetId, candidates, numVoters)
+			0, // global byteslices
 			args
 		);
 		let txId = txn.txID().toString();
@@ -123,8 +109,8 @@ export const createVoteSmartContract = async (req, res) => {
 
 		return res.send({
 			appId,
-			startVotingBlock,
-			endVotingBlock,
+			startVoteUTC,
+			endVoteUTC,
 			confirmedRound: transactionResponse["confirmed-round"],
 		});
 	} catch (err) {
@@ -149,7 +135,6 @@ export const optInVoteSmartContract = async (req, res) => {
 
 	const args = [];
 	args.push(new Uint8Array(Buffer.from("register")));
-	// args.push(new Uint8Array(...Buffer.from("register")));
 
 	// create unsigned transaction
 	const txn = algosdk.makeApplicationOptInTxn(sender, params, appId, args);
@@ -271,7 +256,11 @@ export const submitVote = async (req, res) => {
 			await printAssetHolding(algodClient, recipient, assetId)
 		);
 
-		return res.send({ voterAssetHoldings, creatorAssetHoldings });
+		return res.send({
+			voterAssetHoldings,
+			creatorAssetHoldings,
+			txId: txn.txId,
+		});
 	} catch (err) {
 		console.log(err);
 		return res.send(err);
@@ -322,18 +311,13 @@ export const readVoteSmartContractState = async (req, res) => {
 		const globalState = application.params["global-state"];
 
 		const decodedState = {};
-
-		console.log("app", application);
-		console.log("State", application.params["global-state"]);
-
 		for (let i = 0; i < globalState.length; i++) {
 			const state = globalState[i];
 			// https://forum.algorand.org/t/how-i-can-convert-value-of-global-state-to-human-readable/3551/2
 			decodedState[Buffer.from(state.key, "base64").toString()] =
-				state.value.type === 1
-					? application.params.creator // only the creator is a byteslice (type 1)
-					: state.value.uint;
+				state.value.uint; // all global states are uint
 		}
+		decodedState["Creator"] = application.params.creator;
 
 		return res.send(decodedState);
 	} catch (err) {
@@ -378,4 +362,77 @@ export const didUserVote = async (req, res) => {
 		voted: "Did not participate in application",
 		status: false,
 	});
+};
+
+export const registerForVote = async (req, res) => {
+	try {
+		const userAccount = algosdk.mnemonicToSecretKey(
+			decodeURIMnemonic(req.body.userMnemonic)
+		);
+		const appId = req.body.appId;
+		const sender = userAccount.addr;
+
+		const smartContractAttributes = await axios.get(
+			`http://127.0.0.1:${BACKEND_PORT}/smartContract/readVoteSmartContractState`,
+			{ params: { appId } }
+		);
+
+		const assetId = smartContractAttributes.data.AssetId;
+
+		let params = await algodClient.getTransactionParams().do();
+		//comment out the next two lines to use suggested fee
+		params.fee = 1000;
+		params.flatFee = true;
+
+		// opt in to receive asset
+		// signing and sending "txn" allows sender to begin accepting asset specified by creator and index
+		const asaTxn = algosdk.makeAssetTransferTxnWithSuggestedParams(
+			sender,
+			sender,
+			undefined,
+			undefined,
+			0,
+			undefined,
+			assetId,
+			params
+		);
+
+		// opt in to vote smart contract
+		const args = [];
+		args.push(new Uint8Array(Buffer.from("register")));
+
+		// create unsigned transaction
+		const smartContractTxn = algosdk.makeApplicationOptInTxn(
+			sender,
+			params,
+			appId,
+			args
+		);
+
+		// Combine transactions
+		const txns = [asaTxn, smartContractTxn];
+
+		// Group both transactions
+		const txnGroup = algosdk.assignGroupID(txns);
+		// console.log("txnGroup", txnGroup);
+
+		const signedTxn1 = asaTxn.signTxn(userAccount.sk);
+		const signedTxn2 = smartContractTxn.signTxn(userAccount.sk);
+
+		// Combine the signed transactions
+		const signed = [];
+		signed.push(signedTxn1);
+		signed.push(signedTxn2);
+
+		let txn = await algodClient.sendRawTransaction(signed).do();
+		console.log("Transaction : " + txn.txId);
+
+		// Wait for transaction to be confirmed
+		await waitForConfirmation(algodClient, txn.txId);
+
+		return res.send({ txId: txn.txId });
+	} catch (err) {
+		console.log(err);
+		return res.send(err);
+	}
 };

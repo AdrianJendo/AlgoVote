@@ -1,4 +1,8 @@
-export const cancelVote = (setVoteInfo) => {
+export const cancelVote = (setVoteInfo, navigate = null) => {
+	if (navigate) {
+		navigate("/");
+	}
+
 	setVoteInfo({
 		activeStep: 0,
 		accountFundingType: null,
@@ -19,7 +23,11 @@ export const cancelVote = (setVoteInfo) => {
 	});
 };
 
-export const cancelParticipate = (setParticipateInfo) => {
+export const cancelParticipate = (setParticipateInfo, navigate = null) => {
+	if (navigate) {
+		navigate("/");
+	}
+
 	setParticipateInfo({
 		activeStep: 0,
 		registerOrVote: null,
@@ -31,17 +39,21 @@ export const cancelParticipate = (setParticipateInfo) => {
 		candidates: [],
 		selectedCandidate: "",
 		voteSubmitted: false,
-		voteAccepted: false,
+		txId: null,
 	});
 };
 
-export const cancelVoteResults = (setVoteResults) => {
+export const cancelVoteResults = (setVoteResults, navigate = null) => {
+	if (navigate) {
+		navigate("/");
+	}
+
 	setVoteResults({
 		activeStep: 0,
 		voteStatus: null,
 		appId: "",
 		creator: null,
-		creatorAssetBalance: null,
+		numRegistered: null,
 		assetId: null,
 		participants: null,
 		voteBegin: null,
