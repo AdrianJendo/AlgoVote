@@ -22,6 +22,29 @@ export default function StickyHeadTable({ stage }) {
 	const [page, setPage] = React.useState(0);
 	const [voteInfo, setVoteInfo] = React.useContext(VoteInfoContext);
 
+	const updatePerson = (row, type = "decrement") => {
+		const newNumVotes =
+			type === "decrement" ? row.numVotes - 1 : row.numVotes + 1;
+		const newVoteInfo = Object.assign({}, voteInfo);
+		if (newNumVotes === 0) {
+			const newVoteInfo = Object.assign({}, voteInfo);
+			if (stage === "participants") {
+				delete newVoteInfo.participantData[row.name];
+			} else {
+				delete newVoteInfo.candidateData[row.name];
+			}
+			setVoteInfo(newVoteInfo);
+		} else if (stage === "participants") {
+			if (type === "decrement") {
+				newVoteInfo.participantData[row.name]--;
+			} else {
+				newVoteInfo.participantData[row.name]++;
+			}
+		}
+
+		setVoteInfo(newVoteInfo);
+	};
+
 	const columns =
 		stage === "participants"
 			? [
@@ -67,7 +90,7 @@ export default function StickyHeadTable({ stage }) {
 					) : (
 						<IconButton
 							onClick={() =>
-								updatePerson({ numVotes, name }, false)
+								updatePerson({ numVotes, name }, "increment")
 							}
 						>
 							<PlusOneIcon />
@@ -105,28 +128,6 @@ export default function StickyHeadTable({ stage }) {
 			id++;
 		});
 	}
-
-	const updatePerson = (row, decrement = true) => {
-		const newNumVotes = decrement ? row.numVotes - 1 : row.numVotes + 1;
-		const newVoteInfo = Object.assign({}, voteInfo);
-		if (newNumVotes === 0) {
-			const newVoteInfo = Object.assign({}, voteInfo);
-			if (stage === "participants") {
-				delete newVoteInfo.participantData[row.name];
-			} else {
-				delete newVoteInfo.candidateData[row.name];
-			}
-			setVoteInfo(newVoteInfo);
-		} else if (stage === "participants") {
-			if (decrement) {
-				newVoteInfo.participantData[row.name]--;
-			} else {
-				newVoteInfo.participantData[row.name]++;
-			}
-		}
-
-		setVoteInfo(newVoteInfo);
-	};
 
 	const handleChangePage = (event, newPage) => {
 		setPage(newPage);
