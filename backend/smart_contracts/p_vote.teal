@@ -102,18 +102,6 @@ int 0 // offset of 0 corresponds to sender [A]
 txn ApplicationID // AppId [B]
 app_opted_in // check if account A (0 -> sender) opted in to application B (specified by AppId)
 bz failed
-// check if they have the vote token
-// sender
-int 0 // offset 0 for sender
-// not hard-coded assetid
-byte "AssetId" // OR int 0 (first index of foregin asset args)
-app_global_get
-asset_holding_get AssetBalance // get assetBalance
-pop // i guess we pop to save stack space for things we don't need?
-// does voter have at least 1 vote token
-int 1
->=
-bz failed
 // two transactions
 global GroupSize
 int 2
@@ -143,20 +131,27 @@ byte "voted"
 app_local_get_ex // put voted variable to top of stack
 // if voted skip incrementing count and return success
 bnz success
-pop
 // voting for candidate
 // read existing vote candidate in global state and increment vote
 int 0
 txna ApplicationArgs 1 // load candidate onto top of stack
 app_global_get_ex // read from application A (0) global state key B (candidate)
 bnz increment_existing 
-pop
 int 0 // add zero (current number of votes of candidate)
 
 increment_existing:
-txna ApplicationArgs 2 // load number of votes onto top of stack
-btoi
-+
+// check if they have the vote token & increment votes by their balance
+int 0 // offset 0 for sender
+byte "AssetId" // OR int 0 (first index of foreign asset args)
+app_global_get
+asset_holding_get AssetBalance // get AssetBalance
+bz failed // asset_holding_get AssetBalance first pushes a 0 or 1 where 0 means the asset balance was not found and 1 means an asset balance was found
+// does voter have at least 1 vote token
+dup // duplicate the balance so it doesn't get popped when we check the balance
+int 1
+>=
+bz failed
++ // increment count by asset balance
 store 1
 txna ApplicationArgs 1
 load 1
