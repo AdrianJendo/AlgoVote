@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { Button, Typography, ButtonGroup, TextField } from "@mui/material";
 import { VoteInfoContext } from "context/VoteInfoContext";
-import StickyHeadTable from "components/base/RenderTable";
+import ParticipantsTable from "components/base/RenderTable";
 import { txtUploadHandler, excelUploadHandler } from "utils/FileUpload";
 import { cancelVote } from "utils/CancelVote";
 import { generateAlgorandAccounts } from "utils/AlgoFunctions";
@@ -14,7 +14,7 @@ import {
 	ManualUploadDiv,
 	ManualUploadSubDiv,
 } from "utils/Style/ParticipantsStyle";
-import CustomizedInputBase from "components/createWorkflow/TextInput";
+import ParticipantsInput from "components/createWorkflow/TextInput";
 import HelpIcon from "@mui/icons-material/Help";
 import HelperTooltip from "components/createWorkflow/HelperTooltip";
 import { useNavigate } from "react-router-dom";
@@ -320,10 +320,10 @@ const SelectParticipants = () => {
 				voteInfo.participantData !== null) && (
 				<ManualUploadDiv>
 					<ManualUploadSubDiv>
-						<CustomizedInputBase index="participantData" />
+						<ParticipantsInput index="participantData" />
 					</ManualUploadSubDiv>
 					<TableSubDiv>
-						<StickyHeadTable stage="participants" />
+						<ParticipantsTable stage="participants" />
 					</TableSubDiv>
 				</ManualUploadDiv>
 			)}
