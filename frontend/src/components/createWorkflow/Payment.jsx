@@ -18,7 +18,7 @@ const Payment = () => {
 
 	const getText = (val) => {
 		switch (val) {
-			case 0:
+			case 1:
 				return "Creating vote token";
 			case 20:
 				return "Creating smart contract";

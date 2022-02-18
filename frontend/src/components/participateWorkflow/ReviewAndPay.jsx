@@ -120,7 +120,7 @@ const ReviewAndPay = () => {
 
 			{participateInfo.voteSubmitted && !participateInfo.txId && (
 				<div style={{ padding: "50px" }}>
-					<ProgressBar text="Sending Transaction..." value={null} />
+					<ProgressBar text="Sending Transaction..." />
 				</div>
 			)}
 			{participateInfo.voteSubmitted && participateInfo.txId && (
