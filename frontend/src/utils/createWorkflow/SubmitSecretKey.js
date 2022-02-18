@@ -77,6 +77,9 @@ const submitSecretKey = async (props) => {
 				assetName: voteName === "" ? `Algo Vote Token` : voteName,
 			});
 			const assetId = tokenResp.data.assetId;
+			const prefundedAccounts = JSON.parse(
+				JSON.stringify(voteInfo.participantData)
+			); // deep copy of all accounts
 			const participantAddresses = Object.keys(voteInfo.participantData);
 
 			// Create smart contract
@@ -96,16 +99,24 @@ const submitSecretKey = async (props) => {
 			);
 			const appId = smartContractResp.data.appId;
 			const candidates = Object.keys(voteInfo.candidateData);
-			let participantAccounts;
+			let newParticipantAccounts;
 
 			const sendTokenPromises = [];
 			if (voteInfo.accountFundingType === "newAccounts") {
+				// Logic that allows mixing of public and private addresses
+				const newAccountAddresses = Object.keys(
+					voteInfo.privatePublicKeyPairs
+				);
+				newAccountAddresses.forEach((accountAddr) => {
+					delete prefundedAccounts[accountAddr];
+				});
+
 				const fundAccountPromises = [];
 				const optInContractPromises = [];
-				participantAccounts = voteInfo.privatePublicKeyPairs;
+				newParticipantAccounts = voteInfo.privatePublicKeyPairs;
 				// fund new account with minimum balance
 				setProgressBar(40);
-				participantAddresses.forEach((accountAddr) => {
+				newAccountAddresses.forEach((accountAddr) => {
 					fundAccountPromises.push(
 						axios.post("/api/algoAccount/sendAlgo", {
 							senderMnemonic: encryptedMnemonic,
@@ -119,9 +130,8 @@ const submitSecretKey = async (props) => {
 
 				// opt in to vote token and voting contract (atomically grouped)
 				setProgressBar(60);
-				participantAddresses.forEach((accountAddr) => {
-					const accountMnemonic = participantAccounts[accountAddr];
-					if (accountMnemonic) {
+				Object.values(newParticipantAccounts).forEach(
+					(accountMnemonic) => {
 						optInContractPromises.push(
 							axios.post("/api/smartContract/registerForVote", {
 								userMnemonic:
@@ -130,15 +140,15 @@ const submitSecretKey = async (props) => {
 							})
 						);
 					}
-				});
+				);
+
 				await Promise.all(optInContractPromises);
 
 				// send out vote tokens from creator
 				setProgressBar(80);
-				participantAddresses.forEach((receiver) => {
+				newAccountAddresses.forEach((receiver) => {
 					const amount = voteInfo.participantData[receiver];
 					const senderMnemonic = encryptedMnemonic;
-
 					sendTokenPromises.push(
 						axios.post("/api/asa/transferAsset", {
 							senderMnemonic,
@@ -150,8 +160,10 @@ const submitSecretKey = async (props) => {
 				});
 				await Promise.all(sendTokenPromises);
 			} else {
-				// Create asset transfer txns but send it in the future when the vote starts
 				setProgressBar(80);
+			}
+			if (Object.keys(prefundedAccounts).length > 0) {
+				// Create asset transfer txns but send it in the future when the vote starts
 				const today = new Date();
 				const startVoteUTC = Date.UTC(
 					startVote.getUTCFullYear(),
@@ -167,14 +179,14 @@ const submitSecretKey = async (props) => {
 				const amounts = [];
 				const receivers = [];
 				const senderMnemonic = encryptedMnemonic;
-				participantAddresses.forEach((receiver) => {
+				Object.keys(prefundedAccounts).forEach((receiver) => {
 					amounts.push(voteInfo.participantData[receiver]);
 					receivers.push(receiver);
 				});
 				await axios.post("/api/asa/delayedTransferAsset", {
 					senderMnemonic,
-					receivers: JSON.stringify(receivers),
 					assetId,
+					receivers: JSON.stringify(receivers),
 					amounts: JSON.stringify(amounts),
 					secsToTxn: startVoteSecs,
 				});
@@ -199,7 +211,7 @@ const submitSecretKey = async (props) => {
 				],
 			];
 
-			if (participantAccounts) {
+			if (newParticipantAccounts) {
 				ws_data[0].push("Secret Key");
 			}
 
@@ -224,8 +236,10 @@ const submitSecretKey = async (props) => {
 				if (i < participantAddresses.length) {
 					row[5] = participantAddresses[i];
 					row[6] = voteInfo.participantData[participantAddresses[i]];
-					if (participantAccounts) {
-						row[7] = participantAccounts[participantAddresses[i]];
+					if (newParticipantAccounts) {
+						row[7] =
+							newParticipantAccounts[participantAddresses[i]] ||
+							"";
 					}
 				}
 
