@@ -7,6 +7,7 @@ import submitSecretKey from "utils/createWorkflow/SubmitSecretKey";
 import isMnemonicValid from "utils/IsMnemonicValid";
 import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "constants";
+import getTxnCost from "utils/createWorkflow/GetTxnCost";
 
 const Payment = () => {
 	const [voteInfo, setVoteInfo] = useContext(VoteInfoContext);
@@ -51,6 +52,23 @@ const Payment = () => {
 			>
 				Paste the secret key to the creator's wallet address to create
 				the vote
+			</Typography>
+			<Typography
+				variant="text"
+				component="div"
+				sx={{ flexGrow: 1, padding: "10px" }}
+			>
+				The estimated cost of this transaction is{" "}
+				<i>
+					<b>
+						{getTxnCost(
+							Object.keys(voteInfo.participantData).length,
+							Object.keys(voteInfo.privatePublicKeyPairs || {})
+								.length
+						)}{" "}
+						Algos
+					</b>
+				</i>{" "}
 			</Typography>
 			<div
 				style={{

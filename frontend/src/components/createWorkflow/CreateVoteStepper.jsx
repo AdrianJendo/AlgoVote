@@ -6,35 +6,7 @@ import { MINUTES_DELAY, DELAY } from "utils/Constants";
 import isSameDate from "utils/IsSameDate";
 import Stepper from "components/base/Stepper";
 import { useNavigate } from "react-router-dom";
-
-const steps = [
-	{
-		label: "Select Voting Participants",
-		description: "Select who will be participating in your vote.",
-	},
-	{
-		label: "Specify Vote Options",
-		description: "Select the possible candidates for the vote.",
-	},
-	{
-		label: "Specify Start Date",
-		description: "Choose when your vote will start.",
-	},
-	{
-		label: "Specify End Date",
-		description: "Choose when your vote will end.",
-	},
-	{
-		label: "Review Details",
-		description:
-			"Review the details of this transaction and click 'Continue'.",
-	},
-	{
-		label: "Payment",
-		description:
-			"A gas fee of X algo is required to execute this smart contract on the blockchain. Make the payment to finalize this vote contract.",
-	},
-];
+import getTxnCost from "utils/createWorkflow/GetTxnCost";
 
 export default function VerticalLinearStepper() {
 	const [voteInfo, setVoteInfo] = React.useContext(VoteInfoContext);
@@ -56,6 +28,37 @@ export default function VerticalLinearStepper() {
 			setReadyToContinue(false);
 		}
 	}, [voteInfo, dateValue]);
+
+	const steps = [
+		{
+			label: "Select Voting Participants",
+			description: "Select who will be participating in your vote.",
+		},
+		{
+			label: "Specify Vote Options",
+			description: "Select the possible candidates for the vote.",
+		},
+		{
+			label: "Specify Start Date",
+			description: "Choose when your vote will start.",
+		},
+		{
+			label: "Specify End Date",
+			description: "Choose when your vote will end.",
+		},
+		{
+			label: "Review Details",
+			description:
+				"Review the details of this transaction and click 'Continue'.",
+		},
+		{
+			label: "Payment",
+			description: `A txn fee of ${getTxnCost(
+				Object.keys(voteInfo.participantData).length,
+				Object.keys(voteInfo.privatePublicKeyPairs || {}).length
+			)} Algos is required to create the vote. Make the payment to finalize this application.`,
+		},
+	];
 
 	const handleNext = () => {
 		if (voteInfo.activeStep === 2) {
