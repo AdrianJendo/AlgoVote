@@ -61,7 +61,6 @@ export const cancelVoteResults = (setVoteResults, navigate = null) => {
 		voteBegin: null,
 		voteEnd: null,
 		candidates: null,
-		castedVotes: 0,
 		assetSupply: 0,
 		assetName: "",
 		assetUnit: "",

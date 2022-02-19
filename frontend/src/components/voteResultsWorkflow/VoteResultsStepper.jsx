@@ -56,7 +56,6 @@ export default function VerticalLinearStepper() {
 					}
 				});
 				const candidates = {};
-				let castedVotes = 0;
 				let voteStatus = "register";
 
 				const today = new Date();
@@ -90,7 +89,6 @@ export default function VerticalLinearStepper() {
 						].includes(key)
 					) {
 						candidates[key] = voteData[key];
-						castedVotes += voteData[key];
 					}
 				});
 
@@ -106,7 +104,6 @@ export default function VerticalLinearStepper() {
 					voteBegin: voteBegin.toString(),
 					voteEnd: voteEnd.toString(),
 					candidates,
-					castedVotes,
 					assetSupply: assetData.params.total,
 					assetName: assetData.params.name,
 					assetUnit: assetData.params["unit-name"],

@@ -16,7 +16,6 @@ export const VoteResultsProvider = (props) => {
 		voteBegin: null,
 		voteEnd: null,
 		candidates: null,
-		castedVotes: 0, // number of casted votes (weighted by number of spent tokens)
 
 		assetId: null,
 		assetSupply: 0, // vote token supply
