@@ -47,6 +47,7 @@ export default function VerticalLinearStepper() {
 				});
 				const assetData = assetResp.data.assetData;
 				const assetBalances = assetResp.data.assetBalances;
+				const numVoted = assetResp.data.numVoted;
 				const creator = voteData.Creator;
 				let numRegistered = 0;
 				assetBalances.forEach((assetBalance) => {
@@ -99,6 +100,7 @@ export default function VerticalLinearStepper() {
 					creator,
 					numRegistered,
 					numVoters: voteData.NumVoters,
+					numVoted,
 					voteStatus,
 					assetId: voteData.AssetId,
 					voteBegin: voteBegin.toString(),

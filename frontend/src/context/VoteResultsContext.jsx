@@ -10,11 +10,13 @@ export const VoteResultsProvider = (props) => {
 		appId: "",
 		creator: null,
 		numRegistered: null, // number of registered voters
+		numVoters: null,
+		numVoted: null, // number of people who voted
 		participants: null, // list of recent participants and who they voted for
 		voteBegin: null,
 		voteEnd: null,
 		candidates: null,
-		castedVotes: 0, // number of casted votes
+		castedVotes: 0, // number of casted votes (weighted by number of spent tokens)
 
 		assetId: null,
 		assetSupply: 0, // vote token supply

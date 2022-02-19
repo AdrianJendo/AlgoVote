@@ -54,6 +54,8 @@ export const cancelVoteResults = (setVoteResults, navigate = null) => {
 		appId: "",
 		creator: null,
 		numRegistered: null,
+		numVoters: null,
+		numVoted: null,
 		assetId: null,
 		participants: null,
 		voteBegin: null,

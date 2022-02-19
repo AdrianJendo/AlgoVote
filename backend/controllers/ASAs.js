@@ -183,9 +183,22 @@ export const getAssetInfo = async (req, res) => {
 		const assetBalances = await indexerClient
 			.lookupAssetBalances(assetId)
 			.do();
-		return res.send({ assetData, assetBalances: assetBalances.balances });
+
+		const txns = await indexerClient.lookupAssetTransactions(assetId).do();
+		const creator = assetData.params.creator;
+		const numVoted = txns.transactions.filter(
+			(txn) =>
+				txn["tx-type"] === "axfer" &&
+				txn["asset-transfer-transaction"]["receiver"] === creator
+		).length;
+
+		return res.send({
+			assetData,
+			assetBalances: assetBalances.balances,
+			numVoted,
+		});
 	} catch (err) {
-		return res.status(404).send(err);
+		return res.status(400).send(err);
 	}
 };
 
