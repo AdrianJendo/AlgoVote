@@ -105,6 +105,17 @@ export const checkAlgoBalance = async (req, res) => {
 	});
 };
 
+export const getAssetsAndApps = async (req, res) => {
+	const accountAddr = req.query.addr;
+	const accountInfo = await algodClient.accountInformation(accountAddr).do();
+	const numASAs = accountInfo["assets"].length;
+	const numSmartContracts = accountInfo["created-apps"].length;
+	const smartContractGlobalInts =
+		accountInfo["apps-total-schema"]["num-uint"];
+
+	return res.send({ numASAs, numSmartContracts, smartContractGlobalInts });
+};
+
 export const getPublicKey = async (req, res) => {
 	try {
 		const decryptedMnemonic = decodeURIMnemonic(req.query.mnemonic);

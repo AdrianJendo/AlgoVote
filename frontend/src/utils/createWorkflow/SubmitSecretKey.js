@@ -2,7 +2,12 @@ import axios from "axios";
 import encodeURIMnemonic from "utils/EncodeMnemonic";
 import * as XLSX from "xlsx";
 
-const MIN_VOTER_BALANCE = 100000 + 100000 + 100000 + 50000 + 10000; // micro algos -> 0.1 algo (min account balance) + 0.1 (to opt in and receive ASA) + 0.1 (to opt in to smart contract) + 0.05 (for 1 local byte slice)
+const MIN_VOTER_BALANCE =
+	100000 + // 0.1 algos is minimum account balance
+	100000 + // 0.1 algos to opt in to ASA
+	100000 + // 0.1 algos to opt into smart contract
+	50000 + // 0.05 algos for smart contract with 1 local byte slice
+	1000 * 4; // 4 * 0.001 algos for txn costs (opt into asset, opt into smart contract, send asset, participate in smart contract)
 
 const submitSecretKey = async (props) => {
 	const { secretKey, voteInfo, setVoteInfo, setProgressBar, voteName } =
@@ -36,31 +41,52 @@ const submitSecretKey = async (props) => {
 		});
 
 		if (resp.data.addr) {
+			const creatorAddr = resp.data.addr;
+			const participantAddresses = Object.keys(voteInfo.participantData);
+			const candidates = Object.keys(voteInfo.candidateData);
+			const numParticipants = participantAddresses.length;
+			const numCandidates = candidates.length;
+
 			// MIN BALANCE CALCULATION
-			// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-			// const creatorAddr = resp.data.addr;
-			// creator needs approx. 0.1 algo balance + 0.1 algo for ASA numAccounts * participantMinBalance +
-			// 0.001 * numAccounts (send token txn fee) + 0.001 * 2 (create smart contract and ASA fee) +
-			// 4 * int + 1 * global vars
-			// Figure out these specifics later
-			// let creatorMinBalance = 1000000 * (voteInfo.numAccounts + 10);
+			const creatorBalance = await axios.get(
+				"/api/algoAccount/checkAlgoBalance",
+				{ params: { addr: creatorAddr } }
+			);
 
-			// each participant needs 0.1 algo balance + 0.1 algo to opt in to ASA + 0.1 to opt in to smart contract + 0.05 for local byteslice + 0.004 (txn fee to opt in to ASA, send ASA, opt in to smart contract, do smart contract txn)
-			// Figure out these specifics later
+			const creatorAssetsAndApps = await axios.get(
+				"/api/algoAccount/getAssetsAndApps",
+				{
+					params: { addr: creatorAddr },
+				}
+			);
 
-			// If newAccounts, add cost to fund accounts to creatorMinBalance(use participantData.length)
-			// const creatorBalance = await axios.get("/api/algoAccount/checkAlgoBalance", {params:{addr:creatorAddr}})
-			// if (voteInfo.accountFundingType === "newAccounts") {
-			// console.log("balance", creatorBalance);
+			const numGlobalUInts =
+				4 + // AssetId, NumVoters, VoteBegin, and VoteEnd
+				numCandidates + // each candidate is global int
+				creatorAssetsAndApps.data.smartContractGlobalInts; // every other smart contract made by creator
+			const numASAs = creatorAssetsAndApps.data.numASAs; // number of ASAs the creator holds
+			const numSmartContracts =
+				creatorAssetsAndApps.data.numSmartContracts; // number of smart contracts made by creator
+			const newAccountFunding =
+				voteInfo.accountFundingType === "newAccounts"
+					? (MIN_VOTER_BALANCE + 1000) *
+					  Object.keys(voteInfo.privatePublicKeyPairs).length // calculation of funds needed for voters
+					: 0; // calculation to fund new accounts
 
-			// } else {
-			// 	// Else, check that they have enough funds to distribute the tokens and create the smart contract (& vote token)
-			// }
-			// if(creatorBalance < creatorMinBalance) {
-			// 	return false;
-			// }
+			const MIN_CREATOR_BALANCE =
+				100000 + // 0.1 algos is minimum account balance
+				100000 * numASAs + // 0.1 algos for each ASA
+				100000 * numSmartContracts + // 0.1 algos for each smart contract
+				28500 * numGlobalUInts + // 0.0285 algos for each global uint in the smart contracts
+				1000 * (2 + numParticipants) + // txn fees to create ASA & smart contract, and send out vote tokens
+				newAccountFunding;
 
-			// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+			console.log("VALS", creatorBalance, MIN_CREATOR_BALANCE); // Delete this after we get some testing done
+
+			if (creatorBalance.data.accountBalance < MIN_CREATOR_BALANCE) {
+				setVoteInfo({ ...voteInfo, voteSubmitted: false });
+				return false;
+			}
 
 			// Create vote token
 			setProgressBar(1);
@@ -80,7 +106,6 @@ const submitSecretKey = async (props) => {
 			const prefundedAccounts = JSON.parse(
 				JSON.stringify(voteInfo.participantData)
 			); // deep copy of all accounts
-			const participantAddresses = Object.keys(voteInfo.participantData);
 
 			// Create smart contract
 			setProgressBar(20);
@@ -94,11 +119,10 @@ const submitSecretKey = async (props) => {
 					),
 					startVote: startVote.toString(),
 					endVote: endVote.toString(),
-					numVoters: participantAddresses.length,
+					numVoters: numParticipants,
 				}
 			);
 			const appId = smartContractResp.data.appId;
-			const candidates = Object.keys(voteInfo.candidateData);
 			let newParticipantAccounts;
 
 			const sendTokenPromises = [];
@@ -215,11 +239,7 @@ const submitSecretKey = async (props) => {
 				ws_data[0].push("Secret Key");
 			}
 
-			for (
-				let i = 0;
-				i < Math.max(participantAddresses.length, candidates.length);
-				++i
-			) {
+			for (let i = 0; i < Math.max(numParticipants, numCandidates); ++i) {
 				const row = ["", "", "", "", ""];
 
 				if (i === 0) {
@@ -229,11 +249,11 @@ const submitSecretKey = async (props) => {
 					row[4] = endVote.toString();
 				}
 
-				if (i < candidates.length) {
+				if (i < numCandidates) {
 					row[2] = candidates[i];
 				}
 
-				if (i < participantAddresses.length) {
+				if (i < numParticipants) {
 					row[5] = participantAddresses[i];
 					row[6] = voteInfo.participantData[participantAddresses[i]];
 					if (newParticipantAccounts) {
