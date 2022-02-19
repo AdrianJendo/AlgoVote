@@ -80,7 +80,7 @@ const submitSecretKey = async (props) => {
 				TXN_FEE * (2 + numParticipants) + // txn fees to create ASA & smart contract, and send out vote tokens
 				newAccountFunding;
 
-			console.log("VALS", creatorBalance, MIN_CREATOR_BALANCE); // Delete this after we get some testing done
+			console.log("VALS", creatorBalance.data, MIN_CREATOR_BALANCE); // Delete this after we get some testing done
 
 			if (creatorBalance.data.accountBalance < MIN_CREATOR_BALANCE) {
 				setVoteInfo({ ...voteInfo, voteSubmitted: false });

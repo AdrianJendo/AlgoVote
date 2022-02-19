@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import { useNavigate } from "react-router-dom";
-import { BASE_URL } from "constants";
+import { BASE_URL, TXN_FEE } from "constants";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
 	[`&.${tableCellClasses.body}`]: {
@@ -50,7 +50,7 @@ const ReviewAndPay = () => {
 	});
 	rows.push({
 		name: "Estimated transaction fee",
-		value: <i>0.001 Algos</i>,
+		value: <i>{(TXN_FEE * 2) / 1e6} Algos</i>, // 2 txns -> 1 for ASA and 1 for smart contract
 	});
 
 	return (
