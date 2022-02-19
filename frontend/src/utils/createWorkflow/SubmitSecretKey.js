@@ -1,13 +1,12 @@
 import axios from "axios";
 import encodeURIMnemonic from "utils/EncodeMnemonic";
 import * as XLSX from "xlsx";
-
-const MIN_VOTER_BALANCE =
-	100000 + // 0.1 algos is minimum account balance
-	100000 + // 0.1 algos to opt in to ASA
-	100000 + // 0.1 algos to opt into smart contract
-	50000 + // 0.05 algos for smart contract with 1 local byte slice
-	1000 * 4; // 4 * 0.001 algos for txn costs (opt into asset, opt into smart contract, send asset, participate in smart contract)
+import {
+	MIN_VOTER_BALANCE,
+	TXN_FEE,
+	MIN_ACCOUNT_BALANCE,
+	SMART_CNTRACT_UINT,
+} from "constants";
 
 const submitSecretKey = async (props) => {
 	const { secretKey, voteInfo, setVoteInfo, setProgressBar, voteName } =
@@ -74,11 +73,11 @@ const submitSecretKey = async (props) => {
 					: 0; // calculation to fund new accounts
 
 			const MIN_CREATOR_BALANCE =
-				100000 + // 0.1 algos is minimum account balance
-				100000 * numASAs + // 0.1 algos for each ASA
-				100000 * numSmartContracts + // 0.1 algos for each smart contract
-				28500 * numGlobalUInts + // 0.0285 algos for each global uint in the smart contracts
-				1000 * (2 + numParticipants) + // txn fees to create ASA & smart contract, and send out vote tokens
+				MIN_ACCOUNT_BALANCE + // 0.1 algos is minimum account balance
+				MIN_ACCOUNT_BALANCE * numASAs + // 0.1 algos for each ASA
+				MIN_ACCOUNT_BALANCE * numSmartContracts + // 0.1 algos for each smart contract
+				SMART_CNTRACT_UINT * numGlobalUInts + // 0.0285 algos for each global uint in the smart contracts
+				TXN_FEE * (2 + numParticipants) + // txn fees to create ASA & smart contract, and send out vote tokens
 				newAccountFunding;
 
 			console.log("VALS", creatorBalance, MIN_CREATOR_BALANCE); // Delete this after we get some testing done
