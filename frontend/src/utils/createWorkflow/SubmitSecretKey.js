@@ -278,9 +278,10 @@ const submitSecretKey = async (props) => {
 			return { error: resp.data };
 		}
 	} catch (err) {
-		console.warn(err);
+		const error = err.response?.data?.message || err.message;
+		console.warn(error);
 		setVoteInfo({ ...voteInfo, voteSubmitted: false });
-		return { error: err.message };
+		return { error };
 	}
 };
 

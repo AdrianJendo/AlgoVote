@@ -114,7 +114,9 @@ export const createVoteSmartContract = async (req, res) => {
 			confirmedRound: transactionResponse["confirmed-round"],
 		});
 	} catch (err) {
-		return res.status(500).send({ error: err.message });
+		return res
+			.status(400)
+			.send(err.response?.text || { message: err.message });
 	}
 };
 
@@ -166,7 +168,9 @@ export const optInVoteSmartContract = async (req, res) => {
 
 		return res.send({ transactionResponse, appId });
 	} catch (err) {
-		return res.status(500).send({ error: err.message });
+		return res
+			.status(400)
+			.send(err.response?.text || { message: err.message });
 	}
 };
 
@@ -265,7 +269,9 @@ export const submitVote = async (req, res) => {
 			txId: txn.txId,
 		});
 	} catch (err) {
-		return res.status(500).send({ error: err.message });
+		return res
+			.status(400)
+			.send(err.response?.text || { message: err.message });
 	}
 };
 
@@ -309,7 +315,9 @@ export const deleteVoteSmartContract = async (req, res) => {
 		console.log("Deleted app-id: ", appId);
 		return res.send(transactionResponse);
 	} catch (err) {
-		return res.status(500).send({ error: err.message });
+		return res
+			.status(400)
+			.send(err.response?.text || { message: err.message });
 	}
 };
 
@@ -330,7 +338,9 @@ export const readVoteSmartContractState = async (req, res) => {
 
 		return res.send(decodedState);
 	} catch (err) {
-		return res.status(500).send({ error: err.message });
+		return res
+			.status(400)
+			.send(err.response?.text || { message: err.message });
 	}
 };
 
@@ -379,7 +389,9 @@ export const didUserVote = async (req, res) => {
 			status: false,
 		});
 	} catch (err) {
-		return res.status(500).send({ error: err.message });
+		return res
+			.status(400)
+			.send(err.response?.text || { message: err.message });
 	}
 };
 
@@ -451,6 +463,8 @@ export const registerForVote = async (req, res) => {
 
 		return res.send({ txId: txn.txId });
 	} catch (err) {
-		return res.status(500).send({ error: err.message });
+		return res
+			.status(400)
+			.send(err.response?.text || { message: err.message });
 	}
 };

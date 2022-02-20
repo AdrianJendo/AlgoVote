@@ -16,7 +16,9 @@ export const createAlgoAccount = (req, res) => {
 		console.log("https://dispenser.testnet.aws.algodev.network/ ");
 		return res.send({ accountAddr, accountMnemonic });
 	} catch (err) {
-		return res.status(500).send({ error: err.message });
+		return res
+			.status(400)
+			.send(err.response?.text || { message: err.message });
 	}
 };
 
@@ -93,7 +95,9 @@ export const sendAlgo = async (req, res) => {
 			fee: confirmedTxn.txn.txn.fee,
 		});
 	} catch (err) {
-		return res.status(500).send({ error: err.message });
+		return res
+			.status(400)
+			.send(err.response?.text || { message: err.message });
 	}
 };
 
@@ -105,7 +109,9 @@ export const checkAlgoBalance = async (req, res) => {
 			accountBalance: await getAlgoBalance(algodClient, accountAddr),
 		});
 	} catch (err) {
-		return res.status(500).send({ error: err.message });
+		return res
+			.status(400)
+			.send(err.response?.text || { message: err.message });
 	}
 };
 
@@ -126,7 +132,9 @@ export const getAssetsAndApps = async (req, res) => {
 			smartContractGlobalInts,
 		});
 	} catch (err) {
-		return res.status(500).send({ error: err.message });
+		return res
+			.status(400)
+			.send(err.response?.text || { message: err.message });
 	}
 };
 
@@ -137,6 +145,8 @@ export const getPublicKey = async (req, res) => {
 
 		return res.send({ addr: account.addr });
 	} catch (err) {
-		return res.status(500).send({ error: err.message });
+		return res
+			.status(400)
+			.send(err.response?.text || { message: err.message });
 	}
 };

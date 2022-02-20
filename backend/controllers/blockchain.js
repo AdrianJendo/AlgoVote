@@ -6,7 +6,9 @@ export const blockchainStatus = async (req, res) => {
 
 		return res.send(blockchainStatus);
 	} catch (err) {
-		return res.status(500).send({ error: err.message });
+		return res
+			.status(400)
+			.send(err.response?.text || { message: err.message });
 	}
 };
 
@@ -17,6 +19,8 @@ export const blockTimestamp = async (req, res) => {
 
 		return res.send(new Date(block.block.ts * 1000));
 	} catch (err) {
-		return res.status(500).send({ error: err.message });
+		return res
+			.status(400)
+			.send(err.response?.text || { message: err.message });
 	}
 };

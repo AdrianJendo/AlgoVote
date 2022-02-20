@@ -87,17 +87,21 @@ const ReviewAndPay = () => {
 			{!participateInfo.voteSubmitted && (
 				<Button
 					variant="contained"
-					onClick={async () =>
-						participateInfo.registerOrVote === "vote"
-							? await submitVote(
-									participateInfo,
-									setParticipateInfo
-							  )
-							: await submitRegister(
-									participateInfo,
-									setParticipateInfo
-							  )
-					}
+					onClick={async () => {
+						const resp =
+							participateInfo.registerOrVote === "vote"
+								? await submitVote(
+										participateInfo,
+										setParticipateInfo
+								  )
+								: await submitRegister(
+										participateInfo,
+										setParticipateInfo
+								  );
+						if (resp.error) {
+							alert(resp.error);
+						}
+					}}
 				>
 					Confirm
 				</Button>

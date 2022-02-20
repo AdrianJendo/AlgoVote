@@ -2,24 +2,31 @@ import encodeURIMnemonic from "utils/EncodeMnemonic";
 import axios from "axios";
 
 const submitVote = async (participateInfo, setParticipateInfo) => {
-	const appId = parseInt(participateInfo.appId);
-	const userMnemonic = encodeURIMnemonic(participateInfo.sk);
-	const candidate = participateInfo.selectedCandidate;
-	setParticipateInfo({ ...participateInfo, voteSubmitted: true });
+	try {
+		const appId = parseInt(participateInfo.appId);
+		const userMnemonic = encodeURIMnemonic(participateInfo.sk);
+		const candidate = participateInfo.selectedCandidate;
+		setParticipateInfo({ ...participateInfo, voteSubmitted: true });
 
-	const resp = await axios.post("/api/smartContract/submitVote", {
-		userMnemonic,
-		appId,
-		candidate,
-	});
+		const resp = await axios.post("/api/smartContract/submitVote", {
+			userMnemonic,
+			appId,
+			candidate,
+		});
 
-	setParticipateInfo({
-		...participateInfo,
-		voteSubmitted: true,
-		txId: resp.data.txId,
-	});
+		setParticipateInfo({
+			...participateInfo,
+			voteSubmitted: true,
+			txId: resp.data.txId,
+		});
 
-	return resp.data;
+		return resp.data;
+	} catch (err) {
+		const error = err.response?.data?.message || err.message;
+		console.warn(error);
+		setParticipateInfo({ ...participateInfo, voteSubmitted: false });
+		return { error };
+	}
 };
 
 export default submitVote;
