@@ -3,10 +3,10 @@ import encodeURIMnemonic from "utils/EncodeMnemonic";
 import * as XLSX from "xlsx";
 import {
 	MIN_VOTER_BALANCE,
-	TXN_FEE,
 	MIN_ACCOUNT_BALANCE,
-	SMART_CNTRACT_UINT,
+	SMART_CONTRACT_UINT,
 } from "constants";
+import getTxnCost from "utils/createWorkflow/GetTxnCost";
 
 const submitSecretKey = async (props) => {
 	const { secretKey, voteInfo, setVoteInfo, setProgressBar, voteName } =
@@ -66,21 +66,16 @@ const submitSecretKey = async (props) => {
 			const numASAs = creatorAssetsAndApps.data.numASAs; // number of ASAs the creator holds
 			const numSmartContracts =
 				creatorAssetsAndApps.data.numSmartContracts; // number of smart contracts made by creator
-			const newAccountFunding =
-				voteInfo.accountFundingType === "newAccounts"
-					? (MIN_VOTER_BALANCE + 1000) *
-					  Object.keys(voteInfo.privatePublicKeyPairs).length // calculation of funds needed for voters
-					: 0; // calculation to fund new accounts
 
 			const MIN_CREATOR_BALANCE =
 				MIN_ACCOUNT_BALANCE + // 0.1 algos is minimum account balance
-				MIN_ACCOUNT_BALANCE * numASAs + // 0.1 algos for each ASA
-				MIN_ACCOUNT_BALANCE * numSmartContracts + // 0.1 algos for each smart contract
-				SMART_CNTRACT_UINT * numGlobalUInts + // 0.0285 algos for each global uint in the smart contracts
-				TXN_FEE * (2 + numParticipants) + // txn fees to create ASA & smart contract, and send out vote tokens
-				newAccountFunding;
-
-			console.log("VALS", creatorBalance.data, MIN_CREATOR_BALANCE); // Delete this after we get some testing done
+				MIN_ACCOUNT_BALANCE * (1 + numASAs) + // 0.1 algos for each ASA
+				MIN_ACCOUNT_BALANCE * (1 + numSmartContracts) + // 0.1 algos for each smart contract
+				SMART_CONTRACT_UINT * numGlobalUInts + // 0.0285 algos for each global uint in the smart contracts
+				getTxnCost(
+					numParticipants,
+					Object.keys(voteInfo.privatePublicKeyPairs || {}).length
+				);
 
 			if (creatorBalance.data.accountBalance < MIN_CREATOR_BALANCE) {
 				setVoteInfo({ ...voteInfo, voteSubmitted: false });

@@ -2,7 +2,7 @@ export const BASE_URL = "https://testnet.algoexplorer.io";
 export const TXN_FEE = 1000;
 export const MIN_ACCOUNT_BALANCE = 100000;
 export const SMART_CONTRACT_BYTESLICE = 50000;
-export const SMART_CNTRACT_UINT = 28500;
+export const SMART_CONTRACT_UINT = 28500;
 export const MIN_VOTER_BALANCE =
 	MIN_ACCOUNT_BALANCE + // 0.1 algos is minimum account balance
 	MIN_ACCOUNT_BALANCE + // 0.1 algos to opt in to ASA
