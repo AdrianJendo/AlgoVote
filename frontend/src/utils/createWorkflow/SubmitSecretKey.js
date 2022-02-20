@@ -7,6 +7,7 @@ import {
 	SMART_CONTRACT_UINT,
 } from "constants";
 import getTxnCost from "utils/createWorkflow/GetTxnCost";
+import { generateAlgorandAccounts } from "utils/createWorkflow/AlgoFunctions";
 
 const submitSecretKey = async (props) => {
 	const { secretKey, voteInfo, setVoteInfo, setProgressBar, voteName } =
@@ -42,9 +43,8 @@ const submitSecretKey = async (props) => {
 		if (resp.data.addr) {
 			setProgressBar(1);
 			const creatorAddr = resp.data.addr;
-			const participantAddresses = Object.keys(voteInfo.participantData);
 			const candidates = Object.keys(voteInfo.candidateData);
-			const numParticipants = participantAddresses.length;
+			const numParticipants = voteInfo.numParticipants;
 			const numCandidates = candidates.length;
 
 			// MIN BALANCE CALCULATION
@@ -73,10 +73,7 @@ const submitSecretKey = async (props) => {
 				MIN_ACCOUNT_BALANCE * (1 + numASAs) + // 0.1 algos for each ASA
 				MIN_ACCOUNT_BALANCE * (1 + numSmartContracts) + // 0.1 algos for each smart contract
 				SMART_CONTRACT_UINT * numGlobalUInts + // 0.0285 algos for each global uint in the smart contracts
-				getTxnCost(
-					numParticipants,
-					Object.keys(voteInfo.privatePublicKeyPairs || {}).length
-				);
+				getTxnCost(numParticipants, voteInfo.numNewAccounts);
 
 			if (creatorBalance.data.accountBalance < MIN_CREATOR_BALANCE) {
 				return {
@@ -101,9 +98,10 @@ const submitSecretKey = async (props) => {
 				assetName: voteName === "" ? `Algo Vote Token` : voteName,
 			});
 			const assetId = tokenResp.data.assetId;
-			const prefundedAccounts = JSON.parse(
-				JSON.stringify(voteInfo.participantData)
-			); // deep copy of all accounts
+			const preFundedAccounts =
+				voteInfo.accountFundingType === "preFundedAccounts"
+					? JSON.parse(JSON.stringify(voteInfo.participantData))
+					: {}; // deep copy of all accounts
 
 			// Create smart contract
 			setProgressBar(20);
@@ -124,18 +122,31 @@ const submitSecretKey = async (props) => {
 			let newParticipantAccounts;
 
 			const sendTokenPromises = [];
-			if (voteInfo.accountFundingType === "newAccounts") {
+			if (
+				voteInfo.accountFundingType === "newAccounts" &&
+				voteInfo.numNewAccounts > 0
+			) {
+				// Generate new accounts
+				const { newParticipantData, privatePublicKeyPairs } =
+					await generateAlgorandAccounts(
+						voteInfo.numNewAccounts,
+						voteInfo.participantData
+					);
+
+				voteInfo.participantData = newParticipantData;
+				const newAccountAddresses = Object.keys(privatePublicKeyPairs);
+
 				// Logic that allows mixing of public and private addresses
-				const newAccountAddresses = Object.keys(
-					voteInfo.privatePublicKeyPairs
-				);
-				newAccountAddresses.forEach((accountAddr) => {
-					delete prefundedAccounts[accountAddr];
+				Object.keys(voteInfo.participantData).forEach((accountAddr) => {
+					if (!privatePublicKeyPairs[accountAddr]) {
+						preFundedAccounts[accountAddr] =
+							voteInfo.participantData[accountAddr];
+					}
 				});
 
 				const fundAccountPromises = [];
 				const optInContractPromises = [];
-				newParticipantAccounts = voteInfo.privatePublicKeyPairs;
+				newParticipantAccounts = privatePublicKeyPairs;
 				// fund new account with minimum balance
 				setProgressBar(40);
 				newAccountAddresses.forEach((accountAddr) => {
@@ -152,7 +163,7 @@ const submitSecretKey = async (props) => {
 
 				// opt in to vote token and voting contract (atomically grouped)
 				setProgressBar(60);
-				Object.values(newParticipantAccounts).forEach(
+				Object.values(privatePublicKeyPairs).forEach(
 					(accountMnemonic) => {
 						optInContractPromises.push(
 							axios.post("/api/smartContract/registerForVote", {
@@ -184,7 +195,7 @@ const submitSecretKey = async (props) => {
 			} else {
 				setProgressBar(80);
 			}
-			if (Object.keys(prefundedAccounts).length > 0) {
+			if (Object.keys(preFundedAccounts).length > 0) {
 				// Create asset transfer txns but send it in the future when the vote starts
 				const today = new Date();
 				const startVoteUTC = Date.UTC(
@@ -201,7 +212,7 @@ const submitSecretKey = async (props) => {
 				const amounts = [];
 				const receivers = [];
 				const senderMnemonic = encryptedMnemonic;
-				Object.keys(prefundedAccounts).forEach((receiver) => {
+				Object.keys(preFundedAccounts).forEach((receiver) => {
 					amounts.push(voteInfo.participantData[receiver]);
 					receivers.push(receiver);
 				});
@@ -237,6 +248,7 @@ const submitSecretKey = async (props) => {
 				ws_data[0].push("Secret Key");
 			}
 
+			const participantAddresses = Object.keys(voteInfo.participantData);
 			for (let i = 0; i < Math.max(numParticipants, numCandidates); ++i) {
 				const row = ["", "", "", "", ""];
 

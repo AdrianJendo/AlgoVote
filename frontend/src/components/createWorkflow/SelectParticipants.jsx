@@ -7,7 +7,6 @@ import {
 	excelUploadHandler,
 } from "utils/createWorkflow/FileUpload";
 import { cancelVote } from "utils/CancelVote";
-import { generateAlgorandAccounts } from "utils/createWorkflow/AlgoFunctions";
 import {
 	FillDiv,
 	Input,
@@ -40,8 +39,8 @@ const SelectParticipants = () => {
 			setVoteInfo({
 				...voteInfo,
 				participantData: null,
-				numAccounts: 0,
-				privatePublicKeyPairs: null,
+				numParticipants: 0,
+				numNewAccounts: 0,
 			});
 		} else if (voteInfo.participantUploadType) {
 			setVoteInfo({
@@ -114,7 +113,7 @@ const SelectParticipants = () => {
 								fontSize: "40px",
 							}}
 							autoFocus={true}
-							value={voteInfo.numAccounts}
+							value={voteInfo.numParticipants}
 							placeholder="Number of participants"
 							variant="standard"
 							onChange={(e) => {
@@ -125,7 +124,7 @@ const SelectParticipants = () => {
 								) {
 									setVoteInfo({
 										...voteInfo,
-										numAccounts:
+										numParticipants:
 											val === "" ? 0 : parseInt(val),
 									});
 								}
@@ -374,8 +373,8 @@ const SelectParticipants = () => {
 								participantUploadMethod: null,
 								participantUploadType: null,
 								participantData: null,
-								privatePublicKeyPairs: null,
-								numAccounts: 0,
+								numParticipants: 0,
+								numNewAccounts: 0,
 							})
 						}
 					>
@@ -386,37 +385,25 @@ const SelectParticipants = () => {
 					{voteInfo.accountFundingType === null ? "Cancel" : "Back"}
 				</Button>
 				{voteInfo.accountFundingType === "newAccounts" &&
-					voteInfo.numAccounts > 0 &&
+					voteInfo.numParticipants > 0 &&
 					voteInfo.participantData === null && (
 						<Button
-							onClick={() =>
-								generateAlgorandAccounts(
-									voteInfo.numAccounts
-								).then((resp) => {
-									if (resp.error) {
-										alert(resp.error);
-										return;
-									}
-									// save accounts
-									const accounts = resp;
-									const participantData = {};
-									const privatePublicKeyPairs = {};
-									for (let i = 0; i < accounts.length; i++) {
-										privatePublicKeyPairs[
-											accounts[i].accountAddr
-										] = accounts[i].accountMnemonic;
-										participantData[
-											accounts[i].accountAddr
-										] = 1;
-									}
+							onClick={() => {
+								const participantData = {};
+								for (
+									let i = 1;
+									i <= voteInfo.numParticipants;
+									i++
+								) {
+									participantData[`New Account ${i}`] = 1;
+								}
 
-									setVoteInfo({
-										...voteInfo,
-										participantData,
-										privatePublicKeyPairs,
-									});
-								})
-							}
+								setVoteInfo({
+									...voteInfo,
+									numNewAccounts: voteInfo.numParticipants,
+									participantData,
+								});
+							}}
 						>
 							Next
 						</Button>

@@ -16,6 +16,7 @@ export default function CustomizedInputBase({ index }) {
 	const addValue = () => {
 		const names = textValue.split(","); // handles comma separated names
 		const participants = voteInfo[index] ? voteInfo[index] : {};
+		let numParticipants = voteInfo.numParticipants;
 		for (let i = 0; i < names.length; ++i) {
 			const name =
 				index === "participantData"
@@ -28,6 +29,9 @@ export default function CustomizedInputBase({ index }) {
 					alert("Candidate already exists in table");
 					return;
 				} else {
+					if (index === "participantData") {
+						numParticipants++;
+					}
 					participants[name] = 1;
 				}
 			} else {
@@ -36,7 +40,8 @@ export default function CustomizedInputBase({ index }) {
 			}
 
 			if (i === names.length - 1) {
-				const newVoteInfo = Object.assign({}, voteInfo);
+				const newVoteInfo = JSON.parse(JSON.stringify(voteInfo));
+				newVoteInfo.numParticipants = numParticipants;
 				newVoteInfo[index] = participants;
 				setVoteInfo(newVoteInfo);
 				setTextValue("");
@@ -75,6 +80,7 @@ export default function CustomizedInputBase({ index }) {
 					}
 				}}
 				onChange={handleChange}
+				autoFocus={true}
 			/>
 			<Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
 			<IconButton

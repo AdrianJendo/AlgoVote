@@ -62,9 +62,8 @@ const Payment = () => {
 				<i>
 					<b>
 						{getTxnCost(
-							Object.keys(voteInfo.participantData).length,
-							Object.keys(voteInfo.privatePublicKeyPairs || {})
-								.length
+							voteInfo.numParticipants,
+							voteInfo.numNewAccounts
 						) / 1e6}{" "}
 						Algos
 					</b>
