@@ -12,7 +12,7 @@ import MUISwitch from "components/base/MuiSwitch";
 import { VoteInfoContext } from "context/VoteInfoContext";
 import { ParticipateContext } from "context/ParticipateContext";
 import { VoteResultsContext } from "context/VoteResultsContext";
-import changeRoute from "utils/changeRoute";
+import changeRoute from "utils/ChangeRoute";
 import { useNavigate } from "react-router-dom";
 
 const TopAppBar = ({ dark, setDark }) => {

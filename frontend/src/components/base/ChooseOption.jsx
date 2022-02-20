@@ -4,7 +4,7 @@ import { styled } from "@mui/system";
 import { VoteInfoContext } from "context/VoteInfoContext";
 import { ParticipateContext } from "context/ParticipateContext";
 import { VoteResultsContext } from "context/VoteResultsContext";
-import changeRoute from "utils/changeRoute";
+import changeRoute from "utils/ChangeRoute";
 import { useNavigate } from "react-router-dom";
 
 const ButtonDiv = styled("div")({

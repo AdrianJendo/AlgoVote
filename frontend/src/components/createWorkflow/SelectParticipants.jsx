@@ -2,9 +2,12 @@ import React, { useContext } from "react";
 import { Button, Typography, ButtonGroup, TextField } from "@mui/material";
 import { VoteInfoContext } from "context/VoteInfoContext";
 import ParticipantsTable from "components/base/RenderTable";
-import { txtUploadHandler, excelUploadHandler } from "utils/FileUpload";
+import {
+	txtUploadHandler,
+	excelUploadHandler,
+} from "utils/createWorkflow/FileUpload";
 import { cancelVote } from "utils/CancelVote";
-import { generateAlgorandAccounts } from "utils/AlgoFunctions";
+import { generateAlgorandAccounts } from "utils/createWorkflow/AlgoFunctions";
 import {
 	FillDiv,
 	Input,
