@@ -62,15 +62,22 @@ export const createVoteAsset = async (req, res) => {
 
 		return res.send(assetData);
 	} catch (err) {
-		console.log(err);
-		return res.status(500).send(err.message);
+		return res.status(500).send({ error: err.message });
 	}
 };
 
 export const checkAssetBalance = async (req, res) => {
-	return res.send(
-		await printAssetHolding(algodClient, req.query.addr, req.query.assetId)
-	);
+	try {
+		return res.send(
+			await printAssetHolding(
+				algodClient,
+				req.query.addr,
+				req.query.assetId
+			)
+		);
+	} catch (err) {
+		return res.status(500).send({ error: err.message });
+	}
 };
 
 export const optInToAsset = async (req, res) => {
@@ -120,8 +127,7 @@ export const optInToAsset = async (req, res) => {
 
 		return res.send(assetHoldings);
 	} catch (err) {
-		console.log(err);
-		return res.send(err);
+		return res.status(500).send({ error: err.message });
 	}
 };
 
@@ -171,8 +177,7 @@ export const transferAsset = async (req, res) => {
 
 		return res.send({ tokensWithCreator, tokensWithRecipient });
 	} catch (err) {
-		console.log(err);
-		return res.send(err);
+		return res.status(500).send({ error: err.message });
 	}
 };
 
@@ -198,7 +203,7 @@ export const getAssetInfo = async (req, res) => {
 			numVoted,
 		});
 	} catch (err) {
-		return res.status(400).send(err);
+		return res.status(500).send({ error: err.message });
 	}
 };
 
@@ -237,7 +242,7 @@ export const delayedTransferAsset = async (req, res) => {
 
 		return res.send({ status: "queued" });
 	} catch (err) {
-		return res.status(404).send(err);
+		return res.status(500).send({ error: err.message });
 	}
 };
 
@@ -282,7 +287,6 @@ export const deleteASA = async (req, res) => {
 		console.log("Deleted asset-id: ", assetId);
 		return res.send(transactionResponse);
 	} catch (err) {
-		console.log(err);
-		return res.send(err);
+		return res.status(500).send({ error: err.message });
 	}
 };

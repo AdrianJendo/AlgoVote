@@ -40,6 +40,7 @@ const submitSecretKey = async (props) => {
 		});
 
 		if (resp.data.addr) {
+			setProgressBar(1);
 			const creatorAddr = resp.data.addr;
 			const participantAddresses = Object.keys(voteInfo.participantData);
 			const candidates = Object.keys(voteInfo.candidateData);
@@ -78,13 +79,16 @@ const submitSecretKey = async (props) => {
 				);
 
 			if (creatorBalance.data.accountBalance < MIN_CREATOR_BALANCE) {
-				setVoteInfo({ ...voteInfo, voteSubmitted: false });
-				return false;
+				return {
+					error: `Your balance (${
+						creatorBalance.data.accountBalance / 10e6
+					} Algos) is less than the minimum balance of ${
+						MIN_CREATOR_BALANCE / 10e6
+					} Algos`,
+				};
 			}
 
 			// Create vote token
-			setProgressBar(1);
-			// Get Supply
 			let numVoteTokens = 0;
 			Object.values(voteInfo.participantData).map((numVotes) => {
 				numVoteTokens += numVotes;
@@ -271,12 +275,12 @@ const submitSecretKey = async (props) => {
 
 			return appId;
 		} else {
-			//failure
 			return { error: resp.data };
 		}
 	} catch (err) {
-		console.warn(err.message);
-		return err.message;
+		console.warn(err);
+		setVoteInfo({ ...voteInfo, voteSubmitted: false });
+		return { error: err.message };
 	}
 };
 

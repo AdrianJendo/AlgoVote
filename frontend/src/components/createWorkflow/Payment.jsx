@@ -90,14 +90,19 @@ const Payment = () => {
 			<Button
 				variant="contained"
 				onClick={async () => {
-					const newAppId = await submitSecretKey({
+					const resp = await submitSecretKey({
 						secretKey,
 						voteInfo,
 						setVoteInfo,
 						setProgressBar,
 						voteName,
 					});
-					setAppId(newAppId);
+					if (resp.error) {
+						setVoteInfo({ ...voteInfo, voteSubmitted: false });
+						setProgressBar(null);
+						alert(resp.error);
+					}
+					setAppId(resp);
 				}}
 				sx={{ mt: 1, mr: 1 }}
 				disabled={!isMnemonicValid(secretKey) || progressBar !== null}
