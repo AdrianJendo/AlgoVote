@@ -70,9 +70,6 @@ export const createVoteSmartContract = async (req, res) => {
 			args.push(new Uint8Array(Buffer.from(candidate)));
 		});
 
-		// const lsig = new algosdk.LogicSigAccount(vote_program, args);
-		// console.log("lsig : " + lsig.address());
-
 		// create unsigned transaction
 		let txn = algosdk.makeApplicationCreateTxn(
 			sender,
@@ -90,7 +87,6 @@ export const createVoteSmartContract = async (req, res) => {
 
 		// Sign the transaction
 		let signedTxn = txn.signTxn(creatorAccount.sk);
-		console.log("Signed transaction with txID: %s", txId);
 
 		// Submit the transaction
 		await algodClient.sendRawTransaction(signedTxn).do();
@@ -103,9 +99,7 @@ export const createVoteSmartContract = async (req, res) => {
 			.pendingTransactionInformation(txId)
 			.do();
 
-		// console.log("txn response", transactionResponse);
 		let appId = transactionResponse["application-index"];
-		console.log("Created new app-id: ", appId);
 
 		return res.send({
 			appId,
@@ -149,7 +143,6 @@ export const optInVoteSmartContract = async (req, res) => {
 
 		// Sign the transaction
 		let signedTxn = txn.signTxn(userAccount.sk);
-		console.log("Signed transaction with txID: %s", txId);
 
 		// Submit the transaction
 		await algodClient.sendRawTransaction(signedTxn).do();
@@ -161,10 +154,6 @@ export const optInVoteSmartContract = async (req, res) => {
 		let transactionResponse = await algodClient
 			.pendingTransactionInformation(txId)
 			.do();
-		console.log(
-			"Opted-in to app-id:",
-			transactionResponse["txn"]["txn"]["apid"]
-		);
 
 		return res.send({ transactionResponse, appId });
 	} catch (err) {
@@ -251,7 +240,6 @@ export const submitVote = async (req, res) => {
 		signed.push(signedTxn2);
 
 		let txn = await algodClient.sendRawTransaction(signed).do();
-		console.log("Transaction : " + txn.txId);
 
 		// Wait for transaction to be confirmed
 		await waitForConfirmation(algodClient, txn.txId);
@@ -299,7 +287,6 @@ export const deleteVoteSmartContract = async (req, res) => {
 
 		// Sign the transaction
 		let signedTxn = txn.signTxn(creatorAccount.sk);
-		console.log("Signed transaction with txID: %s", txId);
 
 		// Submit the transaction
 		await algodClient.sendRawTransaction(signedTxn).do();
@@ -312,7 +299,6 @@ export const deleteVoteSmartContract = async (req, res) => {
 			.pendingTransactionInformation(txId)
 			.do();
 
-		console.log("Deleted app-id: ", appId);
 		return res.send(transactionResponse);
 	} catch (err) {
 		return res
@@ -445,7 +431,6 @@ export const registerForVote = async (req, res) => {
 
 		// Group both transactions
 		const txnGroup = algosdk.assignGroupID(txns);
-		// console.log("txnGroup", txnGroup);
 
 		const signedTxn1 = asaTxn.signTxn(userAccount.sk);
 		const signedTxn2 = smartContractTxn.signTxn(userAccount.sk);
@@ -456,7 +441,6 @@ export const registerForVote = async (req, res) => {
 		signed.push(signedTxn2);
 
 		let txn = await algodClient.sendRawTransaction(signed).do();
-		console.log("Transaction : " + txn.txId);
 
 		// Wait for transaction to be confirmed
 		await waitForConfirmation(algodClient, txn.txId);

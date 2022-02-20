@@ -2,9 +2,12 @@ import React, { useContext } from "react";
 import { Button, Typography, ButtonGroup, TextField } from "@mui/material";
 import { VoteInfoContext } from "context/VoteInfoContext";
 import ParticipantsTable from "components/base/RenderTable";
-import { txtUploadHandler, excelUploadHandler } from "utils/FileUpload";
+import {
+	txtUploadHandler,
+	excelUploadHandler,
+} from "utils/createWorkflow/FileUpload";
 import { cancelVote } from "utils/CancelVote";
-import { generateAlgorandAccounts } from "utils/AlgoFunctions";
+import { generateAlgorandAccounts } from "utils/createWorkflow/AlgoFunctions";
 import {
 	FillDiv,
 	Input,
@@ -387,33 +390,32 @@ const SelectParticipants = () => {
 					voteInfo.participantData === null && (
 						<Button
 							onClick={() =>
-								generateAlgorandAccounts(voteInfo.numAccounts)
-									.then((accounts) => {
-										// save accounts
-										const participantData = {};
-										const privatePublicKeyPairs = {};
-										for (
-											let i = 0;
-											i < accounts.length;
-											i++
-										) {
-											privatePublicKeyPairs[
-												accounts[i].accountAddr
-											] = accounts[i].accountMnemonic;
-											participantData[
-												accounts[i].accountAddr
-											] = 1;
-										}
+								generateAlgorandAccounts(
+									voteInfo.numAccounts
+								).then((resp) => {
+									if (resp.error) {
+										alert(resp.error);
+										return;
+									}
+									// save accounts
+									const accounts = resp;
+									const participantData = {};
+									const privatePublicKeyPairs = {};
+									for (let i = 0; i < accounts.length; i++) {
+										privatePublicKeyPairs[
+											accounts[i].accountAddr
+										] = accounts[i].accountMnemonic;
+										participantData[
+											accounts[i].accountAddr
+										] = 1;
+									}
 
-										setVoteInfo({
-											...voteInfo,
-											participantData,
-											privatePublicKeyPairs,
-										});
-									})
-									.catch((err) => {
-										console.log(err);
-									})
+									setVoteInfo({
+										...voteInfo,
+										participantData,
+										privatePublicKeyPairs,
+									});
+								})
 							}
 						>
 							Next

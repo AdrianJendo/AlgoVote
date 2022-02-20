@@ -12,7 +12,7 @@ import MUISwitch from "components/base/MuiSwitch";
 import { VoteInfoContext } from "context/VoteInfoContext";
 import { ParticipateContext } from "context/ParticipateContext";
 import { VoteResultsContext } from "context/VoteResultsContext";
-import changeRoute from "utils/changeRoute";
+import changeRoute from "utils/ChangeRoute";
 import { useNavigate } from "react-router-dom";
 
 const TopAppBar = ({ dark, setDark }) => {
@@ -59,12 +59,6 @@ const TopAppBar = ({ dark, setDark }) => {
 					</Typography>
 					<Button color="inherit" onClick={() => nav("/")}>
 						Home
-					</Button>
-					<Button color="inherit" onClick={() => nav("/tutorial")}>
-						Tutorial
-					</Button>
-					<Button color="inherit" onClick={() => nav("/about")}>
-						About
 					</Button>
 					<MUISwitch defaultChecked toggleSwitch={toggleSwitch} />
 				</Toolbar>
