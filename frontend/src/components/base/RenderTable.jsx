@@ -25,11 +25,17 @@ export default function StickyHeadTable({ stage }) {
 	const updatePerson = (row, type = "decrement") => {
 		const newNumVotes =
 			type === "decrement" ? row.numVotes - 1 : row.numVotes + 1;
-		const newVoteInfo = Object.assign({}, voteInfo);
+		const newVoteInfo = JSON.parse(JSON.stringify(voteInfo));
 		if (newNumVotes === 0) {
-			const newVoteInfo = Object.assign({}, voteInfo);
 			if (stage === "participants") {
-				delete newVoteInfo.participantData[row.name];
+				if (row.name.includes("New Account")) {
+					const highestNumAccount = `New Account ${voteInfo.numNewAccounts}`;
+					newVoteInfo.numNewAccounts--;
+					delete newVoteInfo.participantData[highestNumAccount];
+				} else {
+					delete newVoteInfo.participantData[row.name];
+				}
+				newVoteInfo.numParticipants--;
 			} else {
 				delete newVoteInfo.candidateData[row.name];
 			}

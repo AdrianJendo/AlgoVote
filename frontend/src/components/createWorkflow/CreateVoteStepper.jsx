@@ -16,7 +16,9 @@ export default function VerticalLinearStepper() {
 
 	React.useEffect(() => {
 		if (
-			(voteInfo.activeStep === 0 && voteInfo.participantData) ||
+			(voteInfo.activeStep === 0 &&
+				voteInfo.participantData &&
+				Object.keys(voteInfo.participantData).length) ||
 			(voteInfo.activeStep === 1 && voteInfo.candidateData) ||
 			(voteInfo.activeStep === 2 && !dateValue.error) ||
 			(voteInfo.activeStep === 3 && !dateValue.error) ||
@@ -54,10 +56,8 @@ export default function VerticalLinearStepper() {
 		{
 			label: "Payment",
 			description: `A txn fee of ${
-				getTxnCost(
-					Object.keys(voteInfo.participantData || {}).length,
-					Object.keys(voteInfo.privatePublicKeyPairs || {}).length
-				) / 1e6
+				getTxnCost(voteInfo.numParticipants, voteInfo.numNewAccounts) /
+				1e6
 			} Algos is required to create the vote. Make the payment to finalize this application.`,
 		},
 	];

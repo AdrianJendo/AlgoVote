@@ -31,6 +31,7 @@ const EnterVoteInfo = () => {
 			>
 				<TextField
 					label="Application Id"
+					autoFocus={true}
 					placeholder="Enter App Id"
 					sx={{ width: "200px", margin: "20px" }}
 					value={participateInfo.appId}
