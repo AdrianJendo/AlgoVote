@@ -47,6 +47,7 @@ export default function VerticalLinearStepper() {
 				});
 				const assetData = assetResp.data.assetData;
 				const assetBalances = assetResp.data.assetBalances;
+				const numVoted = assetResp.data.numVoted;
 				const creator = voteData.Creator;
 				let numRegistered = 0;
 				assetBalances.forEach((assetBalance) => {
@@ -55,7 +56,6 @@ export default function VerticalLinearStepper() {
 					}
 				});
 				const candidates = {};
-				let castedVotes = 0;
 				let voteStatus = "register";
 
 				const today = new Date();
@@ -89,7 +89,6 @@ export default function VerticalLinearStepper() {
 						].includes(key)
 					) {
 						candidates[key] = voteData[key];
-						castedVotes += voteData[key];
 					}
 				});
 
@@ -99,12 +98,12 @@ export default function VerticalLinearStepper() {
 					creator,
 					numRegistered,
 					numVoters: voteData.NumVoters,
+					numVoted,
 					voteStatus,
 					assetId: voteData.AssetId,
 					voteBegin: voteBegin.toString(),
 					voteEnd: voteEnd.toString(),
 					candidates,
-					castedVotes,
 					assetSupply: assetData.params.total,
 					assetName: assetData.params.name,
 					assetUnit: assetData.params["unit-name"],

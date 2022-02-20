@@ -71,19 +71,6 @@ const EnterVoteInfo = () => {
 	});
 
 	if (voteResults.voteStatus === "register") {
-		const registeredVoters = voteResults.numRegistered;
-		generalInfo.push({
-			caption: "Registered Voters",
-			data: registeredVoters,
-		});
-		generalInfo.push({
-			caption: "Registered Percentage",
-			data: `${
-				Math.round((registeredVoters / voteResults.numVoters) * 10000) /
-				100
-			}%`,
-		});
-
 		Object.keys(voteResults.candidates).forEach((candidate) => {
 			candidatesInfo.push({
 				caption: "",
@@ -93,13 +80,13 @@ const EnterVoteInfo = () => {
 	} else {
 		generalInfo.push({
 			caption: "Votes Casted",
-			data: voteResults.castedVotes,
+			data: voteResults.numVoted,
 		});
 		generalInfo.push({
-			caption: "Vote Percentage",
+			caption: "Voter Percentage",
 			data: `${
 				Math.round(
-					(voteResults.castedVotes / voteResults.assetSupply) * 10000
+					(voteResults.numVoted / voteResults.numRegistered) * 10000
 				) / 100
 			}%`,
 		});
@@ -110,6 +97,21 @@ const EnterVoteInfo = () => {
 			});
 		});
 	}
+
+	// Registration info
+	generalInfo.push({
+		caption: "Registered Voters",
+		data: voteResults.numRegistered,
+	});
+
+	generalInfo.push({
+		caption: "Registered Percentage",
+		data: `${
+			Math.round(
+				(voteResults.numRegistered / voteResults.numVoters) * 10000
+			) / 100
+		}%`,
+	});
 
 	tokenInfo.push({
 		caption: "Asset Id",

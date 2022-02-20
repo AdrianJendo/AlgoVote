@@ -16,7 +16,9 @@ export const createAlgoAccount = (req, res) => {
 		console.log("https://dispenser.testnet.aws.algodev.network/ ");
 		return res.send({ accountAddr, accountMnemonic });
 	} catch (err) {
-		console.log("err", err);
+		return res
+			.status(400)
+			.send(err.response?.text || { message: err.message });
 	}
 };
 
@@ -93,16 +95,47 @@ export const sendAlgo = async (req, res) => {
 			fee: confirmedTxn.txn.txn.fee,
 		});
 	} catch (err) {
-		console.log("err", err);
+		return res
+			.status(400)
+			.send(err.response?.text || { message: err.message });
 	}
 };
 
 export const checkAlgoBalance = async (req, res) => {
-	const accountAddr = req.query.addr;
+	try {
+		const accountAddr = req.query.addr;
 
-	return res.send({
-		accountBalance: await getAlgoBalance(algodClient, accountAddr),
-	});
+		return res.send({
+			accountBalance: await getAlgoBalance(algodClient, accountAddr),
+		});
+	} catch (err) {
+		return res
+			.status(400)
+			.send(err.response?.text || { message: err.message });
+	}
+};
+
+export const getAssetsAndApps = async (req, res) => {
+	try {
+		const accountAddr = req.query.addr;
+		const accountInfo = await algodClient
+			.accountInformation(accountAddr)
+			.do();
+		const numASAs = accountInfo["assets"].length;
+		const numSmartContracts = accountInfo["created-apps"].length;
+		const smartContractGlobalInts =
+			accountInfo["apps-total-schema"]["num-uint"];
+
+		return res.send({
+			numASAs,
+			numSmartContracts,
+			smartContractGlobalInts,
+		});
+	} catch (err) {
+		return res
+			.status(400)
+			.send(err.response?.text || { message: err.message });
+	}
 };
 
 export const getPublicKey = async (req, res) => {
@@ -111,7 +144,9 @@ export const getPublicKey = async (req, res) => {
 		const account = algosdk.mnemonicToSecretKey(decryptedMnemonic);
 
 		return res.send({ addr: account.addr });
-	} catch (error) {
-		return res.send(error.message);
+	} catch (err) {
+		return res
+			.status(400)
+			.send(err.response?.text || { message: err.message });
 	}
 };

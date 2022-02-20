@@ -1,8 +1,12 @@
 import axios from "axios";
 import encodeURIMnemonic from "utils/EncodeMnemonic";
 import * as XLSX from "xlsx";
-
-const MIN_VOTER_BALANCE = 100000 + 100000 + 100000 + 50000 + 10000; // micro algos -> 0.1 algo (min account balance) + 0.1 (to opt in and receive ASA) + 0.1 (to opt in to smart contract) + 0.05 (for 1 local byte slice)
+import {
+	MIN_VOTER_BALANCE,
+	MIN_ACCOUNT_BALANCE,
+	SMART_CONTRACT_UINT,
+} from "constants";
+import getTxnCost from "utils/createWorkflow/GetTxnCost";
 
 const submitSecretKey = async (props) => {
 	const { secretKey, voteInfo, setVoteInfo, setProgressBar, voteName } =
@@ -36,35 +40,55 @@ const submitSecretKey = async (props) => {
 		});
 
 		if (resp.data.addr) {
+			setProgressBar(1);
+			const creatorAddr = resp.data.addr;
+			const participantAddresses = Object.keys(voteInfo.participantData);
+			const candidates = Object.keys(voteInfo.candidateData);
+			const numParticipants = participantAddresses.length;
+			const numCandidates = candidates.length;
+
 			// MIN BALANCE CALCULATION
-			// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-			// const creatorAddr = resp.data.addr;
-			// creator needs approx. 0.1 algo balance + 0.1 algo for ASA numAccounts * participantMinBalance +
-			// 0.001 * numAccounts (send token txn fee) + 0.001 * 2 (create smart contract and ASA fee) +
-			// 4 * int + 1 * global vars
-			// Figure out these specifics later
-			// let creatorMinBalance = 1000000 * (voteInfo.numAccounts + 10);
+			const creatorBalance = await axios.get(
+				"/api/algoAccount/checkAlgoBalance",
+				{ params: { addr: creatorAddr } }
+			);
 
-			// each participant needs 0.1 algo balance + 0.1 algo to opt in to ASA + 0.1 to opt in to smart contract + 0.05 for local byteslice + 0.004 (txn fee to opt in to ASA, send ASA, opt in to smart contract, do smart contract txn)
-			// Figure out these specifics later
+			const creatorAssetsAndApps = await axios.get(
+				"/api/algoAccount/getAssetsAndApps",
+				{
+					params: { addr: creatorAddr },
+				}
+			);
 
-			// If newAccounts, add cost to fund accounts to creatorMinBalance(use participantData.length)
-			// const creatorBalance = await axios.get("/api/algoAccount/checkAlgoBalance", {params:{addr:creatorAddr}})
-			// if (voteInfo.accountFundingType === "newAccounts") {
-			// console.log("balance", creatorBalance);
+			const numGlobalUInts =
+				4 + // AssetId, NumVoters, VoteBegin, and VoteEnd
+				numCandidates + // each candidate is global int
+				creatorAssetsAndApps.data.smartContractGlobalInts; // every other smart contract made by creator
+			const numASAs = creatorAssetsAndApps.data.numASAs; // number of ASAs the creator holds
+			const numSmartContracts =
+				creatorAssetsAndApps.data.numSmartContracts; // number of smart contracts made by creator
 
-			// } else {
-			// 	// Else, check that they have enough funds to distribute the tokens and create the smart contract (& vote token)
-			// }
-			// if(creatorBalance < creatorMinBalance) {
-			// 	return false;
-			// }
+			const MIN_CREATOR_BALANCE =
+				MIN_ACCOUNT_BALANCE + // 0.1 algos is minimum account balance
+				MIN_ACCOUNT_BALANCE * (1 + numASAs) + // 0.1 algos for each ASA
+				MIN_ACCOUNT_BALANCE * (1 + numSmartContracts) + // 0.1 algos for each smart contract
+				SMART_CONTRACT_UINT * numGlobalUInts + // 0.0285 algos for each global uint in the smart contracts
+				getTxnCost(
+					numParticipants,
+					Object.keys(voteInfo.privatePublicKeyPairs || {}).length
+				);
 
-			// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+			if (creatorBalance.data.accountBalance < MIN_CREATOR_BALANCE) {
+				return {
+					error: `Your balance (${
+						creatorBalance.data.accountBalance / 10e6
+					} Algos) is less than the minimum balance of ${
+						MIN_CREATOR_BALANCE / 10e6
+					} Algos`,
+				};
+			}
 
 			// Create vote token
-			setProgressBar(1);
-			// Get Supply
 			let numVoteTokens = 0;
 			Object.values(voteInfo.participantData).map((numVotes) => {
 				numVoteTokens += numVotes;
@@ -80,7 +104,6 @@ const submitSecretKey = async (props) => {
 			const prefundedAccounts = JSON.parse(
 				JSON.stringify(voteInfo.participantData)
 			); // deep copy of all accounts
-			const participantAddresses = Object.keys(voteInfo.participantData);
 
 			// Create smart contract
 			setProgressBar(20);
@@ -94,11 +117,10 @@ const submitSecretKey = async (props) => {
 					),
 					startVote: startVote.toString(),
 					endVote: endVote.toString(),
-					numVoters: participantAddresses.length,
+					numVoters: numParticipants,
 				}
 			);
 			const appId = smartContractResp.data.appId;
-			const candidates = Object.keys(voteInfo.candidateData);
 			let newParticipantAccounts;
 
 			const sendTokenPromises = [];
@@ -215,11 +237,7 @@ const submitSecretKey = async (props) => {
 				ws_data[0].push("Secret Key");
 			}
 
-			for (
-				let i = 0;
-				i < Math.max(participantAddresses.length, candidates.length);
-				++i
-			) {
+			for (let i = 0; i < Math.max(numParticipants, numCandidates); ++i) {
 				const row = ["", "", "", "", ""];
 
 				if (i === 0) {
@@ -229,11 +247,11 @@ const submitSecretKey = async (props) => {
 					row[4] = endVote.toString();
 				}
 
-				if (i < candidates.length) {
+				if (i < numCandidates) {
 					row[2] = candidates[i];
 				}
 
-				if (i < participantAddresses.length) {
+				if (i < numParticipants) {
 					row[5] = participantAddresses[i];
 					row[6] = voteInfo.participantData[participantAddresses[i]];
 					if (newParticipantAccounts) {
@@ -257,12 +275,13 @@ const submitSecretKey = async (props) => {
 
 			return appId;
 		} else {
-			//failure
 			return { error: resp.data };
 		}
 	} catch (err) {
-		console.warn(err.message);
-		return err.message;
+		const error = err.response?.data?.message || err.message;
+		console.warn(error);
+		setVoteInfo({ ...voteInfo, voteSubmitted: false });
+		return { error };
 	}
 };
 

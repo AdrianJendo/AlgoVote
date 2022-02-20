@@ -14,7 +14,7 @@ export const createVoteAsset = async (req, res) => {
 		const assetName = req.body.assetName;
 		const defaultFrozen = false;
 		const unitName = "VOTE";
-		const managerAddr = undefined;
+		const managerAddr = creatorAccount.addr;
 		const reserveAddr = undefined;
 		const freezeAddr = creatorAccount.addr;
 		const clawbackAddr = creatorAccount.addr;
@@ -62,15 +62,26 @@ export const createVoteAsset = async (req, res) => {
 
 		return res.send(assetData);
 	} catch (err) {
-		console.log(err);
-		return res.status(500).send(err.message);
+		return res
+			.status(400)
+			.send(err.response?.text || { message: err.message });
 	}
 };
 
 export const checkAssetBalance = async (req, res) => {
-	return res.send(
-		await printAssetHolding(algodClient, req.query.addr, req.query.assetId)
-	);
+	try {
+		return res.send(
+			await printAssetHolding(
+				algodClient,
+				req.query.addr,
+				req.query.assetId
+			)
+		);
+	} catch (err) {
+		return res
+			.status(400)
+			.send(err.response?.text || { message: err.message });
+	}
 };
 
 export const optInToAsset = async (req, res) => {
@@ -120,8 +131,9 @@ export const optInToAsset = async (req, res) => {
 
 		return res.send(assetHoldings);
 	} catch (err) {
-		console.log(err);
-		return res.send(err);
+		return res
+			.status(400)
+			.send(err.response?.text || { message: err.message });
 	}
 };
 
@@ -171,8 +183,9 @@ export const transferAsset = async (req, res) => {
 
 		return res.send({ tokensWithCreator, tokensWithRecipient });
 	} catch (err) {
-		console.log(err);
-		return res.send(err);
+		return res
+			.status(400)
+			.send(err.response?.text || { message: err.message });
 	}
 };
 
@@ -183,9 +196,24 @@ export const getAssetInfo = async (req, res) => {
 		const assetBalances = await indexerClient
 			.lookupAssetBalances(assetId)
 			.do();
-		return res.send({ assetData, assetBalances: assetBalances.balances });
+
+		const txns = await indexerClient.lookupAssetTransactions(assetId).do();
+		const creator = assetData.params.creator;
+		const numVoted = txns.transactions.filter(
+			(txn) =>
+				txn["tx-type"] === "axfer" &&
+				txn["asset-transfer-transaction"]["receiver"] === creator
+		).length;
+
+		return res.send({
+			assetData,
+			assetBalances: assetBalances.balances,
+			numVoted,
+		});
 	} catch (err) {
-		return res.status(404).send(err);
+		return res
+			.status(400)
+			.send(err.response?.text || { message: err.message });
 	}
 };
 
@@ -224,6 +252,55 @@ export const delayedTransferAsset = async (req, res) => {
 
 		return res.send({ status: "queued" });
 	} catch (err) {
-		return res.status(404).send(err);
+		return res
+			.status(400)
+			.send(err.response?.text || { message: err.message });
+	}
+};
+
+export const deleteASA = async (req, res) => {
+	try {
+		// define sender as creator
+		const creatorAccount = algosdk.mnemonicToSecretKey(
+			decodeURIMnemonic(req.body.creatorMnemonic)
+		);
+		const assetId = req.body.assetId;
+
+		// get node suggested parameters
+		let params = await algodClient.getTransactionParams().do();
+		// comment out the next two lines to use suggested fee
+		params.fee = 1000;
+		params.flatFee = true;
+
+		// create unsigned transaction
+		let txn = algosdk.makeAssetDestroyTxnWithSuggestedParams(
+			creatorAccount.addr,
+			new Uint8Array(Buffer.from("")),
+			assetId,
+			params
+		);
+		let txId = txn.txID().toString();
+
+		// Sign the transaction
+		let signedTxn = txn.signTxn(creatorAccount.sk);
+		console.log("Signed transaction with txID: %s", txId);
+
+		// Submit the transaction
+		await algodClient.sendRawTransaction(signedTxn).do();
+
+		// Wait for confirmation
+		await waitForConfirmation(algodClient, txId);
+
+		// display results
+		let transactionResponse = await algodClient
+			.pendingTransactionInformation(txId)
+			.do();
+
+		console.log("Deleted asset-id: ", assetId);
+		return res.send(transactionResponse);
+	} catch (err) {
+		return res
+			.status(400)
+			.send(err.response?.text || { message: err.message });
 	}
 };

@@ -114,57 +114,64 @@ export const createVoteSmartContract = async (req, res) => {
 			confirmedRound: transactionResponse["confirmed-round"],
 		});
 	} catch (err) {
-		console.log(err);
-		return res.status(500).send(err.message);
+		return res
+			.status(400)
+			.send(err.response?.text || { message: err.message });
 	}
 };
 
 export const optInVoteSmartContract = async (req, res) => {
-	// get accounts from mnemonic
-	const userAccount = algosdk.mnemonicToSecretKey(
-		decodeURIMnemonic(req.body.userMnemonic)
-	);
-	const sender = userAccount.addr;
-	const appId = req.body.appId;
-
-	// get node suggested parameters
-	let params = await algodClient.getTransactionParams().do();
-	// comment out the next two lines to use suggested fee
-	params.fee = 1000;
-	params.flatFee = true;
-
-	const args = [];
-	args.push(new Uint8Array(Buffer.from("register")));
-
-	// create unsigned transaction
-	const txn = algosdk.makeApplicationOptInTxn(sender, params, appId, args);
-	let txId = txn.txID().toString();
-
-	// Sign the transaction
-	let signedTxn = txn.signTxn(userAccount.sk);
-	console.log("Signed transaction with txID: %s", txId);
-
 	try {
+		// get accounts from mnemonic
+		const userAccount = algosdk.mnemonicToSecretKey(
+			decodeURIMnemonic(req.body.userMnemonic)
+		);
+		const sender = userAccount.addr;
+		const appId = req.body.appId;
+
+		// get node suggested parameters
+		let params = await algodClient.getTransactionParams().do();
+		// comment out the next two lines to use suggested fee
+		params.fee = 1000;
+		params.flatFee = true;
+
+		const args = [];
+		args.push(new Uint8Array(Buffer.from("register")));
+
+		// create unsigned transaction
+		const txn = algosdk.makeApplicationOptInTxn(
+			sender,
+			params,
+			appId,
+			args
+		);
+		let txId = txn.txID().toString();
+
+		// Sign the transaction
+		let signedTxn = txn.signTxn(userAccount.sk);
+		console.log("Signed transaction with txID: %s", txId);
+
 		// Submit the transaction
 		await algodClient.sendRawTransaction(signedTxn).do();
 
 		// Wait for confirmation
 		await waitForConfirmation(algodClient, txId);
+
+		// display results
+		let transactionResponse = await algodClient
+			.pendingTransactionInformation(txId)
+			.do();
+		console.log(
+			"Opted-in to app-id:",
+			transactionResponse["txn"]["txn"]["apid"]
+		);
+
+		return res.send({ transactionResponse, appId });
 	} catch (err) {
-		console.log(err);
-		return res.send(err);
+		return res
+			.status(400)
+			.send(err.response?.text || { message: err.message });
 	}
-
-	// display results
-	let transactionResponse = await algodClient
-		.pendingTransactionInformation(txId)
-		.do();
-	console.log(
-		"Opted-in to app-id:",
-		transactionResponse["txn"]["txn"]["apid"]
-	);
-
-	return res.send({ transactionResponse, appId });
 };
 
 // voting via atomic transfer
@@ -262,46 +269,56 @@ export const submitVote = async (req, res) => {
 			txId: txn.txId,
 		});
 	} catch (err) {
-		console.log(err);
-		return res.send(err);
+		return res
+			.status(400)
+			.send(err.response?.text || { message: err.message });
 	}
 };
 
 export const deleteVoteSmartContract = async (req, res) => {
-	// define sender as creator
-	const creatorAccount = algosdk.mnemonicToSecretKey(
-		req.body.creatorMnemonic
-	);
-	const sender = creatorAccount.addr;
-	const appId = req.body.appId;
+	try {
+		// define sender as creator
+		const creatorAccount = algosdk.mnemonicToSecretKey(
+			decodeURIMnemonic(req.body.creatorMnemonic)
+		);
+		const appId = req.body.appId;
 
-	// get node suggested parameters
-	let params = await algodClient.getTransactionParams().do();
-	// comment out the next two lines to use suggested fee
-	params.fee = 1000;
-	params.flatFee = true;
+		// get node suggested parameters
+		let params = await algodClient.getTransactionParams().do();
+		// comment out the next two lines to use suggested fee
+		params.fee = 1000;
+		params.flatFee = true;
 
-	// create unsigned transaction
-	let txn = algosdk.makeApplicationDeleteTxn(sender, params, appId);
-	let txId = txn.txID().toString();
+		// create unsigned transaction
+		let txn = algosdk.makeApplicationDeleteTxn(
+			creatorAccount.addr,
+			params,
+			appId
+		);
+		let txId = txn.txID().toString();
 
-	// Sign the transaction
-	let signedTxn = txn.signTxn(creatorAccount.sk);
-	console.log("Signed transaction with txID: %s", txId);
+		// Sign the transaction
+		let signedTxn = txn.signTxn(creatorAccount.sk);
+		console.log("Signed transaction with txID: %s", txId);
 
-	// Submit the transaction
-	await algodClient.sendRawTransaction(signedTxn).do();
+		// Submit the transaction
+		await algodClient.sendRawTransaction(signedTxn).do();
 
-	// Wait for confirmation
-	await waitForConfirmation(algodClient, txId);
+		// Wait for confirmation
+		await waitForConfirmation(algodClient, txId);
 
-	// display results
-	let transactionResponse = await algodClient
-		.pendingTransactionInformation(txId)
-		.do();
+		// display results
+		let transactionResponse = await algodClient
+			.pendingTransactionInformation(txId)
+			.do();
 
-	console.log("Deleted app-id: ", appId);
-	return res.send(transactionResponse);
+		console.log("Deleted app-id: ", appId);
+		return res.send(transactionResponse);
+	} catch (err) {
+		return res
+			.status(400)
+			.send(err.response?.text || { message: err.message });
+	}
 };
 
 export const readVoteSmartContractState = async (req, res) => {
@@ -321,47 +338,61 @@ export const readVoteSmartContractState = async (req, res) => {
 
 		return res.send(decodedState);
 	} catch (err) {
-		return res.status(404).send(err);
+		return res
+			.status(400)
+			.send(err.response?.text || { message: err.message });
 	}
 };
 
 export const didUserVote = async (req, res) => {
-	// read local state of application from user account
-	const userAddr = req.query.userAddr;
-	const appId = req.query.appId;
+	try {
+		// read local state of application from user account
+		const userAddr = req.query.userAddr;
+		const appId = req.query.appId;
 
-	let accountInfoResponse = await algodClient
-		.accountInformation(userAddr)
-		.do();
+		let accountInfoResponse = await algodClient
+			.accountInformation(userAddr)
+			.do();
 
-	for (let i = 0; i < accountInfoResponse["apps-local-state"].length; i++) {
-		if (accountInfoResponse["apps-local-state"][i].id == appId) {
-			if (accountInfoResponse["apps-local-state"][i][`key-value`]) {
-				const decodedLocalState = {};
-				const key =
-					accountInfoResponse["apps-local-state"][i][`key-value`][0]
-						.key;
-				const value =
-					accountInfoResponse["apps-local-state"][i][`key-value`][0]
-						.value.bytes;
+		for (
+			let i = 0;
+			i < accountInfoResponse["apps-local-state"].length;
+			i++
+		) {
+			if (accountInfoResponse["apps-local-state"][i].id == appId) {
+				if (accountInfoResponse["apps-local-state"][i][`key-value`]) {
+					const decodedLocalState = {};
+					const key =
+						accountInfoResponse["apps-local-state"][i][
+							`key-value`
+						][0].key;
+					const value =
+						accountInfoResponse["apps-local-state"][i][
+							`key-value`
+						][0].value.bytes;
 
-				decodedLocalState[Buffer.from(key, "base64").toString()] =
-					Buffer.from(value, "base64").toString();
+					decodedLocalState[Buffer.from(key, "base64").toString()] =
+						Buffer.from(value, "base64").toString();
 
-				return res.send({ ...decodedLocalState, status: true });
-			} else {
-				return res.send({
-					voted: "Registered but did not vote",
-					status: false,
-				});
+					return res.send({ ...decodedLocalState, status: true });
+				} else {
+					return res.send({
+						voted: "Registered but did not vote",
+						status: false,
+					});
+				}
 			}
 		}
-	}
 
-	return res.send({
-		voted: "Did not participate in application",
-		status: false,
-	});
+		return res.send({
+			voted: "Did not participate in application",
+			status: false,
+		});
+	} catch (err) {
+		return res
+			.status(400)
+			.send(err.response?.text || { message: err.message });
+	}
 };
 
 export const registerForVote = async (req, res) => {
@@ -432,7 +463,8 @@ export const registerForVote = async (req, res) => {
 
 		return res.send({ txId: txn.txId });
 	} catch (err) {
-		console.log(err);
-		return res.send(err);
+		return res
+			.status(400)
+			.send(err.response?.text || { message: err.message });
 	}
 };
