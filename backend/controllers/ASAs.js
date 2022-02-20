@@ -48,7 +48,6 @@ export const createVoteAsset = async (req, res) => {
 
 		let rawSignedTxn = txn.signTxn(creatorAccount.sk);
 		let tx = await algodClient.sendRawTransaction(rawSignedTxn).do();
-		console.log("Transaction : " + tx.txId);
 		// wait for transaction to be confirmed
 		await waitForConfirmation(algodClient, tx.txId);
 		// Get the new asset's information from the creator account
@@ -120,7 +119,6 @@ export const optInToAsset = async (req, res) => {
 		// Must be signed by the account wishing to opt in to the asset
 		const rawSignedTxn = opttxn.signTxn(senderAccount.sk);
 		let opttx = await algodClient.sendRawTransaction(rawSignedTxn).do();
-		console.log("Transaction : " + opttx.txId);
 		// wait for transaction to be confirmed
 		await waitForConfirmation(algodClient, opttx.txId);
 
@@ -170,7 +168,6 @@ export const transferAsset = async (req, res) => {
 		// Must be signed by the account sending the asset
 		const rawSignedTxn = xtxn.signTxn(senderAccount.sk);
 		let xtx = await algodClient.sendRawTransaction(rawSignedTxn).do();
-		console.log("Transaction : " + xtx.txId);
 		// wait for transaction to be confirmed
 		await waitForConfirmation(algodClient, xtx.txId);
 
@@ -283,7 +280,6 @@ export const deleteASA = async (req, res) => {
 
 		// Sign the transaction
 		let signedTxn = txn.signTxn(creatorAccount.sk);
-		console.log("Signed transaction with txID: %s", txId);
 
 		// Submit the transaction
 		await algodClient.sendRawTransaction(signedTxn).do();
@@ -296,7 +292,6 @@ export const deleteASA = async (req, res) => {
 			.pendingTransactionInformation(txId)
 			.do();
 
-		console.log("Deleted asset-id: ", assetId);
 		return res.send(transactionResponse);
 	} catch (err) {
 		return res
