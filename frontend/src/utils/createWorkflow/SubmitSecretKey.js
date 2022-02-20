@@ -98,7 +98,7 @@ const submitSecretKey = async (props) => {
 				assetName: voteName === "" ? `Algo Vote Token` : voteName,
 			});
 			const assetId = tokenResp.data.assetId;
-			const prefundedAccounts =
+			const preFundedAccounts =
 				voteInfo.accountFundingType === "preFundedAccounts"
 					? JSON.parse(JSON.stringify(voteInfo.participantData))
 					: {}; // deep copy of all accounts
@@ -139,7 +139,7 @@ const submitSecretKey = async (props) => {
 				// Logic that allows mixing of public and private addresses
 				Object.keys(voteInfo.participantData).forEach((accountAddr) => {
 					if (!privatePublicKeyPairs[accountAddr]) {
-						prefundedAccounts[accountAddr] =
+						preFundedAccounts[accountAddr] =
 							voteInfo.participantData[accountAddr];
 					}
 				});
@@ -195,7 +195,7 @@ const submitSecretKey = async (props) => {
 			} else {
 				setProgressBar(80);
 			}
-			if (Object.keys(prefundedAccounts).length > 0) {
+			if (Object.keys(preFundedAccounts).length > 0) {
 				// Create asset transfer txns but send it in the future when the vote starts
 				const today = new Date();
 				const startVoteUTC = Date.UTC(
@@ -212,7 +212,7 @@ const submitSecretKey = async (props) => {
 				const amounts = [];
 				const receivers = [];
 				const senderMnemonic = encryptedMnemonic;
-				Object.keys(prefundedAccounts).forEach((receiver) => {
+				Object.keys(preFundedAccounts).forEach((receiver) => {
 					amounts.push(voteInfo.participantData[receiver]);
 					receivers.push(receiver);
 				});
