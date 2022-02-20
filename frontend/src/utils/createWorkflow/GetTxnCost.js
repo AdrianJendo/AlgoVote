@@ -5,7 +5,7 @@ const getTxnCost = (numParticipants, newAccounts) => {
 		TXN_FEE + // cost to create ASA
 		TXN_FEE + // cost to create smart contract
 		TXN_FEE * numParticipants + // cost to send out tokens
-		(MIN_VOTER_BALANCE + TXN_FEE) * newAccounts
+		(MIN_VOTER_BALANCE + TXN_FEE) * newAccounts // cost to send out tokens to new accounts
 	); // get from microalgos to algos
 };
 
