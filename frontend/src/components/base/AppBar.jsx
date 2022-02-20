@@ -60,12 +60,6 @@ const TopAppBar = ({ dark, setDark }) => {
 					<Button color="inherit" onClick={() => nav("/")}>
 						Home
 					</Button>
-					<Button color="inherit" onClick={() => nav("/tutorial")}>
-						Tutorial
-					</Button>
-					<Button color="inherit" onClick={() => nav("/about")}>
-						About
-					</Button>
 					<MUISwitch defaultChecked toggleSwitch={toggleSwitch} />
 				</Toolbar>
 			</AppBar>
