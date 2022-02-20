@@ -270,9 +270,8 @@ export const submitVote = async (req, res) => {
 export const deleteVoteSmartContract = async (req, res) => {
 	// define sender as creator
 	const creatorAccount = algosdk.mnemonicToSecretKey(
-		req.body.creatorMnemonic
+		decodeURIMnemonic(req.body.creatorMnemonic)
 	);
-	const sender = creatorAccount.addr;
 	const appId = req.body.appId;
 
 	// get node suggested parameters
@@ -282,7 +281,11 @@ export const deleteVoteSmartContract = async (req, res) => {
 	params.flatFee = true;
 
 	// create unsigned transaction
-	let txn = algosdk.makeApplicationDeleteTxn(sender, params, appId);
+	let txn = algosdk.makeApplicationDeleteTxn(
+		creatorAccount.addr,
+		params,
+		appId
+	);
 	let txId = txn.txID().toString();
 
 	// Sign the transaction

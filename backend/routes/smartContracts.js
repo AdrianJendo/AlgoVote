@@ -16,7 +16,8 @@ router.get("/didUserVote", didUserVote);
 router.post("/createVoteSmartContract", createVoteSmartContract);
 router.post("/optInVoteSmartContract", optInVoteSmartContract);
 router.post("/submitVote", submitVote);
-router.post("/deleteVoteSmartContract", deleteVoteSmartContract);
 router.post("/registerForVote", registerForVote);
+
+router.delete("/deleteVoteSmartContract", deleteVoteSmartContract);
 
 export default router;
