@@ -53,10 +53,12 @@ export default function VerticalLinearStepper() {
 		},
 		{
 			label: "Payment",
-			description: `A txn fee of ${getTxnCost(
-				Object.keys(voteInfo.participantData || {}).length,
-				Object.keys(voteInfo.privatePublicKeyPairs || {}).length
-			)} Algos is required to create the vote. Make the payment to finalize this application.`,
+			description: `A txn fee of ${
+				getTxnCost(
+					Object.keys(voteInfo.participantData || {}).length,
+					Object.keys(voteInfo.privatePublicKeyPairs || {}).length
+				) / 1e6
+			} Algos is required to create the vote. Make the payment to finalize this application.`,
 		},
 	];
 

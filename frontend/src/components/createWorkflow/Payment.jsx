@@ -65,7 +65,7 @@ const Payment = () => {
 							Object.keys(voteInfo.participantData).length,
 							Object.keys(voteInfo.privatePublicKeyPairs || {})
 								.length
-						)}{" "}
+						) / 1e6}{" "}
 						Algos
 					</b>
 				</i>{" "}
