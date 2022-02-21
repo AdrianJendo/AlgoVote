@@ -123,6 +123,7 @@ export default function VerticalLinearStepper() {
 		} else {
 			setVoteResults({
 				...voteResults,
+				appId: "",
 				activeStep: activeStep - 1,
 			});
 		}
