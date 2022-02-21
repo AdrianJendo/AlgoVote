@@ -100,6 +100,11 @@ const EnterVoteInfo = () => {
 
 	// Registration info
 	generalInfo.push({
+		caption: "Number of Voters",
+		data: voteResults.numVoters,
+	});
+
+	generalInfo.push({
 		caption: "Registered Voters",
 		data: voteResults.numRegistered,
 	});
