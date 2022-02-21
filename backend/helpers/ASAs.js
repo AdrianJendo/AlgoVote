@@ -1,26 +1,13 @@
-// Function used to print asset holding for account and assetid
-export const printAssetHolding = async function (
-	algodclient,
-	account,
-	assetid
-) {
+import { algodClient } from "../server.js";
+
+// Function used to print asset holding for account and assetId
+export const getAssetHolding = async (account, assetId) => {
 	try {
-		// note: if you have an indexer instance available it is easier to just use this
-		//     let accountInfo = await indexerClient.searchAccounts()
-		//    .assetID(assetIndex).do();
-		// and in the loop below use this to extract the asset for a particular account
-		// accountInfo['accounts'][idx][account]);
-		let accountInfo = await algodclient.accountInformation(account).do();
-		for (let idx = 0; idx < accountInfo["assets"].length; idx++) {
-			let scrutinizedAsset = accountInfo["assets"][idx];
-			if (scrutinizedAsset["asset-id"] == assetid) {
-				let myassetholding = JSON.stringify(
-					scrutinizedAsset,
-					undefined,
-					2
-				);
-				console.log("assetholdinginfo = " + myassetholding);
-				return myassetholding;
+		const accountInfo = await algodClient.accountInformation(account).do();
+		for (let i = 0; i < accountInfo["assets"].length; i++) {
+			const assetInfo = accountInfo["assets"][i];
+			if (assetInfo["asset-id"] == assetId) {
+				return JSON.stringify(assetInfo, undefined, 2);
 			}
 		}
 	} catch (err) {
@@ -28,29 +15,17 @@ export const printAssetHolding = async function (
 	}
 };
 
-// Function used to print created asset for account and assetid
-export const printCreatedAsset = async function (
-	algodclient,
-	account,
-	assetid
-) {
-	// note: if you have an indexer instance available it is easier to just use this
-	//     let accountInfo = await indexerClient.searchAccounts()
-	//    .assetID(assetIndex).do();
-	// and in the loop below use this to extract the asset for a particular account
-	// accountInfo['accounts'][idx][account]);
-	let accountInfo = await algodclient.accountInformation(account).do();
-	for (let idx = 0; idx < accountInfo["created-assets"].length; idx++) {
-		let scrutinizedAsset = accountInfo["created-assets"][idx];
-		if (scrutinizedAsset["index"] == assetid) {
-			console.log("AssetID = " + scrutinizedAsset["index"]);
-			let myparms = JSON.stringify(
-				scrutinizedAsset["params"],
-				undefined,
-				2
-			);
-			console.log("parms = " + myparms);
-			return myparms;
+// Function used to print created asset for account and assetId
+export const getCreatedAsset = async (account, assetId) => {
+	try {
+		const accountInfo = await algodClient.accountInformation(account).do();
+		for (let i = 0; i < accountInfo["created-assets"].length; i++) {
+			const assetInfo = accountInfo["created-assets"][i];
+			if (assetInfo["index"] == assetId) {
+				return JSON.stringify(assetInfo["params"], undefined, 2);
+			}
 		}
+	} catch (err) {
+		return err.message;
 	}
 };

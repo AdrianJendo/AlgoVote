@@ -1,6 +1,6 @@
 import algosdk from "algosdk";
 import { algodClient, indexerClient, BACKEND_PORT } from "../server.js";
-import { printAssetHolding, printCreatedAsset } from "../helpers/ASAs.js";
+import { getAssetHolding, getCreatedAsset } from "../helpers/ASAs.js";
 import { waitForConfirmation } from "../helpers/misc.js";
 import decodeURIMnemonic from "../helpers/decodeMnemonic.js";
 import axios from "axios";
@@ -55,7 +55,7 @@ export const createVoteAsset = async (req, res) => {
 		const assetId = ptx["asset-index"];
 
 		const assetData = JSON.parse(
-			await printCreatedAsset(algodClient, creatorAccount.addr, assetId)
+			await getCreatedAsset(creatorAccount.addr, assetId)
 		);
 		assetData.assetId = assetId;
 
@@ -70,11 +70,7 @@ export const createVoteAsset = async (req, res) => {
 export const checkAssetBalance = async (req, res) => {
 	try {
 		return res.send(
-			await printAssetHolding(
-				algodClient,
-				req.query.addr,
-				req.query.assetId
-			)
+			await getAssetHolding(req.query.addr, req.query.assetId)
 		);
 	} catch (err) {
 		return res
@@ -123,7 +119,7 @@ export const optInToAsset = async (req, res) => {
 		await waitForConfirmation(algodClient, opttx.txId);
 
 		const assetHoldings = JSON.parse(
-			await printAssetHolding(algodClient, senderAccount.addr, assetId)
+			await getAssetHolding(senderAccount.addr, assetId)
 		);
 		assetHoldings.optedIn = senderAccount.addr;
 
@@ -172,10 +168,10 @@ export const transferAsset = async (req, res) => {
 		await waitForConfirmation(algodClient, xtx.txId);
 
 		const tokensWithCreator = JSON.parse(
-			await printAssetHolding(algodClient, senderAccount.addr, assetId)
+			await getAssetHolding(senderAccount.addr, assetId)
 		);
 		const tokensWithRecipient = JSON.parse(
-			await printAssetHolding(algodClient, recipient, assetId)
+			await getAssetHolding(recipient, assetId)
 		);
 
 		return res.send({ tokensWithCreator, tokensWithRecipient });

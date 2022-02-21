@@ -2,7 +2,7 @@ import algosdk from "algosdk";
 import path from "path";
 
 import { algodClient, __dirname, BACKEND_PORT } from "../server.js";
-import { printAssetHolding } from "../helpers/ASAs.js";
+import { getAssetHolding } from "../helpers/ASAs.js";
 import { waitForConfirmation } from "../helpers/misc.js";
 import { readTeal } from "../helpers/smartContracts.js";
 import decodeURIMnemonic from "../helpers/decodeMnemonic.js";
@@ -245,10 +245,10 @@ export const submitVote = async (req, res) => {
 		await waitForConfirmation(algodClient, txn.txId);
 
 		const voterAssetHoldings = JSON.parse(
-			await printAssetHolding(algodClient, sender, assetId)
+			await getAssetHolding(sender, assetId)
 		);
 		const creatorAssetHoldings = JSON.parse(
-			await printAssetHolding(algodClient, recipient, assetId)
+			await getAssetHolding(recipient, assetId)
 		);
 
 		return res.send({
