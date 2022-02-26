@@ -28,6 +28,19 @@ const SelectParticipants = () => {
 	const [voteInfo, setVoteInfo] = useContext(VoteInfoContext);
 	const navigate = useNavigate();
 
+	const generateParticipants = () => {
+		const participantData = {};
+		for (let i = 1; i <= voteInfo.numParticipants; i++) {
+			participantData[`New Account ${i}`] = 1;
+		}
+
+		setVoteInfo({
+			...voteInfo,
+			numNewAccounts: voteInfo.numParticipants,
+			participantData,
+		});
+	};
+
 	const goBack = () => {
 		if (voteInfo.participantData) {
 			setVoteInfo({
@@ -110,6 +123,12 @@ const SelectParticipants = () => {
 							value={voteInfo.numParticipants}
 							placeholder="Number of participants"
 							variant="standard"
+							onKeyDown={(e) => {
+								if (e.key === "Enter") {
+									e.preventDefault();
+									generateParticipants();
+								}
+							}}
 							onChange={(e) => {
 								const val = e.target.value;
 								if (
@@ -349,24 +368,7 @@ const SelectParticipants = () => {
 				{voteInfo.accountFundingType === "newAccounts" &&
 					voteInfo.numParticipants > 0 &&
 					voteInfo.participantData === null && (
-						<Button
-							onClick={() => {
-								const participantData = {};
-								for (
-									let i = 1;
-									i <= voteInfo.numParticipants;
-									i++
-								) {
-									participantData[`New Account ${i}`] = 1;
-								}
-
-								setVoteInfo({
-									...voteInfo,
-									numNewAccounts: voteInfo.numParticipants,
-									participantData,
-								});
-							}}
-						>
+						<Button onClick={() => generateParticipants()}>
 							Next
 						</Button>
 					)}
