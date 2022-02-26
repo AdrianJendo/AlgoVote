@@ -17,11 +17,7 @@ services:
             context: ./backend
         volumes:
             - /backend/node_modules
-            - ./backend/controllers:/backend/controllers
-            - ./backend/helpers:/backend/helpers
-            - ./backend/routes:/backend/routes
-            - ./backend/smart_contracts:/backend/smart_contracts
-            - ./backend/server.js:/backend/server.js
+            - ./backend:/backend
         env_file:
             - .env
 
