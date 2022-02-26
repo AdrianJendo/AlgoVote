@@ -39,7 +39,7 @@ const CreateVoteWorkflow = () => {
 							selectedTime={voteInfo.startTime}
 							endDate={
 								new Date(
-									new Date().getFullYear() + 7,
+									new Date().getFullYear() + 7, // set endDate to 7 years in the future
 									new Date().getMonth(),
 									new Date().getDate()
 								)
@@ -55,7 +55,7 @@ const CreateVoteWorkflow = () => {
 							selectedTime={voteInfo.endTime}
 							endDate={
 								new Date(
-									voteInfo.startDate.getFullYear() + 7,
+									voteInfo.startDate.getFullYear() + 7, // set endDate to 7 years in the future
 									voteInfo.startDate.getMonth(),
 									voteInfo.startDate.getDate()
 								)

@@ -25,7 +25,7 @@ export default function StickyHeadTable({ stage }) {
 	const updatePerson = (row, type = "decrement") => {
 		const newNumVotes =
 			type === "decrement" ? row.numVotes - 1 : row.numVotes + 1;
-		const newVoteInfo = JSON.parse(JSON.stringify(voteInfo));
+		const newVoteInfo = Object.assign({}, voteInfo);
 		if (newNumVotes === 0) {
 			if (stage === "participants") {
 				if (row.name.includes("New Account")) {
@@ -39,7 +39,6 @@ export default function StickyHeadTable({ stage }) {
 			} else {
 				delete newVoteInfo.candidateData[row.name];
 			}
-			setVoteInfo(newVoteInfo);
 		} else if (stage === "participants") {
 			if (type === "decrement") {
 				newVoteInfo.participantData[row.name]--;
@@ -54,14 +53,13 @@ export default function StickyHeadTable({ stage }) {
 	const columns =
 		stage === "participants"
 			? [
-					{ id: "name", label: "Account Address", minWidth: 170 },
-					{ id: "numVotes", label: "Number of Votes", minWidth: 170 },
+					{ id: "name", label: "Account Address", width: 700 },
+					{ id: "numVotes", label: "Number of Votes" },
 					{ id: "add", label: "", align: "right" },
 					{ id: "cancel", label: "", align: "right" },
 			  ]
 			: [
-					{ id: "id", label: "ID", minWidth: 170 },
-					{ id: "name", label: "Name", minWidth: 170 },
+					{ id: "name", label: "Name" },
 					{ id: "cancel", label: "", align: "right" },
 			  ];
 
@@ -115,10 +113,8 @@ export default function StickyHeadTable({ stage }) {
 			});
 		}
 	} else if (stage === "candidates" && voteInfo.candidateData) {
-		let id = 1;
 		Object.keys(voteInfo.candidateData).forEach((name) => {
 			rows.push({
-				id,
 				name,
 				cancel:
 					voteInfo.activeStep === 4 ? (
@@ -131,7 +127,6 @@ export default function StickyHeadTable({ stage }) {
 						</IconButton>
 					),
 			});
-			id++;
 		});
 	}
 
@@ -151,7 +146,9 @@ export default function StickyHeadTable({ stage }) {
 								<TableCell
 									key={column.id}
 									align={column.align}
-									style={{ minWidth: column.minWidth }}
+									style={{
+										width: column.width,
+									}}
 								>
 									{column.label}
 								</TableCell>
