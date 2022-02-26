@@ -21,12 +21,6 @@ import HelpIcon from "@mui/icons-material/Help";
 import HelperTooltip from "components/createWorkflow/HelperTooltip";
 import { useNavigate } from "react-router-dom";
 
-// const emails1 = require("images/emails1.png");
-// const emails2 = require("images/emails2.png");
-// const emails3 = require("images/emails3.png");
-// const phoneNumbers1 = require("images/phoneNumbers1.png");
-// const phoneNumbers2 = require("images/phoneNumbers2.png");
-// const phoneNumbers3 = require("images/phoneNumbers3.png");
 const preFundedAccountsXlsx = require("images/preFundedAccountsXlsx.png");
 const preFundedAccounts = require("images/preFundedAccounts.png");
 
@@ -329,38 +323,6 @@ const SelectParticipants = () => {
 					</TableSubDiv>
 				</ManualUploadDiv>
 			)}
-
-			{/* TEMP : option to send notification to participants*/}
-			{/* {voteInfo.accountFundingType === "preFundedAccounts" &&
-				voteInfo.contactParticipantMethod === null && (
-					<FillDiv>
-						<Typography sx={typographySX(4)}>
-							How will users be notified of this vote?
-						</Typography>
-						<ButtonGroup variant="contained" sx={buttonGroupSX(10)}>
-							<Button
-								onClick={() =>
-									setVoteInfo({
-										...voteInfo,
-										contactParticipantMethod: "email",
-									})
-								}
-							>
-								Email
-							</Button>
-							<Button
-								onClick={() =>
-									setVoteInfo({
-										...voteInfo,
-										contactParticipantMethod: "phone",
-									})
-								}
-							>
-								Phone Number
-							</Button>
-						</ButtonGroup>
-					</FillDiv>
-				)} */}
 
 			{/* Reset / back button controls */}
 			<ButtonGroup variant="contained" sx={buttonGroupSX(75)}>
