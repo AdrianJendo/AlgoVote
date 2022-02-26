@@ -130,7 +130,7 @@ export default function StickyHeadTable({ stage }) {
 		});
 	}
 
-	const handleChangePage = (event, newPage) => {
+	const handleChangePage = (_, newPage) => {
 		setPage(newPage);
 	};
 
