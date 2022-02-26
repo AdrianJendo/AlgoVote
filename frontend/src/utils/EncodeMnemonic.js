@@ -4,7 +4,7 @@ const encodeURIMnemonic = (mnemonic) => {
 	const encryptedMnemonic = encodeURIComponent(
 		CryptoJS.AES.encrypt(
 			mnemonic,
-			process.env.REACT_APP_ENCRYPTION_KEY
+			process.env.REACT_APP_DATA_ENCRYPTION_KEY
 		).toString()
 	);
 	return encryptedMnemonic;
