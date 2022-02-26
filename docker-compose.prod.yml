@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+    frontend:
+        build:
+            context: ./frontend
+            dockerfile: Dockerfile.prod
+        env_file:
+            - .env
+        environment:
+            - WDS_SOCKET_PORT=0 # Fixes bug where websocket connection is fixed to default port 3000
+
+    backend:
+        build:
+            context: ./backend
+            dockerfile: Dockerfile.prod
+        env_file:
+            - .env
+
+    nginx:
+        restart: always
+        depends_on:
+            - frontend
+            - backend
+        build:
+            context: ./nginx
+        ports:
+            - 8080:80
