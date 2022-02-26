@@ -40,7 +40,7 @@ export default function CustomizedInputBase({ index }) {
 			}
 
 			if (i === names.length - 1) {
-				const newVoteInfo = JSON.parse(JSON.stringify(voteInfo));
+				const newVoteInfo = Object.assign({}, voteInfo);
 				newVoteInfo.numParticipants = numParticipants;
 				newVoteInfo[index] = participants;
 				setVoteInfo(newVoteInfo);
