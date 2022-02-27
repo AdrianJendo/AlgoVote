@@ -1,4 +1,4 @@
-import encodeURIMnemonic from "utils/EncodeMnemonic";
+import encodeURIMnemonic from "utils/misc/EncodeMnemonic";
 import axios from "axios";
 
 const submitRegister = async (participateInfo, setParticipateInfo) => {

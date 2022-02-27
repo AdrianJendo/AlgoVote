@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ParticipateContext } from "context/ParticipateContext";
 import { cancelParticipate } from "utils/misc/CancelVote";
 import Stepper from "components/base/Stepper";
-import isMnemonicValid from "utils/IsMnemonicValid";
+import isMnemonicValid from "utils/misc/IsMnemonicValid";
 import lookupVote from "utils/participateWorkflow/lookupVote";
 
 export default function VerticalLinearStepper() {

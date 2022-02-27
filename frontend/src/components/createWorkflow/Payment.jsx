@@ -4,7 +4,7 @@ import { VoteInfoContext } from "context/VoteInfoContext";
 import ProgressBar from "components/base/ProgressBar";
 import { cancelVote } from "utils/misc/CancelVote";
 import submitSecretKey from "utils/createWorkflow/SubmitSecretKey";
-import isMnemonicValid from "utils/IsMnemonicValid";
+import isMnemonicValid from "utils/misc/IsMnemonicValid";
 import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "constants";
 import getTxnCost from "utils/createWorkflow/GetTxnCost";

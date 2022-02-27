@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { TextField, Typography } from "@mui/material";
 import { ParticipateContext } from "context/ParticipateContext";
-import isMnemonicValid from "utils/IsMnemonicValid";
+import isMnemonicValid from "utils/misc/IsMnemonicValid";
 import lookupVote from "utils/participateWorkflow/lookupVote";
 
 const EnterVoteInfo = () => {
