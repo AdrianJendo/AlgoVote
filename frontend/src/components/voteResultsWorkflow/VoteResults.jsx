@@ -64,12 +64,6 @@ const EnterVoteInfo = () => {
 		});
 	}
 
-	generalInfo.push({
-		caption: "AppId",
-		data: voteResults.appId,
-		url: `${BASE_URL}/application/${voteResults.appId}`,
-	});
-
 	if (voteResults.voteStatus === "register") {
 		Object.keys(voteResults.candidates).forEach((candidate) => {
 			candidatesInfo.push({
@@ -80,6 +74,13 @@ const EnterVoteInfo = () => {
 	} else {
 		generalInfo.push({
 			caption: "Votes Casted",
+			data: Object.values(voteResults.candidates).reduce(
+				(sum, nextElem) => sum + nextElem,
+				0
+			),
+		});
+		generalInfo.push({
+			caption: "Unique Votes",
 			data: voteResults.numVoted,
 		});
 		generalInfo.push({
@@ -98,9 +99,15 @@ const EnterVoteInfo = () => {
 		});
 	}
 
+	generalInfo.push({
+		caption: "AppId",
+		data: voteResults.appId,
+		url: `${BASE_URL}/application/${voteResults.appId}`,
+	});
+
 	// Registration info
 	generalInfo.push({
-		caption: "Number of Voters",
+		caption: "Total number of Voters",
 		data: voteResults.numVoters,
 	});
 
