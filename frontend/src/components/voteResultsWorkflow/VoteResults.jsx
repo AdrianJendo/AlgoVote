@@ -65,12 +65,14 @@ const EnterVoteInfo = () => {
 	}
 
 	if (voteResults.voteStatus === "register") {
-		Object.keys(voteResults.candidates).forEach((candidate) => {
-			candidatesInfo.push({
-				caption: "",
-				data: candidate,
+		Object.keys(voteResults.candidates)
+			.sort()
+			.forEach((candidate) => {
+				candidatesInfo.push({
+					caption: "",
+					data: candidate,
+				});
 			});
-		});
 	} else {
 		generalInfo.push({
 			caption: "Votes Casted",
@@ -91,12 +93,14 @@ const EnterVoteInfo = () => {
 				) / 100
 			}%`,
 		});
-		Object.keys(voteResults.candidates).forEach((candidate) => {
-			candidatesInfo.push({
-				caption: candidate,
-				data: voteResults.candidates[candidate],
+		Object.keys(voteResults.candidates)
+			.sort()
+			.forEach((candidate) => {
+				candidatesInfo.push({
+					caption: candidate,
+					data: voteResults.candidates[candidate],
+				});
 			});
-		});
 	}
 
 	generalInfo.push({
@@ -107,7 +111,7 @@ const EnterVoteInfo = () => {
 
 	// Registration info
 	generalInfo.push({
-		caption: "Total number of Voters",
+		caption: "Number of Voters",
 		data: voteResults.numVoters,
 	});
 
