@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import { Button, Typography, TextField, Link } from "@mui/material";
 import { VoteInfoContext } from "context/VoteInfoContext";
 import ProgressBar from "components/base/ProgressBar";
-import { cancelVote } from "utils/CancelVote";
+import { cancelVote } from "utils/misc/CancelVote";
 import submitSecretKey from "utils/createWorkflow/SubmitSecretKey";
 import isMnemonicValid from "utils/IsMnemonicValid";
 import { useNavigate } from "react-router-dom";

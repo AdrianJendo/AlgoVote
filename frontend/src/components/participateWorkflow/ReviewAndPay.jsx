@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { ParticipateContext } from "context/ParticipateContext";
-import { cancelParticipate } from "utils/CancelVote";
+import { cancelParticipate } from "utils/misc/CancelVote";
 import submitVote from "utils/participateWorkflow/submitVote";
 import submitRegister from "utils/participateWorkflow/submitRegister";
 import ProgressBar from "components/base/ProgressBar";

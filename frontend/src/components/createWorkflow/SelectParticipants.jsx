@@ -6,7 +6,7 @@ import {
 	txtUploadHandler,
 	excelUploadHandler,
 } from "utils/createWorkflow/FileUpload";
-import { cancelVote } from "utils/CancelVote";
+import { cancelVote } from "utils/misc/CancelVote";
 import {
 	FillDiv,
 	Input,

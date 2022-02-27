@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { VoteInfoContext } from "context/VoteInfoContext";
-import { cancelVote } from "utils/CancelVote";
+import { cancelVote } from "utils/misc/CancelVote";
 import { DateValueContext } from "context/DateValueContext";
 import { MINUTES_DELAY, DELAY } from "constants";
 import isSameDate from "utils/createWorkflow/IsSameDate";

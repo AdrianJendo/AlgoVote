@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { VoteResultsContext } from "context/VoteResultsContext";
-import { cancelVoteResults } from "utils/CancelVote";
+import { cancelVoteResults } from "utils/misc/CancelVote";
 import Stepper from "components/base/Stepper";
 import lookupVote from "utils/voteResultsWorkflow/LookupVote";
 

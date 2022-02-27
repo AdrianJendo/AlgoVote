@@ -1,4 +1,4 @@
-import * as cancelVote from "utils/CancelVote";
+import * as cancelVote from "utils/misc/CancelVote";
 
 const changeRoute = (
 	navigate,
