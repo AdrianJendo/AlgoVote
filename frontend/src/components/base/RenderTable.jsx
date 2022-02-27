@@ -28,14 +28,21 @@ export default function StickyHeadTable({ stage }) {
 		const newVoteInfo = Object.assign({}, voteInfo);
 		if (newNumVotes === 0) {
 			if (stage === "participants") {
+				newVoteInfo.numParticipants--;
 				if (row.name.includes("New Account")) {
+					// only delete the end account and shift the votes up accordingly
 					const highestNumAccount = `New Account ${voteInfo.numNewAccounts}`;
-					newVoteInfo.numNewAccounts--;
+					const accountNum = parseInt(row.name[row.name.length - 1]);
+					// shift votes up by 1 account
+					for (let i = accountNum; i < voteInfo.numNewAccounts; i++) {
+						voteInfo.participantData[`New Account ${i}`] =
+							voteInfo.participantData[`New Account ${i + 1}`];
+					}
 					delete newVoteInfo.participantData[highestNumAccount];
+					newVoteInfo.numNewAccounts--;
 				} else {
 					delete newVoteInfo.participantData[row.name];
 				}
-				newVoteInfo.numParticipants--;
 			} else {
 				delete newVoteInfo.candidateData[row.name];
 			}
