@@ -1,6 +1,8 @@
 import React, { useContext } from "react";
 import { TextField, Typography } from "@mui/material";
 import { ParticipateContext } from "context/ParticipateContext";
+import isMnemonicValid from "utils/IsMnemonicValid";
+import lookupVote from "utils/participateWorkflow/lookupVote";
 
 const EnterVoteInfo = () => {
 	const [participateInfo, setParticipateInfo] =
@@ -35,6 +37,19 @@ const EnterVoteInfo = () => {
 					placeholder="Enter App Id"
 					sx={{ width: "200px", margin: "20px" }}
 					value={participateInfo.appId}
+					onKeyDown={(e) => {
+						if (
+							e.key === "Enter" &&
+							isMnemonicValid(participateInfo.sk) &&
+							participateInfo.appId &&
+							!isNaN(participateInfo.appId)
+						) {
+							e.preventDefault();
+							lookupVote(participateInfo, setParticipateInfo);
+						} else if (e.key === "Enter") {
+							alert("Invalid app id or secret key");
+						}
+					}}
 					onChange={(e) =>
 						setParticipateInfo({
 							...participateInfo,

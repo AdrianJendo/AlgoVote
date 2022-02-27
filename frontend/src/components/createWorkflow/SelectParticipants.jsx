@@ -124,9 +124,16 @@ const SelectParticipants = () => {
 							placeholder="Number of participants"
 							variant="standard"
 							onKeyDown={(e) => {
-								if (e.key === "Enter") {
+								if (
+									e.key === "Enter" &&
+									voteInfo.numParticipants !== 0
+								) {
 									e.preventDefault();
 									generateParticipants();
+								} else if (e.key === "Enter") {
+									alert(
+										"Please enter a number greater than 0"
+									);
 								}
 							}}
 							onChange={(e) => {

@@ -1,9 +1,9 @@
 import * as React from "react";
+import { useNavigate } from "react-router-dom";
 import { VoteResultsContext } from "context/VoteResultsContext";
 import { cancelVoteResults } from "utils/CancelVote";
 import Stepper from "components/base/Stepper";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import lookupVote from "utils/voteResultsWorkflow/LookupVote";
 
 const steps = [
 	{
@@ -36,81 +36,7 @@ export default function VerticalLinearStepper() {
 
 	const handleNext = async () => {
 		if (voteResults.activeStep === 0) {
-			try {
-				const voteResp = await axios.get(
-					"/api/smartContract/readVoteSmartContractState",
-					{ params: { appId: voteResults.appId } }
-				);
-				const voteData = voteResp.data;
-				const assetResp = await axios.get("/api/asa/getAssetInfo", {
-					params: { assetId: voteData.AssetId },
-				});
-				const assetData = assetResp.data.assetData;
-				const assetBalances = assetResp.data.assetBalances;
-				const numVoted = assetResp.data.numVoted;
-				const creator = voteData.Creator;
-				let numRegistered = 0;
-				assetBalances.forEach((assetBalance) => {
-					if (assetBalance.address !== creator) {
-						numRegistered++;
-					}
-				});
-				const candidates = {};
-				let voteStatus = "register";
-
-				const today = new Date();
-				const curTimeUTC =
-					Date.UTC(
-						today.getUTCFullYear(),
-						today.getUTCMonth(),
-						today.getUTCDate(),
-						today.getUTCHours(),
-						today.getUTCMinutes(),
-						today.getUTCSeconds()
-					) / 1000;
-
-				if (curTimeUTC > voteData.VoteEnd) {
-					voteStatus = "complete";
-				} else if (curTimeUTC > voteData.VoteBegin) {
-					voteStatus = "vote";
-				}
-
-				const voteBegin = new Date(voteData.VoteBegin * 1000);
-				const voteEnd = new Date(voteData.VoteEnd * 1000);
-
-				Object.keys(voteData).forEach((key) => {
-					if (
-						![
-							"Creator",
-							"AssetId",
-							"VoteBegin",
-							"VoteEnd",
-							"NumVoters",
-						].includes(key)
-					) {
-						candidates[key] = voteData[key];
-					}
-				});
-
-				setVoteResults({
-					...voteResults,
-					activeStep: voteResults.activeStep + 1,
-					creator,
-					numRegistered,
-					numVoters: voteData.NumVoters,
-					numVoted,
-					voteStatus,
-					assetId: voteData.AssetId,
-					voteBegin: voteBegin.toString(),
-					voteEnd: voteEnd.toString(),
-					candidates,
-					assetSupply: assetData.params.total,
-					assetName: assetData.params.name,
-					assetUnit: assetData.params["unit-name"],
-				});
-			} catch (err) {
-				alert("Invalid App Id");
-			}
+			lookupVote(voteResults, setVoteResults);
 		} else {
 			cancelVoteResults(setVoteResults, navigate);
 		}
