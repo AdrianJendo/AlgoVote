@@ -2,18 +2,14 @@ version: "3.8"
 
 services:
     frontend:
-        build:
-            context: ./frontend
-            dockerfile: Dockerfile.prod
-            args:
-                - DATA_ENCRYPTION_KEY=${DATA_ENCRYPTION_KEY}
+        image: gcr.io/algo-vote/algo-vote-frontend
+        container_name: frontend
         environment:
             - WDS_SOCKET_PORT=0 # Fixes bug where websocket connection is fixed to default port 3000
 
     backend:
-        build:
-            context: ./backend
-            dockerfile: Dockerfile.prod
+        image: gcr.io/algo-vote/algo-vote-backend
+        container_name: backend
         env_file:
             - .env
 
@@ -22,7 +18,7 @@ services:
         depends_on:
             - frontend
             - backend
-        build:
-            context: ./nginx
+        image: gcr.io/algo-vote/algo-vote-nginx
+        container_name: nginx
         ports:
-            - 8080:80
+            - 80:80
