@@ -60,7 +60,7 @@ export default function CustomizedInputBase({ index }) {
 				display: "flex",
 				alignItems: "center",
 				position: "relative",
-				width: 300,
+				width: index === "participantData" ? 700 : 350,
 			}}
 		>
 			<InputBase
