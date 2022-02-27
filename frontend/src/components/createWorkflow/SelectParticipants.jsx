@@ -6,7 +6,7 @@ import {
 	txtUploadHandler,
 	excelUploadHandler,
 } from "utils/createWorkflow/FileUpload";
-import { cancelVote } from "utils/CancelVote";
+import { cancelVote } from "utils/misc/CancelVote";
 import {
 	FillDiv,
 	Input,
@@ -21,18 +21,25 @@ import HelpIcon from "@mui/icons-material/Help";
 import HelperTooltip from "components/createWorkflow/HelperTooltip";
 import { useNavigate } from "react-router-dom";
 
-// const emails1 = require("images/emails1.png");
-// const emails2 = require("images/emails2.png");
-// const emails3 = require("images/emails3.png");
-// const phoneNumbers1 = require("images/phoneNumbers1.png");
-// const phoneNumbers2 = require("images/phoneNumbers2.png");
-// const phoneNumbers3 = require("images/phoneNumbers3.png");
 const preFundedAccountsXlsx = require("images/preFundedAccountsXlsx.png");
 const preFundedAccounts = require("images/preFundedAccounts.png");
 
 const SelectParticipants = () => {
 	const [voteInfo, setVoteInfo] = useContext(VoteInfoContext);
 	const navigate = useNavigate();
+
+	const generateParticipants = () => {
+		const participantData = {};
+		for (let i = 1; i <= voteInfo.numParticipants; i++) {
+			participantData[`New Account ${i}`] = 1;
+		}
+
+		setVoteInfo({
+			...voteInfo,
+			numNewAccounts: voteInfo.numParticipants,
+			participantData,
+		});
+	};
 
 	const goBack = () => {
 		if (voteInfo.participantData) {
@@ -116,6 +123,19 @@ const SelectParticipants = () => {
 							value={voteInfo.numParticipants}
 							placeholder="Number of participants"
 							variant="standard"
+							onKeyDown={(e) => {
+								if (
+									e.key === "Enter" &&
+									voteInfo.numParticipants !== 0
+								) {
+									e.preventDefault();
+									generateParticipants();
+								} else if (e.key === "Enter") {
+									alert(
+										"Please enter a number greater than 0"
+									);
+								}
+							}}
 							onChange={(e) => {
 								const val = e.target.value;
 								if (
@@ -330,38 +350,6 @@ const SelectParticipants = () => {
 				</ManualUploadDiv>
 			)}
 
-			{/* TEMP : option to send notification to participants*/}
-			{/* {voteInfo.accountFundingType === "preFundedAccounts" &&
-				voteInfo.contactParticipantMethod === null && (
-					<FillDiv>
-						<Typography sx={typographySX(4)}>
-							How will users be notified of this vote?
-						</Typography>
-						<ButtonGroup variant="contained" sx={buttonGroupSX(10)}>
-							<Button
-								onClick={() =>
-									setVoteInfo({
-										...voteInfo,
-										contactParticipantMethod: "email",
-									})
-								}
-							>
-								Email
-							</Button>
-							<Button
-								onClick={() =>
-									setVoteInfo({
-										...voteInfo,
-										contactParticipantMethod: "phone",
-									})
-								}
-							>
-								Phone Number
-							</Button>
-						</ButtonGroup>
-					</FillDiv>
-				)} */}
-
 			{/* Reset / back button controls */}
 			<ButtonGroup variant="contained" sx={buttonGroupSX(75)}>
 				{voteInfo.accountFundingType !== null && (
@@ -387,24 +375,7 @@ const SelectParticipants = () => {
 				{voteInfo.accountFundingType === "newAccounts" &&
 					voteInfo.numParticipants > 0 &&
 					voteInfo.participantData === null && (
-						<Button
-							onClick={() => {
-								const participantData = {};
-								for (
-									let i = 1;
-									i <= voteInfo.numParticipants;
-									i++
-								) {
-									participantData[`New Account ${i}`] = 1;
-								}
-
-								setVoteInfo({
-									...voteInfo,
-									numNewAccounts: voteInfo.numParticipants,
-									participantData,
-								});
-							}}
-						>
+						<Button onClick={() => generateParticipants()}>
 							Next
 						</Button>
 					)}

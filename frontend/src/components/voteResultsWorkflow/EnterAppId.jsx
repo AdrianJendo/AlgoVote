@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { TextField, Typography } from "@mui/material";
 import { VoteResultsContext } from "context/VoteResultsContext";
+import lookupVote from "utils/voteResultsWorkflow/LookupVote";
 
 const EnterVoteInfo = () => {
 	const [voteResults, setVoteResults] = useContext(VoteResultsContext);
@@ -32,6 +33,18 @@ const EnterVoteInfo = () => {
 					placeholder="Enter App Id"
 					sx={{ width: "200px", margin: "20px" }}
 					value={voteResults.appId}
+					onKeyDown={(e) => {
+						if (
+							e.key === "Enter" &&
+							voteResults.appId &&
+							!isNaN(voteResults.appId)
+						) {
+							e.preventDefault();
+							lookupVote(voteResults, setVoteResults);
+						} else if (e.key === "Enter") {
+							alert("Invalid app id");
+						}
+					}}
 					onChange={(e) =>
 						setVoteResults({
 							...voteResults,

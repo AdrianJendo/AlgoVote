@@ -1,5 +1,5 @@
 import axios from "axios";
-import encodeURIMnemonic from "utils/EncodeMnemonic";
+import encodeURIMnemonic from "utils/misc/EncodeMnemonic";
 import * as XLSX from "xlsx";
 import {
 	MIN_VOTER_BALANCE,

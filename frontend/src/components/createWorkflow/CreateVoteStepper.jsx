@@ -1,6 +1,6 @@
-import * as React from "react";
+import React, { useEffect } from "react";
 import { VoteInfoContext } from "context/VoteInfoContext";
-import { cancelVote } from "utils/CancelVote";
+import { cancelVote } from "utils/misc/CancelVote";
 import { DateValueContext } from "context/DateValueContext";
 import { MINUTES_DELAY, DELAY } from "constants";
 import isSameDate from "utils/createWorkflow/IsSameDate";
@@ -14,7 +14,7 @@ export default function VerticalLinearStepper() {
 	const [readyToContinue, setReadyToContinue] = React.useState(false);
 	const navigate = useNavigate();
 
-	React.useEffect(() => {
+	useEffect(() => {
 		if (
 			(voteInfo.activeStep === 0 &&
 				voteInfo.participantData &&
@@ -96,7 +96,7 @@ export default function VerticalLinearStepper() {
 						0)
 			) {
 				alert(
-					"Update end time or date to be after current time + DELAY"
+					`Update end time or date to be ${MINUTES_DELAY} minutes after the start time`
 				);
 			} else {
 				setVoteInfo({

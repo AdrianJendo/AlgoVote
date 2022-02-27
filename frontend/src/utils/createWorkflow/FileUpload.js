@@ -36,7 +36,7 @@ export const txtUploadHandler = (e, voteInfo, setVoteInfo, dataType) => {
 				}
 			}
 			if (i === len - 1) {
-				const newVoteInfo = JSON.parse(JSON.stringify(voteInfo));
+				const newVoteInfo = Object.assign({}, voteInfo);
 				newVoteInfo[dataType] = participants;
 				setVoteInfo(newVoteInfo);
 			}
@@ -102,7 +102,7 @@ export const excelUploadHandler = async (
 				}
 			}
 			if (i === len - 1) {
-				const newVoteInfo = JSON.parse(JSON.stringify(voteInfo));
+				const newVoteInfo = Object.assign({}, voteInfo);
 				newVoteInfo[dataType] = participants;
 				setVoteInfo(newVoteInfo);
 			}

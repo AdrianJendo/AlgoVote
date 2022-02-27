@@ -11,4 +11,9 @@ RUN npm install
 # copy react app to the container
 COPY . .
 
+# We could just set REACT_APP_DATA_ENCRYPTION_KEY in .env file
+# But do it like this because it's needed for prod anyways
+ARG DATA_ENCRYPTION_KEY
+ENV REACT_APP_DATA_ENCRYPTION_KEY=$DATA_ENCRYPTION_KEY
+
 CMD ["npm", "start"]

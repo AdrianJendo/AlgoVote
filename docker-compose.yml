@@ -4,11 +4,11 @@ services:
     frontend:
         build:
             context: ./frontend
+            args:
+                - DATA_ENCRYPTION_KEY=${DATA_ENCRYPTION_KEY}
         volumes:
             - /frontend/node_modules
             - ./frontend/src:/frontend/src
-        env_file:
-            - .env
         environment:
             - WDS_SOCKET_PORT=0 # Fixes bug where websocket connection is fixed to default port 3000
 
