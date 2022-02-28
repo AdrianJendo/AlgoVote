@@ -7,8 +7,7 @@ import { styled } from "@mui/system";
 import isSameDate from "utils/createWorkflow/IsSameDate";
 import { MINUTES_DELAY, DELAY } from "constants";
 import HelpIcon from "@mui/icons-material/Help";
-
-const typographySX = (top) => ({ position: "relative", top: `${top}%` });
+import { typographySX } from "utils/Style/WorkflowStyle";
 
 const InlineDiv = styled("div")(
 	() => `

@@ -20,6 +20,7 @@ import CreateWorkflow from "components/createWorkflow/CreateWorkflow";
 import ParticipateWorkflow from "components/participateWorkflow/ParticipateWorkflow";
 import VoteResultsWorkflow from "components/voteResultsWorkflow/VoteResultsWorkflow";
 import AppBar from "components/base/AppBar";
+import About from "components/About/About";
 
 const Dashboard = styled("div")(
 	({ theme }) => `
@@ -73,6 +74,10 @@ function App() {
 													element={
 														<VoteResultsWorkflow />
 													}
+												/>
+												<Route
+													path="/about"
+													element={<About />}
 												/>
 											</Routes>
 										</StyledBackground>

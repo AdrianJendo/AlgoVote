@@ -10,12 +10,12 @@ import { cancelVote } from "utils/misc/CancelVote";
 import {
 	FillDiv,
 	Input,
-	typographySX,
 	buttonGroupSX,
 	TableSubDiv,
 	ManualUploadDiv,
 	ManualUploadSubDiv,
 } from "utils/Style/ParticipantsStyle";
+import { typographySX } from "utils/Style/WorkflowStyle";
 import ParticipantsInput from "components/createWorkflow/TextInput";
 import HelpIcon from "@mui/icons-material/Help";
 import HelperTooltip from "components/createWorkflow/HelperTooltip";

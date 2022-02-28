@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { Paper } from "@mui/material";
-import { StepperDiv, PaperDiv } from "utils/Style/WorkflowDivs";
+import { StepperDiv, PaperDiv } from "utils/Style/WorkflowStyle";
 
 // Review vote workflow
 import { VoteResultsContext } from "context/VoteResultsContext";

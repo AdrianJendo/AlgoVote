@@ -1,11 +1,8 @@
 import React, { useContext } from "react";
 import { Button, Typography, ButtonGroup } from "@mui/material";
 import { ParticipateContext } from "context/ParticipateContext";
-import {
-	FillDiv,
-	typographySX,
-	buttonGroupSX,
-} from "utils/Style/ParticipantsStyle";
+import { FillDiv, buttonGroupSX } from "utils/Style/ParticipantsStyle";
+import { typographySX } from "utils/Style/WorkflowStyle";
 
 const RegisterOrVote = () => {
 	const [participateInfo, setParticipateInfo] =
