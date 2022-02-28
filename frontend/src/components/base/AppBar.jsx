@@ -39,16 +39,16 @@ const TopAppBar = ({ dark, setDark }) => {
 		<Box sx={{ flexGrow: 1 }}>
 			<AppBar position="static" style={{ height: "64px" }}>
 				<Toolbar>
-					<IconButton
-						size="large"
-						edge="start"
-						color="inherit"
-						aria-label="menu"
+					<img
 						onClick={() => nav("/")}
-						sx={{ mr: 2 }}
-					>
-						<HowToVoteIcon />
-					</IconButton>
+						src={"/algorand.png"}
+						alt="Err"
+						height="35px"
+						style={{
+							paddingRight: "25px",
+							cursor: "pointer",
+						}}
+					/>
 					<Typography
 						variant="h6"
 						component="div"
