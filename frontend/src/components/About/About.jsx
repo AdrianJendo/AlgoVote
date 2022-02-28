@@ -1,12 +1,6 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Typography, Paper } from "@mui/material";
 import { styled } from "@mui/system";
-import { VoteInfoContext } from "context/VoteInfoContext";
-import { ParticipateContext } from "context/ParticipateContext";
-import { VoteResultsContext } from "context/VoteResultsContext";
-import changeRoute from "utils/misc/ChangeRoute";
-import { useNavigate } from "react-router-dom";
-import { StepperDiv, PaperDiv } from "utils/Style/WorkflowStyle";
 import { typographySX } from "utils/Style/WorkflowStyle";
 
 const AboutDiv = styled("div")({
@@ -42,14 +36,19 @@ const About = () => {
 					About Algo Vote
 				</Typography>
 				<hr />
+				<Typography variant="h6">
+					<b>DISCLAIMER</b>
+				</Typography>
 				<Typography paragraph={true} sx={{ fontSize: 16 }}>
-					<b>DISCLAIMER</b>: <br /> THIS APP IS USING TESTNET AND
-					MEANT ONLY AS A PROOF OF CONCEPT, DON'T USE MAINNET ACCOUNTS
-					WHEN INTERACTING WITH IT. <br /> FOR ALL INTENSIVE PURPOSES,
-					FULL VOTING PROCESSES CAN BE CREATED RELIABLY, JUST MAKE
-					SURE YOU USE A TESTNET ACCOUNT. <br /> A NEW TESTNET ACCOUNT
-					CAN BE **CREATED** BY CLICKING *HERE* AND **FUNDED** BY
-					CLICKING *HERE*
+					THIS APP IS USING TESTNET AND MEANT ONLY AS A PROOF OF
+					CONCEPT, DON'T USE MAINNET ACCOUNTS WHEN INTERACTING WITH IT{" "}
+					<br /> FOR ALL INTENSIVE PURPOSES, FULL VOTING PROCESSES CAN
+					BE CREATED RELIABLY, JUST MAKE SURE YOU USE A TESTNET
+					ACCOUNT <br /> A NEW TESTNET ACCOUNT CAN BE **CREATED** BY
+					CLICKING *HERE* AND **FUNDED** BY CLICKING *HERE*
+				</Typography>
+				<Typography variant="h6">
+					<b>About</b>
 				</Typography>
 				<Typography paragraph={true} sx={{ fontSize: 16 }}>
 					This app was created as a proof of concept for how a
@@ -58,8 +57,9 @@ const About = () => {
 					convenience to the end user, but all voting logic is carried
 					out using smart contracts on the algorand blockchain. Thus,
 					it is possible (but much less convenient) to handle all
-					aspects of the voting process by interacting directly with
-					the blockchain instead of using this app.
+					aspects of the voting process by interacting with the smart
+					contract directly on the blockchain instead of using this
+					app.
 				</Typography>
 				<Typography variant="h6">
 					<b>Basic Voting Workflow</b>
@@ -68,12 +68,12 @@ const About = () => {
 					<b>Step 1: Create the vote</b>
 				</Typography>
 				<ul>
-					<StyledListItem>Click 'Create Vote'</StyledListItem>
+					<StyledListItem>Click 'Create Vote'.</StyledListItem>
 					<StyledListItem>
 						Select 'New Accounts' if you want to generate new
 						algorand accounts (or if you want to mix new accounts
-						with existing accounts) or 'pre-funded accounts' if you
-						already have accounts ready to use for this vote <br />
+						with existing accounts) or 'Pre-Funded Accounts' if you
+						already have accounts ready to use for the vote. <br />
 						<i>
 							{" "}
 							Note: making new accounts is more expensive because
@@ -83,25 +83,23 @@ const About = () => {
 					</StyledListItem>
 					<StyledListItem>
 						Add candidates for the vote, either by uploaded a csv or
-						excel file, or entering them manually
+						excel file, or entering them manually.
 					</StyledListItem>
 					<StyledListItem>
 						Enter a start date & time for the vote (must start at
-						some date into the future)
+						some point in the future).
 					</StyledListItem>
 					<StyledListItem>
-						Enter an end date & time for the vote
+						Enter an end date & time for the vote.
 					</StyledListItem>
 					<StyledListItem>
-						After, reviewing the details, paste the secret key of
-						the account that will be used to fund the vote (creating
-						smart contracts & voting token, and funding any new
-						accounts)
+						After reviewing the details, paste the secret key of the
+						account that will be used to fund the vote.
 					</StyledListItem>
 					<StyledListItem>
 						If the transactions are successful, a link will appear
 						to view the smart contract on the blockchain and an
-						excel file with all the vote details will be created
+						excel file with all the vote details will be created.
 					</StyledListItem>
 				</ul>
 				<Typography paragraph={true} sx={{ fontSize: 16 }}>
@@ -110,18 +108,18 @@ const About = () => {
 				<ul>
 					<StyledListItem>
 						Any prefunded accounts must register to participate in
-						the vote (registration MUST HAPPEN before the start date
-						& time of the vote)
+						the vote (registration <b>MUST HAPPEN</b> before the
+						vote starts).
 						<br />
 						<i>
-							Note: new accounts are automatically opted into the
-							vote when the vote is created
+							Note: new accounts are automatically opted in to the
+							vote when the vote is created.
 						</i>
 					</StyledListItem>
 					<StyledListItem>
-						Once the vote begins, all participants can use tohe
+						Once the vote begins, all participants can use the
 						'Voting' workflow to select their candidate of choice
-						and cast their vote
+						and cast their vote.
 					</StyledListItem>
 				</ul>
 				<Typography paragraph={true} sx={{ fontSize: 16 }}>
@@ -132,18 +130,17 @@ const About = () => {
 						At any point after a vote's inception, anyone can view
 						the results of the vote within the application by
 						navigating to 'View Vote Results' and entering the
-						vote's application id
+						vote's application id.
 					</StyledListItem>
 					<StyledListItem>
 						The information provided includes statistics on how many
 						participants have registered/voted, how many votes each
-						candidate has received, the total number of votes
-						eligibile to be cast, and the start and end times of the
-						vote
+						candidate has received, and the start and end times of
+						the vote.
 					</StyledListItem>
 					<StyledListItem>
 						Additionally, links are provided to view the smart
-						contract details directly on the blockchain explorer
+						contract details directly on the blockchain explorer.
 					</StyledListItem>
 				</ul>
 				<Typography variant="h6">
