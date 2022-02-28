@@ -13,7 +13,7 @@ This app was created as a proof of concept for how a decentralized voting system
 Step 1: Create the vote
 
 -   Click 'Create Vote'.
--   Select 'New Accounts' if you want to generate new algorand accounts (or if you want to mix new accounts with existing accounts) or 'Pre-Funded Accounts' if you already have accounts ready to use for the vote.\ Note: making new accounts is more expensive because it's assumed that the creator will fund them all with the minimum algo balance required for the vote.
+-   Select 'New Accounts' if you want to generate new algorand accounts (or if you want to mix new accounts with existing accounts) or 'Pre-Funded Accounts' if you already have accounts ready to use for the vote.<br/> Note: making new accounts is more expensive because it's assumed that the creator will fund them all with the minimum algo balance required for the vote.
 -   Add candidates for the vote, either by uploaded a csv or excel file, or entering them manually.
 -   Enter a start date & time for the vote (must start at some point in the future).
 -   Enter an end date & time for the vote.
@@ -22,7 +22,7 @@ Step 1: Create the vote
 
 Step 2: Participate in the vote
 
--   Any prefunded accounts must register to participate in the vote (registration **MUST HAPPEN** before the vote starts.\ Note: new accounts are automatically opted in to the vote when the vote is created.
+-   Any prefunded accounts must register to participate in the vote (registration **MUST HAPPEN** before the vote starts.<br/> Note: new accounts are automatically opted in to the vote when the vote is created.
 -   Once the vote begins, all participants can use the 'Voting' workflow to select their candidate of choice and cast their vote.
 
 Step 3: View the vote results
