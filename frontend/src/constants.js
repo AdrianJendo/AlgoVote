@@ -11,3 +11,7 @@ export const MIN_VOTER_BALANCE =
 	TXN_FEE * 4; // 4 * 0.001 algos for txn costs (opt into asset, opt into smart contract, send asset, participate in smart contract)
 export const MINUTES_DELAY = 5; // delay in minutes
 export const DELAY = (MINUTES_DELAY - 1) * 60 * 1000; // minutes (use delay of 5 minutes) - actually 4 but we round to the nearest minutes so this is effectively 5 for any validation
+export const BTC_ADDR = "bc1q950thswhn6wc2qmrh73y86qjhft86qq3p6gd58";
+export const ETH_ADDR = "0x363C4B0973E88C9f016abE6c98f1314b3BF35d8a";
+export const ALGO_ADDR =
+	"ZGCQ73NMFLN3NWMLFFXTRDVKOKX2C33HTDDK7MVNACCDEOTVMRRA7YAYME";

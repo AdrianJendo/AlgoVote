@@ -1,7 +1,9 @@
 import React from "react";
-import { Typography, Paper } from "@mui/material";
+import { Typography, Paper, Link, IconButton, Box } from "@mui/material";
 import { styled } from "@mui/system";
 import { typographySX } from "utils/Style/WorkflowStyle";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import { BTC_ADDR, ETH_ADDR, ALGO_ADDR } from "constants";
 
 const AboutDiv = styled("div")({
 	position: "relative",
@@ -9,6 +11,7 @@ const AboutDiv = styled("div")({
 	margin: "0 auto",
 	width: "70%",
 	alignItems: "center",
+	paddingBottom: "50px",
 });
 
 const StyledListItem = styled("li")({
@@ -17,9 +20,21 @@ const StyledListItem = styled("li")({
 	marginBottom: "8px",
 });
 
-// const
+const FlexBox = styled((props) => <Box {...props} />)(() => ({
+	display: "flex",
+	justifyContent: "center",
+}));
 
-const SubHeaderTypography = styled("Typography")({});
+const AddressBox = styled((props) => <Box {...props} />)(() => ({
+	padding: "10px",
+	border: "1px solid",
+}));
+
+const CopyBox = styled((props) => <Box {...props} />)(() => ({
+	width: 50,
+	border: "1px solid",
+	cursor: "pointer",
+}));
 
 const About = () => {
 	return (
@@ -147,26 +162,118 @@ const About = () => {
 					<b>Github</b>
 				</Typography>
 				<Typography paragraph={true} sx={{ fontSize: 16 }}>
-					Source code available at LINK
+					Source code available{" "}
+					<Link
+						href="https://github.com/AdrianJendo/AlgoVote"
+						sx={{
+							position: "relative",
+							top: "40%",
+							color: "#55ade8",
+						}}
+						target="_blank"
+						underline="hover"
+					>
+						here
+					</Link>
+					.
 				</Typography>
 				<Typography variant="h6">
 					<b>Donations</b>
 				</Typography>
 				<Typography paragraph={true} sx={{ fontSize: 16 }}>
 					Donations to support the maintenance, continued development,
-					and scaling of this app are more than welcome
+					and scaling of this app are more than welcome &#128522;.
 				</Typography>
-				<Typography paragraph={true} sx={{ fontSize: 16 }}>
-					BTC:
+				<Typography sx={{ fontSize: 16 }}>
+					<b>Bitcoin</b>
 				</Typography>
-				<Typography paragraph={true} sx={{ fontSize: 16 }}>
-					ETH:
+				<FlexBox>
+					<AddressBox
+						sx={{
+							width: 400,
+							borderRadius: 1,
+							backgroundColor: "primary.dark",
+						}}
+					>
+						{BTC_ADDR}
+					</AddressBox>
+					<CopyBox
+						sx={{
+							borderRadius: 1,
+							"&:hover": {
+								backgroundColor: "primary.main",
+							},
+						}}
+						onClick={() => {
+							navigator.clipboard.writeText(BTC_ADDR);
+						}}
+					>
+						<IconButton>
+							<ContentCopyIcon />
+						</IconButton>
+					</CopyBox>
+				</FlexBox>
+				QR CODE!
+				<Typography sx={{ fontSize: 16, paddingTop: "10px" }}>
+					<b>Ethereum</b>
 				</Typography>
-				<Typography paragraph={true} sx={{ fontSize: 16 }}>
-					ALGO:
+				<FlexBox>
+					<AddressBox
+						sx={{
+							width: 400,
+							borderRadius: 1,
+							backgroundColor: "primary.dark",
+						}}
+					>
+						{ETH_ADDR}
+					</AddressBox>
+					<CopyBox
+						sx={{
+							borderRadius: 1,
+							"&:hover": {
+								backgroundColor: "primary.main",
+							},
+						}}
+						onClick={() => {
+							navigator.clipboard.writeText(ETH_ADDR);
+						}}
+					>
+						<IconButton>
+							<ContentCopyIcon />
+						</IconButton>
+					</CopyBox>
+				</FlexBox>
+				QR CODE!
+				<Typography sx={{ fontSize: 16, paddingTop: "10px" }}>
+					<b>Algorand</b>
 				</Typography>
-
-				<br />
+				<FlexBox>
+					<AddressBox
+						sx={{
+							width: 625,
+							borderRadius: 1,
+							backgroundColor: "primary.dark",
+						}}
+					>
+						{ALGO_ADDR}
+					</AddressBox>
+					<CopyBox
+						sx={{
+							borderRadius: 1,
+							"&:hover": {
+								backgroundColor: "primary.main",
+							},
+						}}
+						onClick={() => {
+							navigator.clipboard.writeText(ALGO_ADDR);
+						}}
+					>
+						<IconButton>
+							<ContentCopyIcon />
+						</IconButton>
+					</CopyBox>
+				</FlexBox>
+				QR CODE!
 			</AboutDiv>
 		</Paper>
 	);

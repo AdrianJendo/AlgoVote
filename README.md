@@ -43,8 +43,20 @@ video
 
 Donations to support the maintenance, continued development, and scaling of this app are more than welcome :blush:.
 
-BTC:
+### Bitcoin
 
-ETH:
+```
+bc1q950thswhn6wc2qmrh73y86qjhft86qq3p6gd58
+```
 
-ALGO:
+### Ethereum
+
+```
+0x363C4B0973E88C9f016abE6c98f1314b3BF35d8a
+```
+
+### Algorand
+
+```
+ZGCQ73NMFLN3NWMLFFXTRDVKOKX2C33HTDDK7MVNACCDEOTVMRRA7YAYME
+```
