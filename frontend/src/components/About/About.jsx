@@ -4,6 +4,7 @@ import { styled } from "@mui/system";
 import { typographySX } from "utils/Style/WorkflowStyle";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { BTC_ADDR, ETH_ADDR, ALGO_ADDR } from "constants";
+import CopyTextBox from "components/base/CopyTextBox";
 
 const AboutDiv = styled("div")({
 	position: "relative",
@@ -63,8 +64,23 @@ const About = () => {
 					CONCEPT, DON'T USE MAINNET ACCOUNTS WHEN INTERACTING WITH IT{" "}
 					<br /> FOR ALL INTENSIVE PURPOSES, FULL VOTING PROCESSES CAN
 					BE CREATED RELIABLY, JUST MAKE SURE YOU USE A TESTNET
-					ACCOUNT <br /> A NEW TESTNET ACCOUNT CAN BE **CREATED** BY
-					CLICKING *HERE* AND **FUNDED** BY CLICKING *HERE*
+					ACCOUNT <br /> A NEW TESTNET ACCOUNT CAN BE <b>CREATED</b>{" "}
+					BY CLICKING{" "}
+					<Link
+						href="/createCreatorAccount"
+						target="_blank"
+						underline="hover"
+					>
+						HERE
+					</Link>{" "}
+					AND <b>FUNDED</b> BY CLICKING{" "}
+					<Link
+						href="https://bank.testnet.algorand.network/"
+						target="_blank"
+						underline="hover"
+					>
+						HERE
+					</Link>
 				</Typography>
 				<Typography variant="h6">
 					<b>About</b>
@@ -169,11 +185,6 @@ const About = () => {
 					Source code available{" "}
 					<Link
 						href="https://github.com/AdrianJendo/AlgoVote"
-						sx={{
-							position: "relative",
-							top: "40%",
-							color: "#55ade8",
-						}}
 						target="_blank"
 						underline="hover"
 					>
@@ -191,32 +202,7 @@ const About = () => {
 				<Typography sx={{ fontSize: 16 }}>
 					<b>Bitcoin</b>
 				</Typography>
-				<FlexBox>
-					<AddressBox
-						sx={{
-							width: 400,
-							borderRadius: 1,
-							backgroundColor: "primary.dark",
-						}}
-					>
-						{BTC_ADDR}
-					</AddressBox>
-					<CopyBox
-						sx={{
-							borderRadius: 1,
-							"&:hover": {
-								backgroundColor: "primary.main",
-							},
-						}}
-						onClick={() => {
-							navigator.clipboard.writeText(BTC_ADDR);
-						}}
-					>
-						<IconButton>
-							<ContentCopyIcon />
-						</IconButton>
-					</CopyBox>
-				</FlexBox>
+				<CopyTextBox width={400} text={BTC_ADDR} />
 				<img
 					src={BTC_QR}
 					alt="Err"
@@ -228,32 +214,7 @@ const About = () => {
 				<Typography sx={{ fontSize: 16, paddingTop: "10px" }}>
 					<b>Ethereum</b>
 				</Typography>
-				<FlexBox>
-					<AddressBox
-						sx={{
-							width: 400,
-							borderRadius: 1,
-							backgroundColor: "primary.dark",
-						}}
-					>
-						{ETH_ADDR}
-					</AddressBox>
-					<CopyBox
-						sx={{
-							borderRadius: 1,
-							"&:hover": {
-								backgroundColor: "primary.main",
-							},
-						}}
-						onClick={() => {
-							navigator.clipboard.writeText(ETH_ADDR);
-						}}
-					>
-						<IconButton>
-							<ContentCopyIcon />
-						</IconButton>
-					</CopyBox>
-				</FlexBox>
+				<CopyTextBox width={400} text={ETH_ADDR} />
 				<img
 					src={ETH_QR}
 					alt="Err"
@@ -265,32 +226,7 @@ const About = () => {
 				<Typography sx={{ fontSize: 16, paddingTop: "10px" }}>
 					<b>Algorand</b>
 				</Typography>
-				<FlexBox>
-					<AddressBox
-						sx={{
-							width: 625,
-							borderRadius: 1,
-							backgroundColor: "primary.dark",
-						}}
-					>
-						{ALGO_ADDR}
-					</AddressBox>
-					<CopyBox
-						sx={{
-							borderRadius: 1,
-							"&:hover": {
-								backgroundColor: "primary.main",
-							},
-						}}
-						onClick={() => {
-							navigator.clipboard.writeText(ALGO_ADDR);
-						}}
-					>
-						<IconButton>
-							<ContentCopyIcon />
-						</IconButton>
-					</CopyBox>
-				</FlexBox>
+				<CopyTextBox width={625} text={ALGO_ADDR} />
 				<img
 					src={ALGO_QR}
 					alt="Err"
