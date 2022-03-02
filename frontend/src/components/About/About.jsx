@@ -36,6 +36,10 @@ const CopyBox = styled((props) => <Box {...props} />)(() => ({
 	cursor: "pointer",
 }));
 
+const BTC_QR = require("images/BTC.png");
+const ETH_QR = require("images/ETH.png");
+const ALGO_QR = require("images/ALGO.png");
+
 const About = () => {
 	return (
 		<Paper
@@ -213,7 +217,14 @@ const About = () => {
 						</IconButton>
 					</CopyBox>
 				</FlexBox>
-				QR CODE!
+				<img
+					src={BTC_QR}
+					alt="Err"
+					height="160px"
+					style={{
+						padding: "5px",
+					}}
+				/>
 				<Typography sx={{ fontSize: 16, paddingTop: "10px" }}>
 					<b>Ethereum</b>
 				</Typography>
@@ -243,7 +254,14 @@ const About = () => {
 						</IconButton>
 					</CopyBox>
 				</FlexBox>
-				QR CODE!
+				<img
+					src={ETH_QR}
+					alt="Err"
+					height="160px"
+					style={{
+						padding: "5px",
+					}}
+				/>
 				<Typography sx={{ fontSize: 16, paddingTop: "10px" }}>
 					<b>Algorand</b>
 				</Typography>
@@ -273,7 +291,14 @@ const About = () => {
 						</IconButton>
 					</CopyBox>
 				</FlexBox>
-				QR CODE!
+				<img
+					src={ALGO_QR}
+					alt="Err"
+					height="160px"
+					style={{
+						padding: "5px",
+					}}
+				/>
 			</AboutDiv>
 		</Paper>
 	);
