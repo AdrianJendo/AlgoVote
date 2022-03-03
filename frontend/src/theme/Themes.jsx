@@ -2,6 +2,7 @@ export const lightTheme = {
 	palette: {
 		primary: {
 			main: "#3d5afe",
+			dark: "#3d5afe",
 		},
 		secondary: {
 			main: "#9c27b0",
@@ -19,6 +20,7 @@ export const lightTheme = {
 	},
 	stepperButtonColor: "rgba(0, 0, 0, 0.4)",
 };
+
 export const darkTheme = {
 	palette: {
 		primary: {
