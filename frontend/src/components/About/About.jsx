@@ -1,8 +1,7 @@
 import React from "react";
-import { Typography, Paper, Link, IconButton, Box } from "@mui/material";
+import { Typography, Paper, Link } from "@mui/material";
 import { styled } from "@mui/system";
 import { typographySX } from "utils/Style/WorkflowStyle";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { BTC_ADDR, ETH_ADDR, ALGO_ADDR } from "constants";
 import CopyTextBox from "components/base/CopyTextBox";
 
@@ -20,22 +19,6 @@ const StyledListItem = styled("li")({
 	fontSize: "16px",
 	marginBottom: "8px",
 });
-
-const FlexBox = styled((props) => <Box {...props} />)(() => ({
-	display: "flex",
-	justifyContent: "center",
-}));
-
-const AddressBox = styled((props) => <Box {...props} />)(() => ({
-	padding: "10px",
-	border: "1px solid",
-}));
-
-const CopyBox = styled((props) => <Box {...props} />)(() => ({
-	width: 50,
-	border: "1px solid",
-	cursor: "pointer",
-}));
 
 const BTC_QR = require("images/BTC.png");
 const ETH_QR = require("images/ETH.png");
