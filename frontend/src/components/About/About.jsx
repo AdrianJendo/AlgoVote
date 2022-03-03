@@ -93,7 +93,6 @@ const About = () => {
 						with existing accounts) or 'Pre-Funded Accounts' if you
 						already have accounts ready to use for the vote. <br />
 						<i>
-							{" "}
 							Note: making new accounts is more expensive because
 							it's assumed that the creator will fund them all
 							with the minimum algo balance required for the vote.
