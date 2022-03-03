@@ -67,7 +67,7 @@ const Payment = () => {
 						) / 1e6}{" "}
 						Algos
 					</b>
-				</i>{" "}
+				</i>
 			</Typography>
 			<div
 				style={{
