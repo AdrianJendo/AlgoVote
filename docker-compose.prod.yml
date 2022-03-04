@@ -2,13 +2,13 @@ version: "3.8"
 
 services:
     frontend:
-        image: gcr.io/algo-vote/algo-vote-frontend
+        image: us-central1-docker.pkg.dev/algo-vote/algo-vote/algo-vote-frontend
         container_name: frontend
         environment:
             - WDS_SOCKET_PORT=0 # Fixes bug where websocket connection is fixed to default port 3000
 
     backend:
-        image: gcr.io/algo-vote/algo-vote-backend
+        image: us-central1-docker.pkg.dev/algo-vote/algo-vote/algo-vote-backend
         container_name: backend
         env_file:
             - .env
@@ -18,7 +18,7 @@ services:
         depends_on:
             - frontend
             - backend
-        image: gcr.io/algo-vote/algo-vote-nginx
+        image: us-central1-docker.pkg.dev/algo-vote/algo-vote/algo-vote-nginx
         container_name: nginx
         ports:
             - 80:80
