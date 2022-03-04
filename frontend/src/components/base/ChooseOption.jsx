@@ -53,6 +53,13 @@ const ChooseOption = () => {
 			>
 				View Vote Results
 			</Button>
+			<Button
+				variant="contained"
+				onClick={() => nav("/createCreatorAccount")}
+				sx={{ margin: "5px" }}
+			>
+				Create Testnet Account
+			</Button>
 		</ButtonDiv>
 	);
 };

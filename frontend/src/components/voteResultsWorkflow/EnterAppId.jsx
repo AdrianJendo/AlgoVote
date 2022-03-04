@@ -1,10 +1,13 @@
 import React, { useContext } from "react";
-import { TextField, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { TextField, Typography, Button, ButtonGroup } from "@mui/material";
 import { VoteResultsContext } from "context/VoteResultsContext";
 import lookupVote from "utils/voteResultsWorkflow/LookupVote";
+import { cancelVoteResults } from "utils/misc/CancelVote";
 
 const EnterVoteInfo = () => {
 	const [voteResults, setVoteResults] = useContext(VoteResultsContext);
+	const navigate = useNavigate();
 
 	return (
 		<div
@@ -53,6 +56,20 @@ const EnterVoteInfo = () => {
 					}
 				/>
 			</div>
+			<ButtonGroup variant="contained">
+				<Button
+					onClick={() => cancelVoteResults(setVoteResults, navigate)}
+				>
+					Cancel
+				</Button>
+				{voteResults.appId && !isNaN(voteResults.appId) && (
+					<Button
+						onClick={() => lookupVote(voteResults, setVoteResults)}
+					>
+						Next
+					</Button>
+				)}
+			</ButtonGroup>
 		</div>
 	);
 };

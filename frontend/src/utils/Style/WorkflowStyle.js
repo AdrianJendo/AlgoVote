@@ -13,3 +13,5 @@ export const PaperDiv = styled("div")(
 		background: ${theme.palette.background.default};
 	`
 );
+
+export const typographySX = (top) => ({ position: "relative", top: `${top}%` });

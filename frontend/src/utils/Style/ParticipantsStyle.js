@@ -11,7 +11,6 @@ export const Input = styled("input")({
 	display: "none",
 });
 
-export const typographySX = (top) => ({ position: "relative", top: `${top}%` });
 export const buttonGroupSX = (top) => ({
 	position: "relative",
 	top: `${top}px`,

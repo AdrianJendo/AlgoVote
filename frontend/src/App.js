@@ -20,6 +20,8 @@ import CreateWorkflow from "components/createWorkflow/CreateWorkflow";
 import ParticipateWorkflow from "components/participateWorkflow/ParticipateWorkflow";
 import VoteResultsWorkflow from "components/voteResultsWorkflow/VoteResultsWorkflow";
 import AppBar from "components/base/AppBar";
+import About from "components/about/About";
+import CreateCreatorAccount from "components/createCreatorAccount/CreateCreatorAccount";
 
 const Dashboard = styled("div")(
 	({ theme }) => `
@@ -72,6 +74,16 @@ function App() {
 													path="/voteResults"
 													element={
 														<VoteResultsWorkflow />
+													}
+												/>
+												<Route
+													path="/about"
+													element={<About />}
+												/>
+												<Route
+													path="/createCreatorAccount"
+													element={
+														<CreateCreatorAccount />
 													}
 												/>
 											</Routes>

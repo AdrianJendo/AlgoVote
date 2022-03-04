@@ -1,13 +1,5 @@
 import React, { useContext } from "react";
-import {
-	AppBar,
-	Box,
-	Toolbar,
-	Typography,
-	Button,
-	IconButton,
-} from "@mui/material";
-import HowToVoteIcon from "@mui/icons-material/HowToVote";
+import { AppBar, Box, Toolbar, Typography, Button } from "@mui/material";
 import MUISwitch from "components/base/MuiSwitch";
 import { VoteInfoContext } from "context/VoteInfoContext";
 import { ParticipateContext } from "context/ParticipateContext";
@@ -59,6 +51,9 @@ const TopAppBar = ({ dark, setDark }) => {
 					</Typography>
 					<Button color="inherit" onClick={() => nav("/")}>
 						Home
+					</Button>
+					<Button color="inherit" onClick={() => nav("/about")}>
+						About
 					</Button>
 					<MUISwitch defaultChecked toggleSwitch={toggleSwitch} />
 				</Toolbar>
