@@ -22,13 +22,13 @@ Step 1: Create the vote
 
 Step 2: Participate in the vote
 
--   Any prefunded accounts must register to participate in the vote (registration **MUST HAPPEN** before the vote starts.<br/> Note: new accounts are automatically opted in to the vote when the vote is created.
--   Once the vote begins, all participants can use the 'Voting' workflow to select their candidate of choice and cast their vote.
+-   Any prefunded accounts must register to participate in the vote (registration **MUST HAPPEN** before the vote starts).<br/> Note: new accounts are automatically opted in to the vote when the vote is created.
+-   Once the vote begins, all registered participants can use the 'Voting' workflow to select their candidate of choice and cast their vote.
 
 Step 3: View the vote results
 
 -   At any point after a vote's inception, anyone can view the results of the vote within the application by navigating to 'View Vote Results' and entering the vote's application id.
--   The information provided includes statistics on how many participants have registered/voted, how many votes each candidate has received, and the start and end times of the vote.
+-   The information provided includes statistics on how many participants have registered/voted, how many votes each candidate has received, the start and end times of the vote, and so on.
 -   Additionally, links are provided to view the smart contract details directly on the blockchain explorer.
 
 ## Demo videos

@@ -44,10 +44,10 @@ const About = () => {
 				</Typography>
 				<Typography paragraph={true} sx={{ fontSize: 16 }}>
 					THIS APP IS USING TESTNET AND MEANT ONLY AS A PROOF OF
-					CONCEPT, DON'T USE MAINNET ACCOUNTS WHEN INTERACTING WITH IT{" "}
-					<br /> FOR ALL INTENSIVE PURPOSES, FULL VOTING PROCESSES CAN
-					BE CREATED RELIABLY, JUST MAKE SURE YOU USE A TESTNET
-					ACCOUNT <br /> A NEW TESTNET ACCOUNT CAN BE <b>CREATED</b>{" "}
+					CONCEPT, DON'T USE MAINNET ACCOUNTS WHEN INTERACTING WITH
+					IT. <br /> FOR ALL INTENSIVE PURPOSES, FULL VOTING PROCESSES
+					CAN BE CREATED RELIABLY, JUST MAKE SURE YOU USE A TESTNET
+					ACCOUNT. <br /> A NEW TESTNET ACCOUNT CAN BE <b>CREATED</b>{" "}
 					BY CLICKING{" "}
 					<Link
 						href="/createCreatorAccount"
@@ -64,6 +64,7 @@ const About = () => {
 					>
 						HERE
 					</Link>
+					.
 				</Typography>
 				<Typography variant="h6">
 					<b>About</b>
@@ -134,9 +135,9 @@ const About = () => {
 						</i>
 					</StyledListItem>
 					<StyledListItem>
-						Once the vote begins, all participants can use the
-						'Voting' workflow to select their candidate of choice
-						and cast their vote.
+						Once the vote begins, all registered participants can
+						use the 'Voting' workflow to select their candidate of
+						choice and cast their vote.
 					</StyledListItem>
 				</ul>
 				<Typography paragraph={true} sx={{ fontSize: 16 }}>
@@ -152,8 +153,8 @@ const About = () => {
 					<StyledListItem>
 						The information provided includes statistics on how many
 						participants have registered/voted, how many votes each
-						candidate has received, and the start and end times of
-						the vote.
+						candidate has received, the start and end times of the
+						vote, and so on.
 					</StyledListItem>
 					<StyledListItem>
 						Additionally, links are provided to view the smart
