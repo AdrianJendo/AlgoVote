@@ -47,10 +47,10 @@ jobs:
             --tag “us-central1-docker.pkg.dev/$PROJECT_ID/$GCE_INSTANCE/$GCE_INSTANCE-backend" \
             backend
       - name: Build Nginx
-      run: |-
-        docker build \
-          --tag “us-central1-docker.pkg.dev/$PROJECT_ID/$GCE_INSTANCE/$GCE_INSTANCE-nginx" \
-          nginx
+        run: |-
+          docker build \
+            --tag “us-central1-docker.pkg.dev/$PROJECT_ID/$GCE_INSTANCE/$GCE_INSTANCE-nginx" \
+            nginx
 
       # Push the Docker images to Google Container Registry
       - name: Publish Frontend
