@@ -25,7 +25,7 @@ jobs:
       - uses: google-github-actions/setup-gcloud@v0.2.1
         with:
           service_account_key: ${{ secrets.GCE_SA_KEY }}
-          project_id: $PROJECT_ID
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
 
       # Configure Docker to use the gcloud command-line tool as a credential
       # helper for authentication
@@ -72,7 +72,6 @@ jobs:
           BACKEND_PORT=${{ secrets.BACKEND_PORT }}
           ALGOD_TOKEN=${{ secrets.ALGOD_TOKEN }}
           DATA_ENCRYPTION_KEY=${{ secrets.DATA_ENCRYPTION_KEY }}
-          # LD_LIBRARY_PATH=/usr/local/lib
           """ > .env
           gcloud --quiet compute scp --zone $GCE_ZONE .env $GCE_INSTANCE:~
           gcloud --quiet compute scp --zone $GCE_ZONE docker-compose.prod.yml $GCE_INSTANCE:~
