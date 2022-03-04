@@ -18,9 +18,5 @@ yarn-error.log*
 .env
 notes.txt
 
-
-# Sandbox
-.active_config
-.clean
-sandbox.log
-data
+# service account
+algo-vote**.json

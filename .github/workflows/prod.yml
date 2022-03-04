@@ -30,7 +30,7 @@ jobs:
       # Configure Docker to use the gcloud command-line tool as a credential
       # helper for authentication
       - run: |-
-          gcloud --quiet auth configure-docker
+          gcloud auth configure-docker $ARTIFACT_LOCATION-docker.pkg.dev --quiet
 
       # Build the Docker images
       - name: Build Frontend
@@ -38,18 +38,18 @@ jobs:
           docker build \
             -f frontend/Dockerfile.prod \
             --build-arg DATA_ENCRYPTION_KEY=${{ secrets.DATA_ENCRYPTION_KEY }}  \
-            --tag us-central1-docker.pkg.dev/$PROJECT_ID/$GCE_INSTANCE/$GCE_INSTANCE-frontend \
+            --tag $ARTIFACT_LOCATION.pkg.dev/$PROJECT_ID/$GCE_INSTANCE/$GCE_INSTANCE-frontend \
             frontend
       - name: Build Backend
         run: |-
           docker build \
             -f backend/Dockerfile.prod \
-            --tag us-central1-docker.pkg.dev/$PROJECT_ID/$GCE_INSTANCE/$GCE_INSTANCE-backend \
+            --tag $ARTIFACT_LOCATION.pkg.dev/$PROJECT_ID/$GCE_INSTANCE/$GCE_INSTANCE-backend \
             backend
       - name: Build Nginx
         run: |-
           docker build \
-            --tag us-central1-docker.pkg.dev/$PROJECT_ID/$GCE_INSTANCE/$GCE_INSTANCE-nginx \
+            --tag $ARTIFACT_LOCATION.pkg.dev/$PROJECT_ID/$GCE_INSTANCE/$GCE_INSTANCE-nginx \
             nginx
 
       # Push the Docker images to Google Container Registry
