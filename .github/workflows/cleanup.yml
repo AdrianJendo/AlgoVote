@@ -1,0 +1,44 @@
+name: Cleanup Workflow
+
+on:
+  workflow_dispatch:
+  schedule:
+    # runs every Sunday at 00:00 UTC
+    - cron: '0 0 * * SUN'
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GCE_INSTANCE: algo-vote
+  ARTIFACT_NAME: us-central1-docker
+
+jobs:
+  prune-registry:
+    name: Prune Artifact Registry
+    runs-on: ubuntu-latest
+    environment: production
+    if: ${{ github.event_name == 'schedule' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      # Setup gcloud CLI
+      - uses: google-github-actions/setup-gcloud@v0.2.1
+        with:
+          service_account_key: ${{ secrets.GCE_SA_KEY }}
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Prune Frontend
+        run: |-
+          echo Prune all frontend before $(date +%F)
+          ./.github/scripts/gcrgc.sh $ARTIFACT_NAME.pkg.dev/$PROJECT_ID/$GCE_INSTANCE/$GCE_INSTANCE-frontend $(date +%F)
+
+      - name: Prune Backend
+        run: |-
+          echo Prune all backend before $(date +%F)
+          ./.github/scripts/gcrgc.sh $ARTIFACT_NAME.pkg.dev/$PROJECT_ID/$GCE_INSTANCE/$GCE_INSTANCE-backend $(date +%F)
+
+      - name: Prune Nginx
+        run: |-
+          echo Prune all nginx before $(date +%F)
+          ./.github/scripts/gcrgc.sh $ARTIFACT_NAME.pkg.dev/$PROJECT_ID/$GCE_INSTANCE/$GCE_INSTANCE-nginx $(date +%F)

@@ -72,6 +72,7 @@ jobs:
           BACKEND_PORT=${{ secrets.BACKEND_PORT }}
           ALGOD_TOKEN=${{ secrets.ALGOD_TOKEN }}
           DATA_ENCRYPTION_KEY=${{ secrets.DATA_ENCRYPTION_KEY }}
+          ARTIFACT_NAME=$ARTIFACT_NAME
           """ > .env
           gcloud --quiet compute scp --zone $GCE_ZONE .env $GCE_INSTANCE:~
           gcloud --quiet compute scp --zone $GCE_ZONE docker-compose.prod.yml $GCE_INSTANCE:~
@@ -81,7 +82,7 @@ jobs:
         run: |-
           gcloud compute ssh $GCE_INSTANCE --zone $GCE_ZONE --project $PROJECT_ID --command \
           '
-          gcloud auth configure-docker us-central1-docker.pkg.dev --quiet && \
+          gcloud auth configure-docker $ARTIFACT_NAME.pkg.dev --quiet && \
           docker-compose -f docker-compose.prod.yml pull && \
           docker-compose -f docker-compose.prod.yml up --remove-orphans --build -d && \
           docker image prune -af \
