@@ -79,7 +79,7 @@ jobs:
       # Deploy the Docker image in the GCE instance
       - name: Deploy
         run: |-
-          gcloud compute ssh $GCE_INSTANCE --zone $GCE_ZONE --project $PROJECT_ID --comand \
+          gcloud compute ssh $GCE_INSTANCE --zone $GCE_ZONE --project $PROJECT_ID --command \
           '
           gcloud --quiet auth configure-docker $GCE_ZONE-docker.pkg.dev && \
           docker-compose -f docker-compose.prod.yml pull && \
