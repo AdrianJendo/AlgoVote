@@ -3,12 +3,15 @@ import { algodClient } from "../server.js";
 import { getAlgoBalance } from "../helpers/accounts.js";
 import { waitForConfirmation } from "../helpers/misc.js";
 import decodeURIMnemonic from "../helpers/decodeMnemonic.js";
+import encodeURIMnemonic from "../helpers/encodeMnemonic.js";
 
 export const createAlgoAccount = (req, res) => {
 	try {
 		const myaccount = algosdk.generateAccount();
 		const accountAddr = myaccount.addr;
-		const accountMnemonic = algosdk.secretKeyToMnemonic(myaccount.sk);
+		const accountMnemonic = encodeURIMnemonic(
+			algosdk.secretKeyToMnemonic(myaccount.sk)
+		);
 		return res.send({ accountAddr, accountMnemonic });
 	} catch (err) {
 		return res

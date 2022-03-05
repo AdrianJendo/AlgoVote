@@ -4,6 +4,7 @@ import { styled } from "@mui/system";
 import CopyTextBox from "components/base/CopyTextBox";
 import * as XLSX from "xlsx";
 import axios from "axios";
+import decodeURIMnemonic from "utils/misc/DecodeMnemonic";
 
 const ButtonDiv = styled("div")({
 	position: "absolute",
@@ -34,7 +35,9 @@ const CreateCreatorAccount = () => {
 					"/api/algoAccount/createAlgoAccount"
 				);
 				setAccountAddr(resp.data.accountAddr);
-				setAccountMnemonic(resp.data.accountMnemonic);
+				setAccountMnemonic(
+					decodeURIMnemonic(resp.data.accountMnemonic)
+				);
 			} catch (err) {
 				const error = err.response?.data?.message || err.message;
 				console.warn(error);
