@@ -42,7 +42,7 @@ video
 
 ## Donations
 
-Donations to support the maintenance, continued development, and scaling of this app are more than welcome :blush:.
+Donations to support the maintenance, continued development, and scaling of this app are more than welcome :blush:
 
 ### Bitcoin
 
