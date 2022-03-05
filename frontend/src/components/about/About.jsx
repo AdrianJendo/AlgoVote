@@ -45,10 +45,9 @@ const About = () => {
 				<Typography paragraph={true} sx={{ fontSize: 16 }}>
 					THIS APP IS USING TESTNET AND MEANT ONLY AS A PROOF OF
 					CONCEPT, DON'T USE MAINNET ACCOUNTS WHEN INTERACTING WITH
-					IT. <br /> FOR ALL INTENSIVE PURPOSES, FULL VOTING PROCESSES
-					CAN BE CREATED RELIABLY, JUST MAKE SURE YOU USE A TESTNET
-					ACCOUNT. <br /> A NEW TESTNET ACCOUNT CAN BE <b>CREATED</b>{" "}
-					BY CLICKING{" "}
+					IT.
+					<br />A new testnet account can be <b>CREATED</b> by
+					clicking{" "}
 					<Link
 						href="/createCreatorAccount"
 						target="_blank"
@@ -56,7 +55,7 @@ const About = () => {
 					>
 						HERE
 					</Link>{" "}
-					AND <b>FUNDED</b> BY CLICKING{" "}
+					and <b>FUNDED</b> by clicking{" "}
 					<Link
 						href="https://bank.testnet.algorand.network/"
 						target="_blank"
@@ -84,7 +83,16 @@ const About = () => {
 					<b>Basic Voting Workflow</b>
 				</Typography>
 				<Typography paragraph={true} sx={{ fontSize: 16 }}>
-					<b>Step 1: Create the vote</b>
+					<b>
+						Step 1:
+						<Link
+							href="/createVote"
+							target="_blank"
+							underline="hover"
+						>
+							Create the vote
+						</Link>
+					</b>
 				</Typography>
 				<ul>
 					<StyledListItem>Click 'Create Vote'.</StyledListItem>
@@ -121,7 +129,16 @@ const About = () => {
 					</StyledListItem>
 				</ul>
 				<Typography paragraph={true} sx={{ fontSize: 16 }}>
-					<b>Step 2: Participate in the vote</b>
+					<b>
+						Step 2:
+						<Link
+							href="/participateVote"
+							target="_blank"
+							underline="hover"
+						>
+							Participate in the vote
+						</Link>
+					</b>
 				</Typography>
 				<ul>
 					<StyledListItem>
@@ -141,7 +158,16 @@ const About = () => {
 					</StyledListItem>
 				</ul>
 				<Typography paragraph={true} sx={{ fontSize: 16 }}>
-					<b>Step 3: View the vote results</b>
+					<b>
+						Step 3:
+						<Link
+							href="/voteResults"
+							target="_blank"
+							underline="hover"
+						>
+							View the vote results
+						</Link>
+					</b>
 				</Typography>
 				<ul>
 					<StyledListItem>
