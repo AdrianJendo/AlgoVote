@@ -84,7 +84,7 @@ const About = () => {
 				</Typography>
 				<Typography paragraph={true} sx={{ fontSize: 16 }}>
 					<b>
-						Step 1:
+						Step 1:{" "}
 						<Link
 							href="/createVote"
 							target="_blank"
@@ -130,7 +130,7 @@ const About = () => {
 				</ul>
 				<Typography paragraph={true} sx={{ fontSize: 16 }}>
 					<b>
-						Step 2:
+						Step 2:{" "}
 						<Link
 							href="/participateVote"
 							target="_blank"
@@ -159,7 +159,7 @@ const About = () => {
 				</ul>
 				<Typography paragraph={true} sx={{ fontSize: 16 }}>
 					<b>
-						Step 3:
+						Step 3:{" "}
 						<Link
 							href="/voteResults"
 							target="_blank"
@@ -179,7 +179,7 @@ const About = () => {
 					<StyledListItem>
 						The information provided includes statistics on how many
 						participants have registered/voted, how many votes each
-						candidate has received, the start and end times of the
+						candidate has received, the start & end times of the
 						vote, and so on.
 					</StyledListItem>
 					<StyledListItem>
