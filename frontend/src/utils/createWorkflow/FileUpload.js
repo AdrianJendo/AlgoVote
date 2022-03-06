@@ -8,7 +8,7 @@ export const txtUploadHandler = (e, voteInfo, setVoteInfo, dataType) => {
 	for (let i = 0; i < len; i++) {
 		// traverse each uploaded file
 		const file = e.target.files[i];
-		let fileReader = new FileReader();
+		const fileReader = new FileReader();
 		try {
 			fileReader.readAsText(file);
 		} catch {}
@@ -38,6 +38,9 @@ export const txtUploadHandler = (e, voteInfo, setVoteInfo, dataType) => {
 			if (i === len - 1) {
 				const newVoteInfo = Object.assign({}, voteInfo);
 				newVoteInfo[dataType] = participants;
+				if (dataType === "participantData") {
+					newVoteInfo.numParticipants = content.length;
+				}
 				setVoteInfo(newVoteInfo);
 			}
 		};
@@ -57,7 +60,9 @@ export const excelUploadHandler = async (
 		// traverse each uploaded file
 		const file = e.target.files[i];
 		const fileReader = new FileReader();
-		fileReader.readAsBinaryString(file);
+		try {
+			fileReader.readAsBinaryString(file);
+		} catch {}
 
 		fileReader.onload = (e) => {
 			/* Parse data */
@@ -83,17 +88,6 @@ export const excelUploadHandler = async (
 							? content[j].toUpperCase() // participants are addresses so enforce upper case,
 							: content[j].toLowerCase(); // force candidates to be lower case for simplicity
 
-					// handling participants with more than 1 vote (currently not supported)
-					// if (
-					// 	j < content.length - 1 &&
-					// 	voteInfo.participantFormat === "email" && // check if it's an email
-					// 	dataType === "participantData" &&
-					// 	content[j + 1] !== "" &&
-					// 	!content[j + 1].includes("@")
-					// ) {
-					// 	numVotes = parseInt(content[++j]);
-					// }
-
 					if (participants[participant]) {
 						participants[participant] += numVotes;
 					} else if (numVotes > 0) {
@@ -104,6 +98,9 @@ export const excelUploadHandler = async (
 			if (i === len - 1) {
 				const newVoteInfo = Object.assign({}, voteInfo);
 				newVoteInfo[dataType] = participants;
+				if (dataType === "participantData") {
+					newVoteInfo.numParticipants = content.length;
+				}
 				setVoteInfo(newVoteInfo);
 			}
 		};

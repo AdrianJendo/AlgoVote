@@ -280,7 +280,11 @@ const submitSecretKey = async (props) => {
 			XLSX.utils.book_append_sheet(wb, ws, ws_name);
 
 			setTimeout(() => {
-				XLSX.writeFile(wb, "VoteData.xlsx");
+				const today = new Date();
+				XLSX.writeFile(
+					wb,
+					`VoteData-${today.getFullYear()}-${today.getMonth()}-${today.getDate()}.xlsx`
+				);
 				setProgressBar(100);
 				setVoteInfo({ ...voteInfo, voteCreated: true });
 			}, 2000);
