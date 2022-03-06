@@ -35,10 +35,12 @@ Step 3: [View the vote results](https://www.algo-vote.com/voteResults)
 ## Demo videos
 
 Using all new accounts:
-video
 
-Using brand new accounts:
-video
+https://user-images.githubusercontent.com/55325093/156935723-e4f610f8-635a-44b6-9905-0aeca1ee97ea.mp4
+
+Using prefunded accounts:
+
+https://user-images.githubusercontent.com/55325093/156935692-72d19389-45e6-4d8c-b1fd-f52041cdddab.mp4
 
 ## Donations
 
