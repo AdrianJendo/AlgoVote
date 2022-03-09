@@ -4,7 +4,7 @@ import { ParticipateContext } from "context/ParticipateContext";
 import { cancelParticipate } from "utils/misc/CancelVote";
 import Stepper from "components/base/Stepper";
 import isMnemonicValid from "utils/misc/IsMnemonicValid";
-import lookupVote from "utils/participateWorkflow/lookupVote";
+import lookupVote from "utils/participateWorkflow/LookupVote";
 
 export default function VerticalLinearStepper() {
 	const [participateInfo, setParticipateInfo] =
