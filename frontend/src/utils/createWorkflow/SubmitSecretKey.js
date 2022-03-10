@@ -1,5 +1,6 @@
 import axios from "axios";
 import encodeURIMnemonic from "utils/misc/EncodeMnemonic";
+import decodeURIMnemonic from "utils/misc/DecodeMnemonic";
 import * as XLSX from "xlsx";
 import {
 	MIN_VOTER_BALANCE,
@@ -34,10 +35,10 @@ const submitSecretKey = async (props) => {
 		);
 
 		// validate that secret key exists
-		const encryptedMnemonic = encodeURIMnemonic(secretKey);
+		const encryptedCreatorMnemonic = encodeURIMnemonic(secretKey);
 
 		const resp = await axios.get("/api/algoAccount/getPublicKey", {
-			params: { mnemonic: encryptedMnemonic },
+			params: { mnemonic: encryptedCreatorMnemonic },
 		});
 
 		if (resp.data.addr) {
@@ -93,7 +94,7 @@ const submitSecretKey = async (props) => {
 			});
 
 			const tokenResp = await axios.post("/api/asa/createVoteAsset", {
-				creatorMnemonic: encryptedMnemonic,
+				creatorMnemonic: encryptedCreatorMnemonic,
 				numIssued: numVoteTokens,
 				assetName: voteName === "" ? `Algo Vote Token` : voteName,
 			});
@@ -108,7 +109,7 @@ const submitSecretKey = async (props) => {
 			const smartContractResp = await axios.post(
 				"/api/smartContract/createVoteSmartContract",
 				{
-					creatorMnemonic: encryptedMnemonic,
+					creatorMnemonic: encryptedCreatorMnemonic,
 					assetId,
 					candidates: JSON.stringify(
 						Object.keys(voteInfo.candidateData)
@@ -127,18 +128,20 @@ const submitSecretKey = async (props) => {
 				voteInfo.numNewAccounts > 0
 			) {
 				// Generate new accounts
-				const { newParticipantData, privatePublicKeyPairs } =
+				const { newParticipantData, encodedPrivatePublicKeyPairs } =
 					await generateAlgorandAccounts(
 						voteInfo.numNewAccounts,
 						voteInfo.participantData
 					);
 
 				voteInfo.participantData = newParticipantData;
-				const newAccountAddresses = Object.keys(privatePublicKeyPairs);
+				const newAccountAddresses = Object.keys(
+					encodedPrivatePublicKeyPairs
+				);
 
 				// Logic that allows mixing of public and private addresses
 				Object.keys(voteInfo.participantData).forEach((accountAddr) => {
-					if (!privatePublicKeyPairs[accountAddr]) {
+					if (!encodedPrivatePublicKeyPairs[accountAddr]) {
 						preFundedAccounts[accountAddr] =
 							voteInfo.participantData[accountAddr];
 					}
@@ -146,13 +149,13 @@ const submitSecretKey = async (props) => {
 
 				const fundAccountPromises = [];
 				const optInContractPromises = [];
-				newParticipantAccounts = privatePublicKeyPairs;
+				newParticipantAccounts = encodedPrivatePublicKeyPairs;
 				// fund new account with minimum balance
 				setProgressBar(40);
 				newAccountAddresses.forEach((accountAddr) => {
 					fundAccountPromises.push(
 						axios.post("/api/algoAccount/sendAlgo", {
-							senderMnemonic: encryptedMnemonic,
+							senderMnemonic: encryptedCreatorMnemonic,
 							receiver: accountAddr,
 							amount: MIN_VOTER_BALANCE,
 							message: "",
@@ -163,12 +166,11 @@ const submitSecretKey = async (props) => {
 
 				// opt in to vote token and voting contract (atomically grouped)
 				setProgressBar(60);
-				Object.values(privatePublicKeyPairs).forEach(
-					(accountMnemonic) => {
+				Object.values(encodedPrivatePublicKeyPairs).forEach(
+					(encodedMnemonic) => {
 						optInContractPromises.push(
 							axios.post("/api/smartContract/registerForVote", {
-								userMnemonic:
-									encodeURIMnemonic(accountMnemonic),
+								userMnemonic: encodedMnemonic,
 								appId,
 							})
 						);
@@ -181,7 +183,7 @@ const submitSecretKey = async (props) => {
 				setProgressBar(80);
 				newAccountAddresses.forEach((receiver) => {
 					const amount = voteInfo.participantData[receiver];
-					const senderMnemonic = encryptedMnemonic;
+					const senderMnemonic = encryptedCreatorMnemonic;
 					sendTokenPromises.push(
 						axios.post("/api/asa/transferAsset", {
 							senderMnemonic,
@@ -211,7 +213,7 @@ const submitSecretKey = async (props) => {
 				// send out vote tokens from creator
 				const amounts = [];
 				const receivers = [];
-				const senderMnemonic = encryptedMnemonic;
+				const senderMnemonic = encryptedCreatorMnemonic;
 				Object.keys(preFundedAccounts).forEach((receiver) => {
 					amounts.push(voteInfo.participantData[receiver]);
 					receivers.push(receiver);
@@ -268,8 +270,9 @@ const submitSecretKey = async (props) => {
 					row[6] = voteInfo.participantData[participantAddresses[i]];
 					if (newParticipantAccounts) {
 						row[7] =
-							newParticipantAccounts[participantAddresses[i]] ||
-							"";
+							decodeURIMnemonic(
+								newParticipantAccounts[participantAddresses[i]]
+							) || "";
 					}
 				}
 

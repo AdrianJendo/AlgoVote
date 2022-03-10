@@ -16,10 +16,10 @@ export const generateAlgorandAccounts = async (
 		// save accounts
 		const accounts = algoAccounts.map((account) => account.data);
 		const newParticipantData = {};
-		const privatePublicKeyPairs = {};
+		const encodedPrivatePublicKeyPairs = {};
 
 		for (let i = 0; i < accounts.length; i++) {
-			privatePublicKeyPairs[accounts[i].accountAddr] =
+			encodedPrivatePublicKeyPairs[accounts[i].accountAddr] =
 				accounts[i].accountMnemonic;
 			newParticipantData[accounts[i].accountAddr] =
 				participantData[`New Account ${i + 1}`];
@@ -31,7 +31,7 @@ export const generateAlgorandAccounts = async (
 			}
 		});
 
-		return { newParticipantData, privatePublicKeyPairs };
+		return { newParticipantData, encodedPrivatePublicKeyPairs };
 	} catch (err) {
 		const error = err.response?.data?.message || err.message;
 		console.warn(error);
