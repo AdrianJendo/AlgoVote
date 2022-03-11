@@ -322,7 +322,7 @@ export const readVoteSmartContractState = async (req, res) => {
 			decodedState[Buffer.from(state.key, "base64").toString()] =
 				state.value.type === 1
 					? Buffer.from(state.value.bytes, "base64").toString()
-					: state.value.uint; // all global states are uint
+					: state.value.uint;
 		}
 		decodedState["Creator"] = application.params.creator;
 
