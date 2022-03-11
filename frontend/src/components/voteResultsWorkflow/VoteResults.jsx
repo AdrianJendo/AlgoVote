@@ -155,12 +155,8 @@ const EnterVoteInfo = () => {
 				overflow: "auto",
 			}}
 		>
-			<Typography
-				variant="h6"
-				component="div"
-				sx={{ flexGrow: 1, padding: "20px" }}
-			>
-				Vote Information
+			<Typography variant="h4" sx={{ flexGrow: 1, padding: "20px" }}>
+				<b>{voteResults.voteTitle}</b>
 			</Typography>
 			<Typography>General Info:</Typography>
 			<StyledGrid container>
@@ -177,7 +173,7 @@ const EnterVoteInfo = () => {
 					]}
 				/>
 			</StyledGrid>
-			<Typography>Candidates:</Typography>
+			<Typography>Vote Options:</Typography>
 			<StyledGrid container>
 				<FormRow data={candidatesInfo} />
 			</StyledGrid>

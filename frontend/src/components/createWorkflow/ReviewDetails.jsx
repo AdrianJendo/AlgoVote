@@ -97,7 +97,7 @@ const ReviewDetails = () => {
 					aria-controls="panel2d-content"
 					id="panel2d-header"
 				>
-					<Typography>Candidates</Typography>
+					<Typography>Options</Typography>
 				</AccordionSummary>
 				<AccordionDetails>
 					<div

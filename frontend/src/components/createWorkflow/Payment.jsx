@@ -11,10 +11,10 @@ import getTxnCost from "utils/createWorkflow/GetTxnCost";
 
 const Payment = () => {
 	const [voteInfo, setVoteInfo] = useContext(VoteInfoContext);
-	const voteName = useState("")[0];
 	const [secretKey, setSecretKey] = useState("");
 	const [progressBar, setProgressBar] = useState(null);
 	const [appId, setAppId] = useState(null);
+	const [voteTitle, setVoteTitle] = useState("");
 	const navigate = useNavigate();
 
 	const getText = (val) => {
@@ -50,9 +50,17 @@ const Payment = () => {
 				component="div"
 				sx={{ flexGrow: 1, padding: "10px" }}
 			>
-				Paste the secret key to the creator's wallet address to create
-				the vote
+				Add a title and paste the creator's secret key to create the
+				vote
 			</Typography>
+			<TextField
+				label="Vote Title"
+				autoFocus={true}
+				placeholder="Enter Vote Title"
+				sx={{ width: "400px", margin: "20px" }}
+				value={voteTitle}
+				onChange={(e) => setVoteTitle(e.target.value)}
+			/>
 			<Typography
 				variant="text"
 				component="div"
@@ -94,7 +102,7 @@ const Payment = () => {
 						voteInfo,
 						setVoteInfo,
 						setProgressBar,
-						voteName,
+						voteTitle: voteTitle === "" ? "Algo Vote" : voteTitle,
 					});
 					if (resp.error) {
 						setVoteInfo({ ...voteInfo, voteSubmitted: false });

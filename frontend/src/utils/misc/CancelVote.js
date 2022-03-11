@@ -31,6 +31,7 @@ export const cancelParticipate = (setParticipateInfo, navigate = null) => {
 	setParticipateInfo({
 		activeStep: 0,
 		registerOrVote: null,
+		voteTitle: "",
 		voteBegin: null,
 		voteEnd: null,
 		sk: "",
@@ -58,6 +59,7 @@ export const cancelVoteResults = (setVoteResults, navigate = null) => {
 		numVoted: null,
 		assetId: null,
 		participants: null,
+		voteTitle: "",
 		voteBegin: null,
 		voteEnd: null,
 		candidates: null,

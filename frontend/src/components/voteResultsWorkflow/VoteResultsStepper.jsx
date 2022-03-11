@@ -32,7 +32,7 @@ export default function VerticalLinearStepper() {
 		} else {
 			setReadyToContinue(false);
 		}
-	}, [voteResults, setVoteResults]);
+	}, [voteResults]);
 
 	const handleNext = async () => {
 		if (voteResults.activeStep === 0) {
