@@ -14,25 +14,32 @@ const submitSecretKey = async (props) => {
 	const { secretKey, voteInfo, setVoteInfo, setProgressBar, voteTitle } =
 		props;
 
+	// get start and end date
+	const startVote = new Date(
+		voteInfo.startDate.getFullYear(),
+		voteInfo.startDate.getMonth(),
+		voteInfo.startDate.getDate(),
+		voteInfo.startTime.getHours(),
+		voteInfo.startTime.getMinutes()
+	);
+
+	const endVote = new Date(
+		voteInfo.endDate.getFullYear(),
+		voteInfo.endDate.getMonth(),
+		voteInfo.endDate.getDate(),
+		voteInfo.endTime.getHours(),
+		voteInfo.endTime.getMinutes()
+	);
+
+	// check if start date already passed
+	if (startVote < new Date()) {
+		const error = "Vote start date has already passed";
+		console.warn(error);
+		return { error };
+	}
+
 	try {
 		setVoteInfo({ ...voteInfo, voteSubmitted: true });
-
-		// get start and end date
-		const startVote = new Date(
-			voteInfo.startDate.getFullYear(),
-			voteInfo.startDate.getMonth(),
-			voteInfo.startDate.getDate(),
-			voteInfo.startTime.getHours(),
-			voteInfo.startTime.getMinutes()
-		);
-
-		const endVote = new Date(
-			voteInfo.endDate.getFullYear(),
-			voteInfo.endDate.getMonth(),
-			voteInfo.endDate.getDate(),
-			voteInfo.endTime.getHours(),
-			voteInfo.endTime.getMinutes()
-		);
 
 		// validate that secret key exists
 		const encryptedCreatorMnemonic = encodeURIMnemonic(secretKey);
@@ -124,10 +131,7 @@ const submitSecretKey = async (props) => {
 			let newParticipantAccounts;
 
 			const sendTokenPromises = [];
-			if (
-				voteInfo.accountFundingType === "newAccounts" &&
-				voteInfo.numNewAccounts > 0
-			) {
+			if (voteInfo.numNewAccounts > 0) {
 				// Generate new accounts
 				const { newParticipantData, encodedPrivatePublicKeyPairs } =
 					await generateAlgorandAccounts(
