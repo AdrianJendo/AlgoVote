@@ -22,7 +22,7 @@ export default function CustomizedInputBase({ index }) {
 				index === "participantData"
 					? names[i].toUpperCase() // participants are addresses so enforce upper case,
 					: names[i].toLowerCase(); // force candidates to be lower case for simplicity
-			if (shouldAddPerson(name, voteInfo, index)) {
+			if (shouldAddPerson(name, index)) {
 				if (participants[name] && index === "participantData") {
 					participants[name]++;
 				} else if (participants[name]) {
