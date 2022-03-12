@@ -3,7 +3,7 @@ import shouldAddPerson from "utils/createWorkflow/ShouldAddPerson";
 
 // Handle .txt and .csv files
 export const txtUploadHandler = (e, voteInfo, setVoteInfo, dataType) => {
-	const participants = {}; // handling multiple votes right now, but update it in the future to support name:numVotes in the future ... for excel files just do adjacent cells
+	const participants = {};
 	const len = e.target.files.length;
 	for (let i = 0; i < len; i++) {
 		// traverse each uploaded file
@@ -21,8 +21,10 @@ export const txtUploadHandler = (e, voteInfo, setVoteInfo, dataType) => {
 				.split(" ")
 				.join(",")
 				.split(","); // Split element in list of values
+			let numParticipants = 0;
 			for (let j = 0; j < content.length; j++) {
-				if (shouldAddPerson(content[j], voteInfo, dataType)) {
+				if (shouldAddPerson(content[j], dataType)) {
+					numParticipants++;
 					const participant =
 						dataType === "participantData"
 							? content[j].toUpperCase() // participants are addresses so enforce upper case,
@@ -39,7 +41,7 @@ export const txtUploadHandler = (e, voteInfo, setVoteInfo, dataType) => {
 				const newVoteInfo = Object.assign({}, voteInfo);
 				newVoteInfo[dataType] = participants;
 				if (dataType === "participantData") {
-					newVoteInfo.numParticipants = content.length;
+					newVoteInfo.numParticipants = numParticipants;
 				}
 				setVoteInfo(newVoteInfo);
 			}
@@ -54,7 +56,7 @@ export const excelUploadHandler = async (
 	setVoteInfo,
 	dataType
 ) => {
-	const participants = {}; // handling multiple votes right now, but update it in the future to support name:numVotes in the future ... for excel files just do adjacent cells
+	const participants = {};
 	const len = e.target.files.length;
 	for (let i = 0; i < len; i++) {
 		// traverse each uploaded file
@@ -80,18 +82,19 @@ export const excelUploadHandler = async (
 				.join(",")
 				.split(","); // Split element in list of values
 			/* Update state */
+			let numParticipants = 0;
 			for (let j = 0; j < content.length; j++) {
-				if (shouldAddPerson(content[j], voteInfo, dataType)) {
-					let numVotes = 1;
+				if (shouldAddPerson(content[j], dataType)) {
+					numParticipants++;
 					const participant =
 						dataType === "participantData"
 							? content[j].toUpperCase() // participants are addresses so enforce upper case,
 							: content[j].toLowerCase(); // force candidates to be lower case for simplicity
 
 					if (participants[participant]) {
-						participants[participant] += numVotes;
-					} else if (numVotes > 0) {
-						participants[participant] = numVotes;
+						participants[participant] += 1;
+					} else {
+						participants[participant] = 1;
 					}
 				}
 			}
@@ -99,7 +102,7 @@ export const excelUploadHandler = async (
 				const newVoteInfo = Object.assign({}, voteInfo);
 				newVoteInfo[dataType] = participants;
 				if (dataType === "participantData") {
-					newVoteInfo.numParticipants = content.length;
+					newVoteInfo.numParticipants = numParticipants;
 				}
 				setVoteInfo(newVoteInfo);
 			}
