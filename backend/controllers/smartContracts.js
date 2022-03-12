@@ -17,6 +17,7 @@ export const createVoteSmartContract = async (req, res) => {
 		const assetId = req.body.assetId;
 		const candidates = JSON.parse(req.body.candidates);
 		const numVoters = req.body.numVoters;
+		const voteTitle = req.body.voteTitle;
 
 		// get node suggested parameters
 		let params = await algodClient.getTransactionParams().do();
@@ -66,6 +67,7 @@ export const createVoteSmartContract = async (req, res) => {
 		args.push(algosdk.encodeUint64(endVoteUTC));
 		args.push(algosdk.encodeUint64(assetId));
 		args.push(algosdk.encodeUint64(numVoters));
+		args.push(new Uint8Array(Buffer.from(voteTitle)));
 		candidates.map((candidate) => {
 			args.push(new Uint8Array(Buffer.from(candidate)));
 		});
@@ -79,8 +81,8 @@ export const createVoteSmartContract = async (req, res) => {
 			opt_out_program,
 			0, // local integers
 			1, // local byteslices
-			args.length, // global integers (startVoteUTC, endVoteUTC, assetId, candidates, numVoters)
-			0, // global byteslices
+			args.length - 1, // global integers (startVoteUTC, endVoteUTC, assetId, candidates, numVoters)
+			1, // global byteslices (voteTitle)
 			args
 		);
 		let txId = txn.txID().toString();
@@ -318,7 +320,9 @@ export const readVoteSmartContractState = async (req, res) => {
 			const state = globalState[i];
 			// https://forum.algorand.org/t/how-i-can-convert-value-of-global-state-to-human-readable/3551/2
 			decodedState[Buffer.from(state.key, "base64").toString()] =
-				state.value.uint; // all global states are uint
+				state.value.type === 1
+					? Buffer.from(state.value.bytes, "base64").toString()
+					: state.value.uint;
 		}
 		decodedState["Creator"] = application.params.creator;
 

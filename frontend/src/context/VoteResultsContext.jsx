@@ -13,6 +13,7 @@ export const VoteResultsProvider = (props) => {
 		numVoters: null,
 		numVoted: null, // number of people who voted
 		participants: null, // list of recent participants and who they voted for
+		voteTitle: "",
 		voteBegin: null,
 		voteEnd: null,
 		candidates: null,

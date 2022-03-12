@@ -19,6 +19,7 @@ const lookupVote = async (participateInfo, setParticipateInfo) => {
 		const assetId = state.data.AssetId;
 		const voteBegin = state.data.VoteBegin;
 		const voteEnd = state.data.VoteEnd;
+		const voteTitle = state.data.VoteTitle;
 
 		for (const key of Object.keys(state.data)) {
 			if (
@@ -44,7 +45,13 @@ const lookupVote = async (participateInfo, setParticipateInfo) => {
 					return;
 				}
 			} else if (
-				!["Creator", "VoteBegin", "VoteEnd", "NumVoters"].includes(key)
+				![
+					"Creator",
+					"VoteBegin",
+					"VoteEnd",
+					"NumVoters",
+					"VoteTitle",
+				].includes(key)
 			) {
 				candidates.push(key);
 			}
@@ -52,6 +59,7 @@ const lookupVote = async (participateInfo, setParticipateInfo) => {
 
 		setParticipateInfo({
 			...participateInfo,
+			voteTitle,
 			voteBegin,
 			voteEnd,
 			assetId,

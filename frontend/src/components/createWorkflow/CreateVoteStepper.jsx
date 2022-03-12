@@ -54,11 +54,11 @@ export default function VerticalLinearStepper() {
 				"Review the details of this transaction and click 'Continue'.",
 		},
 		{
-			label: "Payment",
+			label: "Payment & Title",
 			description: `A txn fee of ${
 				getTxnCost(voteInfo.numParticipants, voteInfo.numNewAccounts) /
 				1e6
-			} Algos is required to create the vote. Make the payment to finalize this application.`,
+			} Algos is required to create the vote. Add a title and make the payment to finalize this application.`,
 		},
 	];
 

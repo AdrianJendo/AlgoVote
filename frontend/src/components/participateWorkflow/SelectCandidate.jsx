@@ -23,23 +23,22 @@ const SelectCandidate = () => {
 
 	return (
 		<div style={{ position: "relative", height: "100%" }}>
-			<Typography sx={typographySX(2)} variant="h5">
-				Select the candidate you want to vote for
+			<Typography sx={typographySX(2)} variant="h4">
+				<b>{participateInfo.voteTitle}</b>
 			</Typography>
-
 			<FillDiv>
 				<Typography>
 					Select an option from the drop down menu
 				</Typography>
 				<FormControl sx={{ m: 3, minWidth: 200 }}>
 					<InputLabel id="demo-simple-select-label">
-						Candidates
+						Options
 					</InputLabel>
 					<Select
 						labelId="demo-simple-select-label"
 						id="demo-simple-select"
 						value={participateInfo.selectedCandidate}
-						label="Candidates"
+						label="Options"
 						onChange={handleChange}
 					>
 						{participateInfo.candidates.sort().map((candidate) => (

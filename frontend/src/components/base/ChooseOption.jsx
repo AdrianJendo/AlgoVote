@@ -1,11 +1,6 @@
-import React, { useContext } from "react";
-import { Button } from "@mui/material";
+import React from "react";
+import { Button, Link } from "@mui/material";
 import { styled } from "@mui/system";
-import { VoteInfoContext } from "context/VoteInfoContext";
-import { ParticipateContext } from "context/ParticipateContext";
-import { VoteResultsContext } from "context/VoteResultsContext";
-import changeRoute from "utils/misc/ChangeRoute";
-import { useNavigate } from "react-router-dom";
 
 const ButtonDiv = styled("div")({
 	position: "absolute",
@@ -15,51 +10,40 @@ const ButtonDiv = styled("div")({
 });
 
 const ChooseOption = () => {
-	const navigate = useNavigate();
-	const setVoteInfo = useContext(VoteInfoContext)[1];
-	const setParticipateInfo = useContext(ParticipateContext)[1];
-	const setVoteResults = useContext(VoteResultsContext)[1];
-
-	const nav = (route) => {
-		changeRoute(
-			navigate,
-			route,
-			setVoteInfo,
-			setParticipateInfo,
-			setVoteResults
-		);
-	};
-
 	return (
 		<ButtonDiv>
-			<Button
-				variant="contained"
-				onClick={() => nav("/createVote")}
+			<Link
+				href="/createVote"
+				color="inherit"
 				sx={{ margin: "5px" }}
+				underline="none"
 			>
-				Create Vote
-			</Button>
-			<Button
-				variant="contained"
-				onClick={() => nav("/participateVote")}
+				<Button variant="contained">Create Vote</Button>
+			</Link>
+			<Link
+				href="/participateVote"
+				color="inherit"
 				sx={{ margin: "5px" }}
+				underline="none"
 			>
-				Participate in Vote
-			</Button>
-			<Button
-				variant="contained"
-				onClick={() => nav("/voteResults")}
+				<Button variant="contained">Participate in Vote</Button>
+			</Link>
+			<Link
+				href="/voteResults"
+				color="inherit"
 				sx={{ margin: "5px" }}
+				underline="none"
 			>
-				View Vote Results
-			</Button>
-			<Button
-				variant="contained"
-				onClick={() => nav("/createCreatorAccount")}
+				<Button variant="contained">View Vote Results</Button>
+			</Link>
+			<Link
+				href="/createCreatorAccount"
+				color="inherit"
 				sx={{ margin: "5px" }}
+				underline="none"
 			>
-				Create Testnet Account
-			</Button>
+				<Button variant="contained">Create Testnet Account</Button>
+			</Link>
 		</ButtonDiv>
 	);
 };

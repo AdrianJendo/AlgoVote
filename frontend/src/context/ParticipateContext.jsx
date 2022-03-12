@@ -6,6 +6,7 @@ export const ParticipateProvider = (props) => {
 	const [participateInfo, setParticipateInfo] = useState({
 		activeStep: 0, // current step of workflow
 		registerOrVote: null, // either "register" or "vote"
+		voteTitle: "",
 		voteBegin: null, // vote start UTC time
 		voteEnd: null, // vote end UTC time
 		sk: "", // secret key of participant

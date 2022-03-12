@@ -50,6 +50,7 @@ const lookupVote = async (voteResults, setVoteResults) => {
 					"AssetId",
 					"VoteBegin",
 					"VoteEnd",
+					"VoteTitle",
 					"NumVoters",
 				].includes(key)
 			) {
@@ -66,6 +67,7 @@ const lookupVote = async (voteResults, setVoteResults) => {
 			numVoted,
 			voteStatus,
 			assetId: voteData.AssetId,
+			voteTitle: voteData.VoteTitle,
 			voteBegin: voteBegin.toString(),
 			voteEnd: voteEnd.toString(),
 			candidates,

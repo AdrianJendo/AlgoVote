@@ -11,7 +11,7 @@ import getTxnCost from "utils/createWorkflow/GetTxnCost";
 import { generateAlgorandAccounts } from "utils/createWorkflow/AlgoFunctions";
 
 const submitSecretKey = async (props) => {
-	const { secretKey, voteInfo, setVoteInfo, setProgressBar, voteName } =
+	const { secretKey, voteInfo, setVoteInfo, setProgressBar, voteTitle } =
 		props;
 
 	try {
@@ -96,7 +96,7 @@ const submitSecretKey = async (props) => {
 			const tokenResp = await axios.post("/api/asa/createVoteAsset", {
 				creatorMnemonic: encryptedCreatorMnemonic,
 				numIssued: numVoteTokens,
-				assetName: voteName === "" ? `Algo Vote Token` : voteName,
+				assetName: "Algo Vote Token",
 			});
 			const assetId = tokenResp.data.assetId;
 			const preFundedAccounts =
@@ -117,6 +117,7 @@ const submitSecretKey = async (props) => {
 					startVote: startVote.toString(),
 					endVote: endVote.toString(),
 					numVoters: numParticipants,
+					voteTitle,
 				}
 			);
 			const appId = smartContractResp.data.appId;
@@ -286,7 +287,9 @@ const submitSecretKey = async (props) => {
 				const today = new Date();
 				XLSX.writeFile(
 					wb,
-					`VoteData-${today.getFullYear()}-${today.getMonth()}-${today.getDate()}.xlsx`
+					`VoteData-${today.getFullYear()}-${
+						today.getMonth() + 1
+					}-${today.getDate()}.xlsx`
 				);
 				setProgressBar(100);
 				setVoteInfo({ ...voteInfo, voteCreated: true });
