@@ -8,9 +8,11 @@ const lookupVote = async (participateInfo, setParticipateInfo) => {
 			{ params: { appId: participateInfo.appId } }
 		);
 
+		const secretKey = participateInfo.sk.split("\n").join(""); // handle secret key with newline characters
+		console.log(secretKey);
 		const userAccount = await axios.get("/api/algoAccount/getPublicKey", {
 			params: {
-				mnemonic: encodeURIMnemonic(participateInfo.sk),
+				mnemonic: encodeURIMnemonic(secretKey),
 			},
 		});
 		const addr = userAccount.data.addr;
@@ -67,7 +69,7 @@ const lookupVote = async (participateInfo, setParticipateInfo) => {
 			activeStep: participateInfo.activeStep + 1,
 		});
 	} catch (err) {
-		alert("Invalid app id");
+		alert("Invalid app id or secret key");
 	}
 };
 
