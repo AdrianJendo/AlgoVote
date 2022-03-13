@@ -13,6 +13,7 @@ import { VoteInfoProvider } from "context/VoteInfoContext";
 import { ParticipateProvider } from "context/ParticipateContext";
 import { VoteResultsProvider } from "context/VoteResultsContext";
 import { DateValueProvider } from "context/DateValueContext";
+import { AlertProvider } from "context/AlertContext";
 
 // Components
 import ChooseOption from "components/base/ChooseOption";
@@ -22,6 +23,7 @@ import VoteResultsWorkflow from "components/voteResultsWorkflow/VoteResultsWorkf
 import AppBar from "components/base/AppBar";
 import About from "components/about/About";
 import CreateCreatorAccount from "components/createCreatorAccount/CreateCreatorAccount";
+import StickyAlert from "components/base/StickyAlert";
 
 const Dashboard = styled("div")(
 	({ theme }) => `
@@ -51,45 +53,52 @@ function App() {
 					<VoteInfoProvider>
 						<ParticipateProvider>
 							<VoteResultsProvider>
-								<DateValueProvider>
-									<AppBar dark={dark} setDark={setDark} />
-									<Dashboard>
-										<StyledBackground>
-											<Routes>
-												<Route
-													path="/"
-													element={<ChooseOption />}
-												/>
-												<Route
-													path="/createVote"
-													element={<CreateWorkflow />}
-												/>
-												<Route
-													path="/participateVote"
-													element={
-														<ParticipateWorkflow />
-													}
-												/>
-												<Route
-													path="/voteResults"
-													element={
-														<VoteResultsWorkflow />
-													}
-												/>
-												<Route
-													path="/about"
-													element={<About />}
-												/>
-												<Route
-													path="/createCreatorAccount"
-													element={
-														<CreateCreatorAccount />
-													}
-												/>
-											</Routes>
-										</StyledBackground>
-									</Dashboard>
-								</DateValueProvider>
+								<AlertProvider>
+									<DateValueProvider>
+										<AppBar dark={dark} setDark={setDark} />
+										<Dashboard>
+											<StyledBackground>
+												<Routes>
+													<Route
+														path="/"
+														element={
+															<ChooseOption />
+														}
+													/>
+													<Route
+														path="/createVote"
+														element={
+															<CreateWorkflow />
+														}
+													/>
+													<Route
+														path="/participateVote"
+														element={
+															<ParticipateWorkflow />
+														}
+													/>
+													<Route
+														path="/voteResults"
+														element={
+															<VoteResultsWorkflow />
+														}
+													/>
+													<Route
+														path="/about"
+														element={<About />}
+													/>
+													<Route
+														path="/createCreatorAccount"
+														element={
+															<CreateCreatorAccount />
+														}
+													/>
+												</Routes>
+											</StyledBackground>
+										</Dashboard>
+										<StickyAlert />
+									</DateValueProvider>
+								</AlertProvider>
 							</VoteResultsProvider>
 						</ParticipateProvider>
 					</VoteInfoProvider>
