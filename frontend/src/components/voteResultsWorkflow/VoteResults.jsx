@@ -1,8 +1,11 @@
-import React, { useContext } from "react";
-import { Typography, Grid } from "@mui/material";
-import { VoteResultsContext } from "context/VoteResultsContext";
+import React, { useContext, useState } from "react";
+import { Typography, Grid, IconButton } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import RefreshIcon from "@mui/icons-material/Refresh";
+import { VoteResultsContext } from "context/VoteResultsContext";
 import VoteResultsBox from "components/voteResultsWorkflow/VoteResultsBox";
+import lookupVote from "utils/voteResultsWorkflow/LookupVote";
+import ProgressBar from "components/base/ProgressBar";
 import { BASE_URL } from "constants";
 
 function FormRow(props) {
@@ -40,7 +43,8 @@ const StyledGrid = styled(Grid)(({ theme }) => ({
 }));
 
 const EnterVoteInfo = () => {
-	const voteResults = useContext(VoteResultsContext)[0];
+	const [voteResults, setVoteResults] = useContext(VoteResultsContext);
+	const [voteRefresh, setVoteRefresh] = useState(false);
 
 	const generalInfo = [];
 	const candidatesInfo = [];
@@ -156,39 +160,62 @@ const EnterVoteInfo = () => {
 			}}
 		>
 			<Typography variant="h4" sx={{ flexGrow: 1, padding: "20px" }}>
-				<b>{voteResults.voteTitle}</b>
+				<b>{voteResults.voteTitle}</b>{" "}
+				<IconButton
+					onClick={async () => {
+						setVoteRefresh(true);
+						const lookupSuccess = await lookupVote(
+							voteResults,
+							setVoteResults
+						);
+						if (lookupSuccess) {
+							setVoteRefresh(false);
+						}
+					}}
+					disabled={voteRefresh}
+				>
+					<RefreshIcon />
+				</IconButton>
 			</Typography>
-			<Typography>General Info:</Typography>
-			<StyledGrid container>
-				<FormRow data={generalInfo} />
-			</StyledGrid>
-			<StyledGrid container>
-				<FormRow
-					data={[
-						{
-							caption: "Creator",
-							data: voteResults.creator,
-							url: `${BASE_URL}/address/${voteResults.creator}`,
-						},
-					]}
-				/>
-			</StyledGrid>
-			<Typography>Vote Options:</Typography>
-			<StyledGrid container>
-				<FormRow data={candidatesInfo} />
-			</StyledGrid>
-			{/* creator, assetId, numVotes, vote %, */}
-			<Typography>Vote Token:</Typography> {/* candidates list */}
-			<StyledGrid container>
-				{/* vote token info (name, supply, ticker) */}
-				<FormRow data={tokenInfo} />
-			</StyledGrid>
-			<Typography>Date Info:</Typography>
-			{/* start and end dates */}
-			<StyledGrid container>
-				{/* vote token info (name, supply, ticker) */}
-				<FormRow data={dateInfo} />
-			</StyledGrid>
+			{voteRefresh ? (
+				<div style={{ padding: "50px" }}>
+					<ProgressBar text="Reloading Vote Info..." />
+				</div>
+			) : (
+				<div>
+					<Typography>General Info:</Typography>
+					<StyledGrid container>
+						<FormRow data={generalInfo} />
+					</StyledGrid>
+					<StyledGrid container>
+						<FormRow
+							data={[
+								{
+									caption: "Creator",
+									data: voteResults.creator,
+									url: `${BASE_URL}/address/${voteResults.creator}`,
+								},
+							]}
+						/>
+					</StyledGrid>
+					<Typography>Vote Options:</Typography>
+					<StyledGrid container>
+						<FormRow data={candidatesInfo} />
+					</StyledGrid>
+					{/* creator, assetId, numVotes, vote %, */}
+					<Typography>Vote Token:</Typography> {/* candidates list */}
+					<StyledGrid container>
+						{/* vote token info (name, supply, ticker) */}
+						<FormRow data={tokenInfo} />
+					</StyledGrid>
+					<Typography>Date Info:</Typography>
+					{/* start and end dates */}
+					<StyledGrid container>
+						{/* vote token info (name, supply, ticker) */}
+						<FormRow data={dateInfo} />
+					</StyledGrid>
+				</div>
+			)}
 		</div>
 	);
 };

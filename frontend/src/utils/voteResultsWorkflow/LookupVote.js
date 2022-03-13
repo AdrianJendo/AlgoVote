@@ -60,7 +60,10 @@ const lookupVote = async (voteResults, setVoteResults) => {
 
 		setVoteResults({
 			...voteResults,
-			activeStep: voteResults.activeStep + 1,
+			activeStep:
+				voteResults.activeStep === 0
+					? voteResults.activeStep + 1
+					: voteResults.activeStep,
 			creator,
 			numRegistered,
 			numVoters: voteData.NumVoters,
@@ -75,8 +78,10 @@ const lookupVote = async (voteResults, setVoteResults) => {
 			assetName: assetData.params.name,
 			assetUnit: assetData.params["unit-name"],
 		});
+		return true;
 	} catch (err) {
 		alert("Invalid app id");
+		return false;
 	}
 };
 
