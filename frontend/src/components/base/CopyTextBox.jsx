@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
 import { IconButton, Box } from "@mui/material";
 import { styled } from "@mui/system";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import { AlertContext } from "context/AlertContext";
 
 const FlexBox = styled((props) => <Box {...props} />)(() => ({
 	display: "flex",
@@ -21,6 +22,8 @@ const CopyIconBox = styled((props) => <Box {...props} />)(() => ({
 
 const CopyTextBox = (props) => {
 	const { width, text } = props;
+	const setOpen = useContext(AlertContext)[1];
+
 	return (
 		<FlexBox>
 			<AddressBox
@@ -41,6 +44,10 @@ const CopyTextBox = (props) => {
 				}}
 				onClick={() => {
 					navigator.clipboard.writeText(text);
+					setOpen(true);
+					setTimeout(() => {
+						setOpen(false);
+					}, 2500);
 				}}
 			>
 				<IconButton>
