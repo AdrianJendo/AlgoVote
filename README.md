@@ -1,11 +1,6 @@
 # Algo Vote
 
-**Check out the website here**: [Algo Vote](https://www.algo-vote.com/)
-
-**DISCLAIMER**:
-THIS APP IS USING TESTNET AND MEANT ONLY AS A PROOF OF CONCEPT, DON'T USE MAINNET ACCOUNTS WHEN INTERACTING WITH IT.
-
-A new testnet account can be **CREATED** by clicking [HERE](https://www.algo-vote.com/createCreatorAccount) and **FUNDED** by clicking [HERE](https://bank.testnet.algorand.network/).
+**Check out the application here**: [Algo Vote](https://www.algo-vote.com/)
 
 This app was created as a proof of concept for how a decentralized voting system could work. The frontend and backend are both hosted in a centralized manner to provide convenience to the end user, but all voting logic is carried out using smart contracts on the algorand blockchain. Thus, it is possible (but much less convenient) to handle all aspects of the voting process by interacting with the smart contract directly on the blockchain instead of using this app.
 

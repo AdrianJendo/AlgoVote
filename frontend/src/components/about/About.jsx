@@ -43,25 +43,25 @@ const About = () => {
 					<b>DISCLAIMER</b>
 				</Typography>
 				<Typography paragraph={true} sx={{ fontSize: 16 }}>
-					THIS APP IS USING TESTNET AND MEANT ONLY AS A PROOF OF
-					CONCEPT, DON'T USE MAINNET ACCOUNTS WHEN INTERACTING WITH
-					IT.
-					<br />A new testnet account can be <b>CREATED</b> by
+					This app is using testnet and meant only as a proof of
+					concept, don't use mainnet accounts when interacting with
+					it.
+					<br />A new testnet account can be <b>created</b> by
 					clicking{" "}
 					<Link
 						href="/createCreatorAccount"
 						target="_blank"
 						underline="hover"
 					>
-						HERE
+						here
 					</Link>{" "}
-					and <b>FUNDED</b> by clicking{" "}
+					and <b>funded</b> by clicking{" "}
 					<Link
 						href="https://bank.testnet.algorand.network/"
 						target="_blank"
 						underline="hover"
 					>
-						HERE
+						here
 					</Link>
 					.
 				</Typography>
