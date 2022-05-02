@@ -38,7 +38,7 @@ const TopAppBar = ({ dark, setDark }) => {
 					<Link href="/about" color="inherit" underline="none">
 						<Button color="inherit">About</Button>
 					</Link>
-					<MUISwitch defaultChecked toggleSwitch={toggleSwitch} />
+					{/* <MUISwitch defaultChecked toggleSwitch={toggleSwitch} /> */}
 				</Toolbar>
 			</AppBar>
 		</Box>
