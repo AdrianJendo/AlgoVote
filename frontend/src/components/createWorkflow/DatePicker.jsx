@@ -43,8 +43,8 @@ export default function ResponsiveDatePickers({
 			timeValue: selectedTime
 				? selectedTime
 				: label === "Start"
-				? new Date(new Date().getTime() + DELAY + 60 * 1000)
-				: new Date(earliestTime.getTime() + DELAY + 60 * 1000),
+					? new Date(new Date().getTime() + DELAY + 60 * 1000)
+					: new Date(earliestTime.getTime() + DELAY + 60 * 1000),
 		});
 	}, [
 		earliestDate,
@@ -122,7 +122,7 @@ export default function ResponsiveDatePickers({
 			<Typography sx={typographySX(2)} variant="h5">
 				When will your vote {label.toLowerCase()}?
 			</Typography>
-			<InlineDiv>
+			{/* <InlineDiv>
 				<MarginDiv>
 					<DatePicker
 						label={`${label} Date`}
@@ -181,7 +181,7 @@ export default function ResponsiveDatePickers({
 						</Typography>
 					)}
 				</MarginDiv>
-			</InlineDiv>
+			</InlineDiv> */}
 		</div>
 	);
 }

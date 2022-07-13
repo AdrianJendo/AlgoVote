@@ -4,8 +4,8 @@ import { lightTheme, darkTheme } from "theme/Themes";
 
 // Mui
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import AdapterDateFns from "@mui/lab/AdapterDateFns";
-import LocalizationProvider from "@mui/lab/LocalizationProvider";
+// import AdapterDateFns from "@mui/lab/AdapterDateFns";
+// import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import { styled } from "@mui/system";
 
 // Context
@@ -49,7 +49,7 @@ function App() {
 			<ThemeProvider
 				theme={dark ? createTheme(darkTheme) : createTheme(lightTheme)}
 			>
-				<LocalizationProvider dateAdapter={AdapterDateFns}>
+				{/* <LocalizationProvider dateAdapter={AdapterDateFns}> */}
 					<VoteInfoProvider>
 						<ParticipateProvider>
 							<VoteResultsProvider>
@@ -102,7 +102,7 @@ function App() {
 							</VoteResultsProvider>
 						</ParticipateProvider>
 					</VoteInfoProvider>
-				</LocalizationProvider>
+				{/* </LocalizationProvider> */}
 			</ThemeProvider>
 		</Router>
 	);
