@@ -1,7 +1,7 @@
 import * as React from "react";
 import { TextField, Typography, Tooltip } from "@mui/material";
-import DatePicker from "@mui/lab/DatePicker";
-import TimePicker from "@mui/lab/TimePicker";
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { DateValueContext } from "context/DateValueContext";
 import { styled } from "@mui/system";
 import isSameDate from "utils/createWorkflow/IsSameDate";
@@ -122,7 +122,7 @@ export default function ResponsiveDatePickers({
 			<Typography sx={typographySX(2)} variant="h5">
 				When will your vote {label.toLowerCase()}?
 			</Typography>
-			{/* <InlineDiv>
+			<InlineDiv>
 				<MarginDiv>
 					<DatePicker
 						label={`${label} Date`}
@@ -153,10 +153,10 @@ export default function ResponsiveDatePickers({
 									? new Date(new Date().getTime() + DELAY)
 									: new Date(0, 0, 0)
 								: isSameDate(dateValue.value, new Date()) // this one is a lot more complicated because we need to check (a) if the end date is today,
-								? new Date(new Date().getTime() + DELAY)
-								: isSameDate(dateValue.value, earliestDate) // and (b) if the date is the same date as the earliest start date
-								? new Date(earliestTime.getTime() + DELAY)
-								: new Date(0, 0, 0)
+									? new Date(new Date().getTime() + DELAY)
+									: isSameDate(dateValue.value, earliestDate) // and (b) if the date is the same date as the earliest start date
+										? new Date(earliestTime.getTime() + DELAY)
+										: new Date(0, 0, 0)
 						}
 						renderInput={(params) => <TextField {...params} />}
 					/>
@@ -167,9 +167,8 @@ export default function ResponsiveDatePickers({
 								left: "69%",
 								top: "35px",
 							}}
-							title={`${label} time must be at least ${MINUTES_DELAY} minutes from ${
-								label === "Start" ? "now" : "start time"
-							}.`}
+							title={`${label} time must be at least ${MINUTES_DELAY} minutes from ${label === "Start" ? "now" : "start time"
+								}.`}
 							placement="right"
 						>
 							<HelpIcon />
@@ -181,7 +180,7 @@ export default function ResponsiveDatePickers({
 						</Typography>
 					)}
 				</MarginDiv>
-			</InlineDiv> */}
+			</InlineDiv>
 		</div>
 	);
 }
