@@ -31,7 +31,8 @@ const About = () => {
 				height: "100%",
 				width: "100%",
 				textAlign: "center",
-				overflow: "auto",
+				overflowY: "auto",
+				overflowX: "hidden"
 			}}
 		>
 			<AboutDiv>
@@ -211,7 +212,7 @@ const About = () => {
 				<Typography sx={{ fontSize: 16 }}>
 					<b>Bitcoin</b>
 				</Typography>
-				<CopyTextBox width={400} text={BTC_ADDR} />
+				<CopyTextBox width={250} text={BTC_ADDR} />
 				<img
 					src={BTC_QR}
 					alt="Err"
@@ -223,7 +224,7 @@ const About = () => {
 				<Typography sx={{ fontSize: 16, paddingTop: "10px" }}>
 					<b>Ethereum</b>
 				</Typography>
-				<CopyTextBox width={400} text={ETH_ADDR} />
+				<CopyTextBox width={250} text={ETH_ADDR} />
 				<img
 					src={ETH_QR}
 					alt="Err"
@@ -235,7 +236,7 @@ const About = () => {
 				<Typography sx={{ fontSize: 16, paddingTop: "10px" }}>
 					<b>Algorand</b>
 				</Typography>
-				<CopyTextBox width={625} text={ALGO_ADDR} />
+				<CopyTextBox width={250} text={ALGO_ADDR} />
 				<img
 					src={ALGO_QR}
 					alt="Err"

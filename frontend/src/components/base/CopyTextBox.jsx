@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { IconButton, Box } from "@mui/material";
+import { IconButton, Box, Typography } from "@mui/material";
 import { styled } from "@mui/system";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { AlertContext } from "context/AlertContext";
@@ -33,7 +33,15 @@ const CopyTextBox = (props) => {
 					backgroundColor: "primary.dark",
 				}}
 			>
+				<Typography sx={{
+					width,
+					flexWrap: "wrap",
+					wordWrap: "break-word",
+					fontSize: "12px",
+				}}>
 				{text}
+
+				</Typography>
 			</AddressBox>
 			<CopyIconBox
 				sx={{
