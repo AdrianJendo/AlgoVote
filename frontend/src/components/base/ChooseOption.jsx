@@ -7,6 +7,10 @@ const ButtonDiv = styled("div")({
 	left: "50%",
 	top: "20%",
 	transform: "translate(-50%, 0)",
+	width: "100%",
+	display: "flex",
+	flexWrap: "wrap",
+	justifyContent: "center"
 });
 
 const ChooseOption = () => {
@@ -15,7 +19,7 @@ const ChooseOption = () => {
 			<Link
 				href="/createVote"
 				color="inherit"
-				sx={{ margin: "5px" }}
+				sx={{ margin: "20px" }}
 				underline="none"
 			>
 				<Button variant="contained">Create Vote</Button>
@@ -23,7 +27,7 @@ const ChooseOption = () => {
 			<Link
 				href="/participateVote"
 				color="inherit"
-				sx={{ margin: "5px" }}
+				sx={{ margin: "20px" }}
 				underline="none"
 			>
 				<Button variant="contained">Participate in Vote</Button>
@@ -31,7 +35,7 @@ const ChooseOption = () => {
 			<Link
 				href="/voteResults"
 				color="inherit"
-				sx={{ margin: "5px" }}
+				sx={{ margin: "20px" }}
 				underline="none"
 			>
 				<Button variant="contained">View Vote Results</Button>
@@ -39,7 +43,7 @@ const ChooseOption = () => {
 			<Link
 				href="/createCreatorAccount"
 				color="inherit"
-				sx={{ margin: "5px" }}
+				sx={{ margin: "20px" }}
 				underline="none"
 			>
 				<Button variant="contained">Create Testnet Account</Button>
