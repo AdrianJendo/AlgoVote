@@ -1,16 +1,22 @@
-import * as React from "react";
-import { TextField, Typography, Tooltip } from "@mui/material";
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-import { DateValueContext } from "context/DateValueContext";
+import React, { useState, useEffect } from "react";
+import {
+  TextField,
+  Typography,
+  Tooltip,
+  ButtonGroup,
+  Button,
+} from "@mui/material";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { styled } from "@mui/system";
 import isSameDate from "utils/createWorkflow/IsSameDate";
 import { MINUTES_DELAY, DELAY } from "constants";
 import HelpIcon from "@mui/icons-material/Help";
 import { typographySX } from "utils/Style/WorkflowStyle";
+import { buttonGroupSX } from "utils/Style/ParticipantsStyle";
 
 const InlineDiv = styled("div")(
-	() => `
+  () => `
 		position:relative;
 		top:30px;
 		display:flex; 
@@ -20,167 +26,146 @@ const InlineDiv = styled("div")(
 );
 
 const MarginDiv = styled("div")(
-	() => `
+  () => `
 		margin:20px;
 	`
 );
 
 export default function ResponsiveDatePickers({
-	earliestDate,
-	earliestTime,
-	selectedDate,
-	selectedTime,
-	endDate,
-	label,
+  dateValue,
+  setDateValue,
+  earliestDate,
+  endDate,
+  label,
+  handleNext,
+  handleBack,
 }) {
-	const [dateValue, setDateValue] = React.useContext(DateValueContext);
+  const [dateError, setDateError] = useState(false);
 
-	// Idk this some fucking nuts shit setting the right time was such a pain in the ass
-	React.useEffect(() => {
-		setDateValue({
-			error: false,
-			value: selectedDate ? selectedDate : earliestDate,
-			timeValue: selectedTime
-				? selectedTime
-				: label === "Start"
-					? new Date(new Date().getTime() + DELAY + 60 * 1000)
-					: new Date(earliestTime.getTime() + DELAY + 60 * 1000),
-		});
-	}, [
-		earliestDate,
-		earliestTime,
-		label,
-		selectedDate,
-		selectedTime,
-		setDateValue,
-	]);
+  useEffect(() => {
+    if (label === "Start") {
+      setDateValue(new Date(new Date().getTime() + DELAY + 60 * 1000));
+    }
+  }, [label, setDateValue]);
 
-	const handeDateChange = (newValue) => {
-		const earliestDateDate = new Date(
-			earliestDate.getFullYear(),
-			earliestDate.getMonth(),
-			earliestDate.getDate()
-		);
-		const endDateDate = new Date(
-			endDate.getFullYear(),
-			endDate.getMonth(),
-			endDate.getDate()
-		);
+  const handeDateChange = (newValue) => {
+    const earliestDay = new Date(
+      earliestDate.getFullYear(),
+      earliestDate.getMonth(),
+      earliestDate.getDate()
+    );
+    const latestDay = new Date(
+      endDate.getFullYear(),
+      endDate.getMonth(),
+      endDate.getDate()
+    );
 
-		if (
-			isNaN(newValue) ||
-			newValue > endDateDate ||
-			newValue < earliestDateDate
-		) {
-			setDateValue({ ...dateValue, value: newValue, error: true });
-		} else {
-			setDateValue({ ...dateValue, value: newValue, error: false });
-		}
-	};
+    if (isNaN(newValue) || newValue > latestDay || newValue < earliestDay) {
+      setDateError(true);
+      setDateValue(newValue);
+    } else {
+      setDateError(false);
+      setDateValue(newValue);
+    }
+  };
 
-	const handleTimeChange = (newValue) => {
-		if (label === "Start") {
-			if (
-				isSameDate(dateValue.value, new Date()) &&
-				newValue < new Date(new Date().getTime() + DELAY) // handle case where we are trying to start a vote today and we try setting the time too early
-			) {
-				setDateValue({
-					...dateValue,
-					timeValue: newValue,
-					error: true,
-				});
-			} else {
-				setDateValue({
-					...dateValue,
-					timeValue: newValue,
-					error: false,
-				});
-			}
-		} else {
-			if (
-				isSameDate(dateValue.value, earliestDate) &&
-				(newValue < new Date(earliestTime.getTime() + DELAY) || // handle case where we are try to end the date on the same day but before the earliest time possible
-					newValue < new Date(new Date().getTime() + DELAY)) // also need to check that the new value is not in the past
-			) {
-				setDateValue({
-					...dateValue,
-					timeValue: newValue,
-					error: true,
-				});
-			} else {
-				setDateValue({
-					...dateValue,
-					timeValue: newValue,
-					error: false,
-				});
-			}
-		}
-	};
+  const handleTimeChange = (newValue) => {
+    if (label === "Start") {
+      if (
+        isNaN(newValue) ||
+        (isSameDate(dateValue, new Date()) &&
+          newValue < new Date(new Date().getTime() + DELAY)) // handle case where we are trying to start a vote today and we try setting the time too early
+      ) {
+        setDateError(true);
+      } else {
+        setDateError(false);
+      }
+      setDateValue(newValue);
+    } else {
+      if (
+        isNaN(newValue) ||
+        (isSameDate(dateValue, earliestDate) &&
+          (newValue < new Date(earliestDate.getTime() + DELAY) || // handle case where we are try to end the date on the same day but before the earliest time possible
+            newValue < new Date(new Date().getTime() + DELAY))) // also need to check that the new value is not in the past
+      ) {
+        setDateError(true);
+      } else {
+        setDateError(false);
+      }
+      setDateValue(newValue);
+    }
+  };
 
-	return (
-		<div style={{ position: "relative", height: "100%" }}>
-			<Typography sx={typographySX(2)} variant="h5">
-				When will your vote {label.toLowerCase()}?
-			</Typography>
-			<InlineDiv>
-				<MarginDiv>
-					<DatePicker
-						label={`${label} Date`}
-						openTo="day"
-						views={["year", "month", "day"]}
-						minDate={earliestDate}
-						maxDate={endDate}
-						value={dateValue.value}
-						onChange={(newValue) => handeDateChange(newValue)}
-						renderInput={(params) => <TextField {...params} />}
-					/>
-					{label === "End" && (
-						<Typography sx={{ margin: "20px" }}>
-							Start Date: {earliestDate.toDateString()}
-						</Typography>
-					)}
-				</MarginDiv>
-				<MarginDiv>
-					<TimePicker
-						label={`${label} Time`}
-						value={dateValue.timeValue}
-						onChange={(newValue) => {
-							handleTimeChange(newValue);
-						}}
-						minTime={
-							label === "Start"
-								? isSameDate(dateValue.value, new Date())
-									? new Date(new Date().getTime() + DELAY)
-									: new Date(0, 0, 0)
-								: isSameDate(dateValue.value, new Date()) // this one is a lot more complicated because we need to check (a) if the end date is today,
-									? new Date(new Date().getTime() + DELAY)
-									: isSameDate(dateValue.value, earliestDate) // and (b) if the date is the same date as the earliest start date
-										? new Date(earliestTime.getTime() + DELAY)
-										: new Date(0, 0, 0)
-						}
-						renderInput={(params) => <TextField {...params} />}
-					/>
-					{dateValue.error && (
-						<Tooltip
-							sx={{
-								position: "absolute",
-								left: "69%",
-								top: "35px",
-							}}
-							title={`${label} time must be at least ${MINUTES_DELAY} minutes from ${label === "Start" ? "now" : "start time"
-								}.`}
-							placement="right"
-						>
-							<HelpIcon />
-						</Tooltip>
-					)}
-					{label === "End" && (
-						<Typography sx={{ margin: "20px" }}>
-							Start Time: {earliestTime.toLocaleTimeString()}
-						</Typography>
-					)}
-				</MarginDiv>
-			</InlineDiv>
-		</div>
-	);
+  let minTime = new Date(0, 0, 0);
+  if (isSameDate(dateValue, new Date())) {
+    minTime = new Date(new Date().getTime() + DELAY);
+  } else if (isSameDate(dateValue, earliestDate)) {
+    minTime = new Date(earliestDate.getTime() + DELAY);
+  }
+
+  return (
+    <div style={{ position: "relative", height: "100%" }}>
+      <Typography sx={typographySX(2)} variant="h5">
+        When will your vote {label.toLowerCase()}?
+      </Typography>
+      <InlineDiv>
+        <MarginDiv>
+          <DatePicker
+            label={`${label} Date`}
+            openTo="day"
+            views={["year", "month", "day"]}
+            minDate={earliestDate}
+            maxDate={endDate}
+            value={dateValue}
+            onChange={(newValue) => handeDateChange(newValue)}
+            renderInput={(params) => <TextField {...params} />}
+          />
+          {label === "End" && (
+            <Typography sx={{ margin: "20px" }}>
+              Start Date: {earliestDate.toDateString()}
+            </Typography>
+          )}
+        </MarginDiv>
+        <MarginDiv>
+          <TimePicker
+            label={`${label} Time`}
+            value={dateValue}
+            onChange={(newValue) => {
+              handleTimeChange(newValue);
+            }}
+            minTime={minTime}
+            renderInput={(params) => <TextField {...params} />}
+          />
+          {dateError && (
+            <Tooltip
+              sx={{
+                position: "absolute",
+                left: "69%",
+                top: "35px",
+              }}
+              title={`${label} time must be at least ${MINUTES_DELAY} minutes from ${
+                label === "Start" ? "now" : "start time"
+              }.`}
+              placement="right"
+            >
+              <HelpIcon />
+            </Tooltip>
+          )}
+          {label === "End" && (
+            <Typography sx={{ margin: "20px" }}>
+              Start Time:{" "}
+              {earliestDate.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </Typography>
+          )}
+        </MarginDiv>
+      </InlineDiv>
+      <ButtonGroup variant="contained" sx={buttonGroupSX(75)}>
+        <Button onClick={handleBack}>Back</Button>
+        {!dateError && <Button onClick={handleNext}>Next Step</Button>}
+      </ButtonGroup>
+    </div>
+  );
 }

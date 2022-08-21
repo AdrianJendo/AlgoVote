@@ -15,11 +15,8 @@ import Toolbar from "components/base/Toolbar";
 import { AppBar, Box, Drawer, Divider } from "@mui/material";
 import { styled } from "@mui/system";
 
-import { cancelVote } from "utils/misc/CancelVote";
-import { DateValueContext } from "context/DateValueContext";
 import { MINUTES_DELAY, DELAY } from "constants";
 import isSameDate from "utils/createWorkflow/IsSameDate";
-import { useNavigate } from "react-router-dom";
 
 const drawerWidth = 240;
 
@@ -34,10 +31,7 @@ const StyledDrawer = styled(Drawer)(({ theme }) => ({
 const CreateVoteWorkflow = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [voteInfo, setVoteInfo] = useContext(VoteInfoContext);
-  const dateValue = React.useContext(DateValueContext)[0];
-  const navigate = useNavigate();
-
-  const earliestStartDate = new Date(); // earliest start date is today
+  const [dateValue, setDateValue] = useState(null);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -46,6 +40,7 @@ const CreateVoteWorkflow = () => {
   const steps = [
     "Select Voting Participants",
     "Specify Vote Options",
+    "Specify Start Date",
     "Specify End Date",
     "Review Details",
     "Payment & Title",
@@ -66,48 +61,41 @@ const CreateVoteWorkflow = () => {
   const container = window.document.body;
 
   const handleNext = () => {
+    // Start date
     if (voteInfo.activeStep === 2) {
-      // Start date stuff
       if (
-        !isSameDate(dateValue.value, new Date()) ||
-        dateValue.timeValue - new Date(new Date().getTime() + DELAY) > 0
+        !isSameDate(dateValue, new Date()) ||
+        dateValue - new Date(new Date().getTime() + DELAY) > 0
       ) {
         setVoteInfo({
           ...voteInfo,
           activeStep: voteInfo.activeStep + 1,
-          startDate: dateValue.value,
-          startTime: new Date(dateValue.timeValue.setSeconds(0)),
+          startDate: dateValue,
         });
+        setDateValue(new Date(dateValue.getTime() + DELAY + 60 * 1000));
       } else {
         alert(
           `Update start time or date to be ${MINUTES_DELAY} minutes after the current time`
         );
       }
-    } else if (voteInfo.activeStep === 3) {
-      // End date stuff
+    }
+    // End date
+    else if (voteInfo.activeStep === 3) {
       if (
-        (isSameDate(dateValue.value, new Date()) &&
-          (dateValue.timeValue - new Date(new Date().getTime() + DELAY) < 0 ||
-            dateValue.timeValue -
-              new Date(voteInfo.startTime.getTime() + DELAY) <
-              0)) || // check if the date is today and we are choosing a time in the past or too early
-        (isSameDate(dateValue.value, voteInfo.startDate) &&
-          dateValue.timeValue - new Date(voteInfo.startTime.getTime() + DELAY) <
-            0)
+        !isSameDate(dateValue, new Date()) || // check if the date is today
+        (dateValue - new Date(new Date().getTime() + DELAY) > 0 && // or we are choosing a time in the future
+          dateValue - new Date(voteInfo.startDate.getTime() + DELAY) > 0)
       ) {
-        alert(
-          `Update end time or date to be ${MINUTES_DELAY} minutes after the start time`
-        );
-      } else {
         setVoteInfo({
           ...voteInfo,
           activeStep: voteInfo.activeStep + 1,
-          endDate: dateValue.value,
-          endTime: new Date(dateValue.timeValue.setSeconds(0)),
+          endDate: dateValue,
         });
+      } else {
+        alert(
+          `Update end time or date to be ${MINUTES_DELAY} minutes after the start time`
+        );
       }
-    } else if (voteInfo.activeStep === 5) {
-      cancelVote(setVoteInfo, navigate);
     } else {
       setVoteInfo({
         ...voteInfo,
@@ -184,9 +172,9 @@ const CreateVoteWorkflow = () => {
           )}
           {voteInfo.activeStep === 2 && (
             <DatePicker
-              earliestDate={earliestStartDate}
-              selectedDate={voteInfo.startDate}
-              selectedTime={voteInfo.startTime}
+              dateValue={dateValue}
+              setDateValue={setDateValue}
+              earliestDate={new Date(new Date().getTime() + DELAY + 60000)} // earliest start date is today
               endDate={
                 new Date(
                   new Date().getFullYear() + 7, // set endDate to 7 years in the future
@@ -201,10 +189,9 @@ const CreateVoteWorkflow = () => {
           )}
           {voteInfo.activeStep === 3 && (
             <DatePicker
-              earliestDate={voteInfo.startDate}
-              earliestTime={voteInfo.startTime}
-              selectedDate={voteInfo.endDate}
-              selectedTime={voteInfo.endTime}
+              dateValue={dateValue}
+              setDateValue={setDateValue}
+              earliestDate={new Date(voteInfo.startDate.getTime())}
               endDate={
                 new Date(
                   voteInfo.startDate.getFullYear() + 7, // set endDate to 7 years in the future
@@ -217,8 +204,10 @@ const CreateVoteWorkflow = () => {
               handleBack={handleBack}
             />
           )}
-          {voteInfo.activeStep === 4 && <ReviewDetails />}
-          {voteInfo.activeStep === 5 && <Payment />}
+          {voteInfo.activeStep === 4 && (
+            <ReviewDetails handleNext={handleNext} handleBack={handleBack} />
+          )}
+          {voteInfo.activeStep === 5 && <Payment handleBack={handleBack} />}
         </Paper>
       </Box>
     </Box>
