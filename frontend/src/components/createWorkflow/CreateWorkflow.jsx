@@ -116,14 +116,9 @@ const CreateVoteWorkflow = () => {
     }
   };
 
-  // const handleBack = () => {
-  //   const activeStep = voteInfo.activeStep;
-  //   if (activeStep === 0) {
-  //     cancelVote(setVoteInfo, navigate);
-  //   } else {
-  //     setVoteInfo({ ...voteInfo, activeStep: activeStep - 1 });
-  //   }
-  // };
+  const handleBack = () => {
+    setVoteInfo({ ...voteInfo, activeStep: voteInfo.activeStep - 1 });
+  };
 
   return (
     <Box
@@ -184,7 +179,9 @@ const CreateVoteWorkflow = () => {
           {voteInfo.activeStep === 0 && (
             <SelectParticipants handleNext={handleNext} />
           )}
-          {voteInfo.activeStep === 1 && <SelectCandidates />}
+          {voteInfo.activeStep === 1 && (
+            <SelectCandidates handleNext={handleNext} />
+          )}
           {voteInfo.activeStep === 2 && (
             <DatePicker
               earliestDate={earliestStartDate}
@@ -198,6 +195,8 @@ const CreateVoteWorkflow = () => {
                 )
               }
               label="Start"
+              handleNext={handleNext}
+              handleBack={handleBack}
             />
           )}
           {voteInfo.activeStep === 3 && (
@@ -214,6 +213,8 @@ const CreateVoteWorkflow = () => {
                 )
               }
               label="End"
+              handleNext={handleNext}
+              handleBack={handleBack}
             />
           )}
           {voteInfo.activeStep === 4 && <ReviewDetails />}

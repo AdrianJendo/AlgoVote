@@ -359,9 +359,10 @@ const SelectParticipants = ({ handleNext }) => {
           voteInfo.participantData === null && (
             <Button onClick={() => generateParticipants()}>Next</Button>
           )}
-        {voteInfo.participantData && (
-          <Button onClick={handleNext}>Next Step</Button>
-        )}
+        {voteInfo.participantData &&
+          Object.keys(voteInfo.participantData).length && (
+            <Button onClick={handleNext}>Next Step</Button>
+          )}
       </ButtonGroup>
     </div>
   );
