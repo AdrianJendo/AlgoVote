@@ -1,5 +1,6 @@
 import React from "react";
 import { Toolbar, Typography, Button, Link } from "@mui/material";
+// import MUISwitch from "components/base/MuiSwitch";
 
 const AppToolbar = ({ toggleSwitch }) => {
   return (
