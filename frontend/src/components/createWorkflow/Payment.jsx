@@ -62,7 +62,7 @@ const Payment = ({ handleBack }) => {
         label="Vote Title"
         autoFocus={true}
         placeholder="Enter Vote Title"
-        sx={{ width: "400px", margin: "20px" }}
+        sx={{ width: "400px", margin: "20px", maxWidth: "100%" }}
         value={voteTitle}
         onChange={(e) => setVoteTitle(e.target.value)}
       />
@@ -92,7 +92,7 @@ const Payment = ({ handleBack }) => {
           placeholder="Paste Secret Key"
           multiline
           rows={4}
-          sx={{ width: "400px" }}
+          sx={{ width: "400px", maxWidth: "100%" }}
           value={secretKey}
           onChange={(e) => setSecretKey(e.target.value)}
         />
