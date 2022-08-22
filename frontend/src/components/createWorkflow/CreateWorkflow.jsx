@@ -10,7 +10,6 @@ import Payment from "components/createWorkflow/Payment";
 import WorkflowDrawer from "components/base/Drawer";
 
 import { MINUTES_DELAY, DELAY } from "constants";
-import isSameDate from "utils/createWorkflow/IsSameDate";
 
 const CreateVoteWorkflow = () => {
   const [voteInfo, setVoteInfo] = useContext(VoteInfoContext);
@@ -28,10 +27,7 @@ const CreateVoteWorkflow = () => {
   const handleNext = () => {
     // Start date
     if (voteInfo.activeStep === 2) {
-      if (
-        !isSameDate(dateValue, new Date()) ||
-        dateValue - new Date(new Date().getTime() + DELAY) > 0
-      ) {
+      if (dateValue > new Date(new Date().getTime() + DELAY)) {
         setVoteInfo({
           ...voteInfo,
           activeStep: voteInfo.activeStep + 1,
@@ -46,11 +42,7 @@ const CreateVoteWorkflow = () => {
     }
     // End date
     else if (voteInfo.activeStep === 3) {
-      if (
-        !isSameDate(dateValue, new Date()) || // check if the date is today
-        (dateValue - new Date(new Date().getTime() + DELAY) > 0 && // or we are choosing a time in the future
-          dateValue - new Date(voteInfo.startDate.getTime() + DELAY) > 0)
-      ) {
+      if (dateValue > new Date(voteInfo.startDate.getTime() + DELAY)) {
         setVoteInfo({
           ...voteInfo,
           activeStep: voteInfo.activeStep + 1,
