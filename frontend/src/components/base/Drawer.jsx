@@ -18,7 +18,7 @@ const StyledDrawer = styled(Drawer)(({ theme }) => ({
   },
 }));
 
-const WorkflowDrawer = ({ steps, content }) => {
+const WorkflowDrawer = ({ steps, stepInfo, content }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleDrawerToggle = () => {
@@ -32,7 +32,7 @@ const WorkflowDrawer = ({ steps, content }) => {
       </AppBar>
       <Divider />
       <StepperDiv>
-        <Stepper steps={steps} />
+        <Stepper steps={steps} stepInfo={stepInfo} />
       </StepperDiv>
     </div>
   );

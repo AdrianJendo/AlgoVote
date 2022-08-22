@@ -7,11 +7,10 @@ import SelectCandidates from "components/createWorkflow/SelectCandidates";
 import DatePicker from "components/createWorkflow/DatePicker";
 import ReviewDetails from "components/createWorkflow/ReviewDetails";
 import Payment from "components/createWorkflow/Payment";
+import WorkflowDrawer from "components/base/Drawer";
 
 import { MINUTES_DELAY, DELAY } from "constants";
 import isSameDate from "utils/createWorkflow/IsSameDate";
-
-import WorkflowDrawer from "components/base/Drawer";
 
 const CreateVoteWorkflow = () => {
   const [voteInfo, setVoteInfo] = useContext(VoteInfoContext);
@@ -122,7 +121,7 @@ const CreateVoteWorkflow = () => {
       {voteInfo.activeStep === 5 && <Payment handleBack={handleBack} />}
     </div>
   );
-  return <WorkflowDrawer steps={steps} content={content} />;
+  return <WorkflowDrawer steps={steps} stepInfo={voteInfo} content={content} />;
 };
 
 export default CreateVoteWorkflow;

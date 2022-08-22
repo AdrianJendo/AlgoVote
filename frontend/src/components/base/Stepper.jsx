@@ -1,7 +1,6 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Box, Stepper, Step, StepLabel, Typography } from "@mui/material";
 import { styled } from "@mui/system";
-import { VoteInfoContext } from "context/VoteInfoContext";
 import Check from "@mui/icons-material/Check";
 
 const StepIconRoot = styled("div")(({ theme, ownerState }) => ({
@@ -50,9 +49,7 @@ const StepIcon = (props) => {
   );
 };
 
-const WorkflowStepper = ({ steps }) => {
-  const stepInfo = useContext(VoteInfoContext)[0];
-
+const WorkflowStepper = ({ steps, stepInfo }) => {
   return (
     <StyledBox sx={{ maxWidth: 300 }}>
       <Stepper activeStep={stepInfo.activeStep} orientation="vertical">
