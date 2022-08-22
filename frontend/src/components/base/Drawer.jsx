@@ -18,6 +18,13 @@ const StyledDrawer = styled(Drawer)(({ theme }) => ({
   },
 }));
 
+const ContentDiv = styled("div")(({ theme }) => ({
+  height: "100%",
+  width: "100%",
+  textAlign: "center",
+  color: theme.palette.text.primary,
+}));
+
 const WorkflowDrawer = ({ steps, stepInfo, content }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -45,6 +52,7 @@ const WorkflowDrawer = ({ steps, stepInfo, content }) => {
         display: "flex",
         width: "100%",
         height: "100%",
+        overflowY: "auto",
       }}
     >
       <Box
@@ -88,15 +96,7 @@ const WorkflowDrawer = ({ steps, stepInfo, content }) => {
           height: "100%",
         }}
       >
-        <Paper
-          sx={{
-            height: "100%",
-            width: "100%",
-            textAlign: "center",
-          }}
-        >
-          {content}
-        </Paper>
+        <ContentDiv>{content}</ContentDiv>
       </Box>
     </Box>
   );
