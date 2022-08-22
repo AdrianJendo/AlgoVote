@@ -55,23 +55,23 @@ const ReviewAndPay = ({ handleBack }) => {
 
   return (
     <div style={{ position: "relative", height: "100%" }}>
-      <Typography sx={{ position: "relative", top: "2%" }} variant="h5">
+      <Typography sx={{ margin: "30px" }} variant="h5">
         Review the details of this transaction
       </Typography>
       <div
         style={{
-          marginTop: 100,
-          marginRight: 300,
-          marginLeft: 300,
+          marginTop: 20,
+          marginRight: 30,
+          marginLeft: 30,
           marginBottom: 60,
-          overflow: "hidden",
+          overflow: "auto",
         }}
       >
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableBody>
             {rows.map((row) => (
               <StyledTableRow key={row.name}>
-                <StyledTableCell sx={{ width: "50%" }}>
+                <StyledTableCell align="center" sx={{ width: "50%" }}>
                   <Typography>
                     <b>{row.name}</b>
                   </Typography>
