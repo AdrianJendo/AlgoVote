@@ -85,7 +85,7 @@ const ReviewAndPay = ({ handleBack }) => {
         </Table>
       </div>
       {!participateInfo.voteSubmitted && (
-        <ButtonGroup variant="contained">
+        <ButtonGroup variant="contained" sx={{ margin: "10px" }}>
           <Button
             onClick={() => cancelParticipate(setParticipateInfo, navigate)}
           >

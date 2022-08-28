@@ -71,7 +71,7 @@ const SelectParticipants = ({ handleNext }) => {
 
   return (
     <div style={{ position: "relative", height: "100%" }}>
-      <Typography sx={typographySX(2)} variant="h5">
+      <Typography sx={{ padding: "30px" }} variant="h5">
         Who will be participating in your vote?
       </Typography>
 
@@ -333,7 +333,7 @@ const SelectParticipants = ({ handleNext }) => {
       )}
 
       {/* reset / back / next button controls */}
-      <ButtonGroup variant="contained" sx={buttonGroupSX(75)}>
+      <ButtonGroup variant="contained" sx={{ margin: "30px" }}>
         {voteInfo.accountFundingType !== null && (
           <Button
             onClick={() =>

@@ -12,8 +12,6 @@ import { styled } from "@mui/system";
 import isSameDate from "utils/createWorkflow/IsSameDate";
 import { MINUTES_DELAY, DELAY } from "constants";
 import HelpIcon from "@mui/icons-material/Help";
-import { typographySX } from "utils/Style/WorkflowStyle";
-import { buttonGroupSX } from "utils/Style/ParticipantsStyle";
 
 const InlineDiv = styled("div")(
   () => `
@@ -105,7 +103,7 @@ export default function ResponsiveDatePickers({
 
   return (
     <div style={{ position: "relative", height: "100%" }}>
-      <Typography sx={typographySX(2)} variant="h5">
+      <Typography sx={{ padding: "30px" }} variant="h5">
         When will your vote {label.toLowerCase()}?
       </Typography>
       <InlineDiv>
@@ -162,7 +160,7 @@ export default function ResponsiveDatePickers({
           )}
         </MarginDiv>
       </InlineDiv>
-      <ButtonGroup variant="contained" sx={buttonGroupSX(75)}>
+      <ButtonGroup variant="contained" sx={{ margin: "30px" }}>
         <Button onClick={handleBack}>Back</Button>
         {!dateError && <Button onClick={handleNext}>Next Step</Button>}
       </ButtonGroup>

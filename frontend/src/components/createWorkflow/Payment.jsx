@@ -54,7 +54,7 @@ const Payment = ({ handleBack }) => {
       <Typography
         variant="h6"
         component="div"
-        sx={{ flexGrow: 1, padding: "10px" }}
+        sx={{ flexGrow: 1, padding: "30px" }}
       >
         Add a title and paste the creator's secret key to create the vote
       </Typography>
@@ -98,7 +98,7 @@ const Payment = ({ handleBack }) => {
         />
       </div>
       {progressBar === null && (
-        <ButtonGroup variant="contained">
+        <ButtonGroup variant="contained" sx={{ margin: "20px" }}>
           <Button onClick={handleBack}>Back</Button>
           <Button
             variant="contained"

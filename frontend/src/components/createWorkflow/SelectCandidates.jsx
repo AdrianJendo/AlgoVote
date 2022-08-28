@@ -46,7 +46,7 @@ const SelectCandidates = ({ handleNext }) => {
 
   return (
     <div style={{ position: "relative", height: "100%" }}>
-      <Typography sx={typographySX(2)} variant="h5">
+      <Typography sx={{ padding: "30px" }} variant="h5">
         What will be the choices for your vote?
       </Typography>
 
@@ -222,7 +222,7 @@ const SelectCandidates = ({ handleNext }) => {
           </TableSubDiv>
         </ManualUploadDiv>
       )}
-      <ButtonGroup variant="contained" sx={buttonGroupSX(75)}>
+      <ButtonGroup variant="contained" sx={{ margin: "30px" }}>
         {voteInfo.candidateUploadMethod !== null &&
           voteInfo.candidateUploadMethod !== "manual" && (
             <Button

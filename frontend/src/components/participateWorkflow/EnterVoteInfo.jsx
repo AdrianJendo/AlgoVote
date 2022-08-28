@@ -72,7 +72,7 @@ const EnterVoteInfo = ({ handleNext, handleBack }) => {
         />
       </div>
 
-      <ButtonGroup variant="contained">
+      <ButtonGroup variant="contained" sx={{ margin: "20px" }}>
         <Button onClick={() => handleBack()}>Back</Button>
         {isMnemonicValid(participateInfo.sk) &&
           participateInfo.appId &&

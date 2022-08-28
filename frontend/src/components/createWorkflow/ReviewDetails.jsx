@@ -7,7 +7,6 @@ import ArrowForwardIosSharpIcon from "@mui/icons-material/ArrowForwardIosSharp";
 import { styled } from "@mui/system";
 import ReviewInfoTable from "components/base/RenderTable";
 import TimesTable from "components/createWorkflow/TimesTable";
-import { buttonGroupSX } from "utils/Style/ParticipantsStyle";
 
 const Accordion = styled((props) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -65,7 +64,7 @@ const ReviewDetails = ({ handleNext, handleBack }) => {
       <Typography
         variant="h6"
         component="div"
-        sx={{ flexGrow: 1, padding: "10px" }}
+        sx={{ flexGrow: 1, padding: "30px" }}
       >
         Review the Vote Details
       </Typography>
@@ -116,7 +115,7 @@ const ReviewDetails = ({ handleNext, handleBack }) => {
           <TimesTable />
         </AccordionDetails>
       </Accordion>
-      <ButtonGroup variant="contained" sx={buttonGroupSX(75)}>
+      <ButtonGroup variant="contained" sx={{ margin: "30px" }}>
         <Button onClick={handleBack}>Back</Button>
         <Button onClick={handleNext}>Next Step</Button>
       </ButtonGroup>

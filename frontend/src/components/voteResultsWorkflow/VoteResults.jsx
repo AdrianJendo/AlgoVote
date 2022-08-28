@@ -14,7 +14,7 @@ function FormRow(props) {
   return (
     <React.Fragment>
       {data.map((item, index) => (
-        <Grid item xs="auto" key={index} sx={{ margin: "15px" }}>
+        <Grid xs="auto" key={index} sx={{ margin: "15px" }}>
           <VoteResultsBox
             caption={item.caption}
             data={item.data}
