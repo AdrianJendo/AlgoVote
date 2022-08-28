@@ -12,6 +12,7 @@ import { styled } from "@mui/system";
 import isSameDate from "utils/createWorkflow/IsSameDate";
 import { MINUTES_DELAY, DELAY } from "constants";
 import HelpIcon from "@mui/icons-material/Help";
+import { buttonGroupSX } from "utils/Style/ParticipantsStyle";
 
 const InlineDiv = styled("div")(
   () => `
@@ -160,7 +161,7 @@ export default function ResponsiveDatePickers({
           )}
         </MarginDiv>
       </InlineDiv>
-      <ButtonGroup variant="contained" sx={{ margin: "30px" }}>
+      <ButtonGroup variant="contained" sx={buttonGroupSX(75)}>
         <Button onClick={handleBack}>Back</Button>
         {!dateError && <Button onClick={handleNext}>Next Step</Button>}
       </ButtonGroup>

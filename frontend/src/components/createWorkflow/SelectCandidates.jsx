@@ -222,7 +222,7 @@ const SelectCandidates = ({ handleNext }) => {
           </TableSubDiv>
         </ManualUploadDiv>
       )}
-      <ButtonGroup variant="contained" sx={{ margin: "30px" }}>
+      <ButtonGroup variant="contained" sx={buttonGroupSX(75)}>
         {voteInfo.candidateUploadMethod !== null &&
           voteInfo.candidateUploadMethod !== "manual" && (
             <Button

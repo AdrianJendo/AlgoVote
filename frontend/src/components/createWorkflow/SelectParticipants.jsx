@@ -333,7 +333,7 @@ const SelectParticipants = ({ handleNext }) => {
       )}
 
       {/* reset / back / next button controls */}
-      <ButtonGroup variant="contained" sx={{ margin: "30px" }}>
+      <ButtonGroup variant="contained" sx={buttonGroupSX(75)}>
         {voteInfo.accountFundingType !== null && (
           <Button
             onClick={() =>
